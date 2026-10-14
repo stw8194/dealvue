@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Clock3, Tag, Users, X } from "lucide-react";
 import type { TimeDeal } from "@/type/home";
 
@@ -139,13 +140,13 @@ export default function TimeDealModal({
                 {deal.price.toLocaleString()}원
               </p>
             </div>
-            <button
-              type="button"
+            <Link
+              to={`/deal/${deal.id}`}
               onClick={onClose}
               className="h-12 min-w-28 cursor-pointer rounded-full bg-accent px-6 text-sm font-bold text-white hover:opacity-85"
             >
-              확인
-            </button>
+              상세 · 일정 확인
+            </Link>
           </div>
         </div>
       </section>

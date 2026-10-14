@@ -44,6 +44,7 @@ export default function Register() {
     useState<SocialLoginProvider | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [emailRegisterError, setEmailRegisterError] = useState("");
+  const [registrationNotice, setRegistrationNotice] = useState("");
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isEmailRegisterLoading, setIsEmailRegisterLoading] = useState(false);
   const setUser = useAuthStore((state) => state.setUser);
@@ -107,6 +108,10 @@ export default function Register() {
 
       setIsEmailModalOpen(false);
       reset();
+      if (!user) {
+        setRegistrationNotice("인증 메일을 보냈습니다. 이메일의 인증 링크를 누른 뒤 로그인해 주세요.");
+        return;
+      }
       setUser(user);
       navigate("/", { replace: true });
     } catch (err) {
@@ -137,6 +142,7 @@ export default function Register() {
       </div>
 
       <div className="mt-16 flex flex-col gap-3">
+        {registrationNotice && <p role="status" className="rounded-lg border border-page-border p-4 text-sm">{registrationNotice}</p>}
         {LOGIN_OPTIONS.map((option) => (
           <button
             key={option.label}

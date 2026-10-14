@@ -37,6 +37,15 @@ export type KakaoCircleInstance = {
 };
 
 export type KakaoMaps = {
+  services: {
+    Status: { OK: string; ZERO_RESULT: string; ERROR: string };
+    Geocoder: new () => {
+      addressSearch: (
+        address: string,
+        callback: (results: { x: string; y: string; address_type: string }[], status: string) => void,
+      ) => void;
+    };
+  };
   load: (callback: () => void) => void;
   LatLng: new (latitude: number, longitude: number) => KakaoLatLng;
   LatLngBounds: new () => KakaoLatLngBounds;

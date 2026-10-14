@@ -18,22 +18,22 @@ const QUICK_QUESTIONS = [
 const INITIAL_MESSAGE: ChatMessage = {
   id: 1,
   role: "assistant",
-  content: "안녕하세요. 딜뷰 AI 고객센터입니다. 무엇을 도와드릴까요?",
+  content: "딜뷰 도움말입니다. 현재는 화면 흐름을 확인하는 자동 응답 예시를 제공합니다.",
 };
 
 function getBotResponse(question: string) {
   const normalizedQuestion = question.replace(/\s/g, "");
 
   if (/예약|변경|취소/.test(normalizedQuestion)) {
-    return "예약내역에서 해당 예약을 선택하면 변경 가능 여부를 확인할 수 있어요. 취소 가능 시간과 환불 금액은 매장 정책에 따라 달라질 수 있습니다.";
+    return "미리보기에서는 예약내역에서 시작 전 예약의 일정 변경과 취소를 체험할 수 있어요. 실제 매장 예약과 취소 처리는 연결 준비 중입니다.";
   }
 
   if (/쿠폰|할인/.test(normalizedQuestion)) {
-    return "결제 단계에서 보유 쿠폰을 선택할 수 있어요. 쿠폰마다 최소 결제 금액과 사용 기한이 다르니 쿠폰함의 조건을 확인해 주세요.";
+    return "쿠폰함에서 쿠폰 정보를 확인할 수 있어요. 예약 단계의 쿠폰 적용은 연결 준비 중입니다.";
   }
 
   if (/결제|환불|카드/.test(normalizedQuestion)) {
-    return "예약 취소가 완료되면 결제 수단으로 환불됩니다. 카드사에 따라 환불 내역이 표시되기까지 영업일 기준 3~7일이 걸릴 수 있어요.";
+    return "현재 테스트 예약은 실제 비용이 청구되지 않아 환불도 발생하지 않아요. 실결제와 환불 정책은 결제 연동 시 안내합니다.";
   }
 
   if (/로그인|계정|비밀번호/.test(normalizedQuestion)) {
@@ -113,10 +113,10 @@ export default function Inquiry() {
           <Bot className="h-6 w-6" strokeWidth={2.1} />
         </span>
         <div className="min-w-0">
-          <h2 className="text-base font-black text-page-heading">AI 고객센터</h2>
+          <h2 className="text-base font-black text-page-heading">딜뷰 도움말</h2>
           <p className="flex items-center gap-1.5 text-xs text-gray-400">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            바로 답변 가능
+            자동 응답 예시
           </p>
         </div>
       </header>

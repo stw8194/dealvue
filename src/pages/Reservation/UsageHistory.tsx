@@ -1,25 +1,5 @@
-import { useEffect, useState } from "react";
-import { requestReservations } from "@/api/reservation";
-import type { Reservation } from "@/type/reservation";
+import ReservationList from "@/features/consumer/booking/ReservationList";
 
 export default function UsageHistory() {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-
-  useEffect(() => {
-    requestReservations("used").then(data => {
-      if (data) setReservations(data);
-    });
-  }, []);
-
-  return (
-    <ul className="flex flex-col gap-3 px-4 py-4">
-      {reservations.map(reservation => (
-        <li key={reservation.id} className="border-b border-page-border pb-3">
-          <p className="text-sm font-semibold text-page-heading">{reservation.productName}</p>
-          <p className="text-sm text-page-text">{reservation.shopName}</p>
-          <p className="text-sm text-page-text">{reservation.reservedAt}</p>
-        </li>
-      ))}
-    </ul>
-  );
+  return <ReservationList statuses={["done", "no_show"]} emptyTitle="아직 이용내역이 없습니다" />;
 }

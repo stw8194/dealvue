@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Bell, ChevronDown, Heart, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -16,40 +16,25 @@ type HomeHeaderProps = {
 export default function HomeHeader({
   unreadNotificationCount = 0,
 }: HomeHeaderProps) {
-  const [locationLabel, setLocationLabel] = useState("현재 위치");
-  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
+  const [cachedLocation] = useState(getCachedCurrentLocation);
+  const [locationLabel, setLocationLabel] = useState(cachedLocation?.label ?? "위치 확인 중");
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>(cachedLocation ? "success" : "loading");
   const [locationError, setLocationError] = useState<string | null>(null);
 
-  const updateCurrentLocation = useCallback(async () => {
-    setLocationStatus("loading");
-    setLocationLabel("위치 확인 중");
-    setLocationError(null);
-
-    try {
-      const location = await requestCurrentLocation();
-      setLocationLabel(location.label);
-      setLocationStatus("success");
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "현재 위치를 확인할 수 없습니다.";
-      setLocationLabel("위치 설정");
-      setLocationError(errorMessage);
-      setLocationStatus("error");
-    }
-  }, []);
-
   useEffect(() => {
-    const cachedLocation = getCachedCurrentLocation();
-    if (cachedLocation) {
-      setLocationLabel(cachedLocation.label);
-      setLocationStatus("success");
-      return;
-    }
-
-    void updateCurrentLocation();
-  }, [updateCurrentLocation]);
+    if (cachedLocation) return;
+    let current = true;
+    void requestCurrentLocation().then((location) => {
+      if (current) { setLocationLabel(location.label); setLocationStatus("success"); }
+    }).catch((error: unknown) => {
+      if (current) {
+        setLocationLabel("위치 설정");
+        setLocationError(error instanceof Error ? error.message : "현재 위치를 확인할 수 없습니다.");
+        setLocationStatus("error");
+      }
+    });
+    return () => { current = false; };
+  }, [cachedLocation]);
 
   return (
     <header className="relative flex h-14 w-full max-w-[100dvw] items-center bg-page-background px-4 min-[390px]:px-5 md:h-16">
@@ -61,12 +46,11 @@ export default function HomeHeader({
         <img src={logoUrl} alt="DEALVUE" className="h-8 w-auto" />
       </Link>
 
-      <button
-        type="button"
-        onClick={() => void updateCurrentLocation()}
+      <Link
+        to="/location"
         aria-live="polite"
-        aria-label={locationError ?? "현재 위치 갱신"}
-        title={locationError ?? "현재 위치 갱신"}
+        aria-label="동네 및 위치 설정"
+        title={locationError ?? "동네 및 위치 설정"}
         className="absolute left-1/2 top-1/2 flex w-[44vw] max-w-72 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 px-1 text-page-heading"
       >
         <MapPin className="h-4 w-4 shrink-0 md:h-5 md:w-5" strokeWidth={2.4} />
@@ -79,11 +63,11 @@ export default function HomeHeader({
           }`}
           strokeWidth={2.5}
         />
-      </button>
+      </Link>
 
       <div className="ml-auto flex shrink-0 items-center justify-end gap-1 md:gap-3">
-        <button
-          type="button"
+        <Link
+          to="/notifications"
           aria-label="알림"
           className="relative grid h-8 w-8 place-items-center text-page-heading md:h-9 md:w-9"
         >
@@ -93,7 +77,7 @@ export default function HomeHeader({
               {unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}
             </span>
           )}
-        </button>
+        </Link>
         <Link
           to="/wishlist"
           aria-label="찜 목록"

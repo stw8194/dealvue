@@ -1,33 +1,10 @@
-import { useEffect, useState } from "react";
-import { requestReservations } from "@/api/reservation";
-import type { Reservation, ReservationStatus } from "@/type/reservation";
-
-const STATUS_LABEL: Record<ReservationStatus, string> = {
-  completed: "예약 완료",
-  used: "이용 완료",
-  cancelling: "취소 진행",
-  refunded: "환불 완료",
-};
+import ReservationList from "@/features/consumer/booking/ReservationList";
 
 export default function CancelRefundHistory() {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-
-  useEffect(() => {
-    Promise.all([requestReservations("cancelling"), requestReservations("refunded")]).then(
-      ([cancelling, refunded]) => {
-        setReservations([...(cancelling ?? []), ...(refunded ?? [])]);
-      },
-    );
-  }, []);
-
   return (
-    <ul className="flex flex-col gap-3 px-4 py-4">
-      {reservations.map(reservation => (
-        <li key={reservation.id} className="border-b border-page-border pb-3">
-          <p className="text-sm font-semibold text-page-heading">{reservation.productName}</p>
-          <p className="text-sm text-accent">{STATUS_LABEL[reservation.status]}</p>
-        </li>
-      ))}
-    </ul>
+    <section className="space-y-4">
+      <p className="text-sm text-page-text">예약 취소와 결제 환불은 별도 상태입니다. 환불 정보 연결은 준비 중이며 테스트 예약은 실제 청구·환불이 없습니다.</p>
+      <ReservationList statuses={["cancelled"]} emptyTitle="취소된 예약이 없습니다" />
+    </section>
   );
 }

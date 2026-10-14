@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { LocateFixed, MapPin, Minus, Plus, RefreshCw, X } from "lucide-react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { ChevronDown, List, LocateFixed, MapPin, Minus, Plus, RefreshCw } from "lucide-react";
 import { getCachedCurrentLocation } from "@/api/location";
 import {
   loadKakaoMaps,
@@ -7,14 +8,17 @@ import {
   type KakaoCustomOverlayInstance,
   type KakaoMapInstance,
   type KakaoMaps,
-  type KakaoMarkerInstance,
 } from "@/api/kakaoMap";
 import {
   requestNearbyBusinesses,
+  hasActiveNearbyDeal,
   type NearbyBusiness,
   type NearbySearchBounds,
 } from "@/api/nearby";
-import Header from "@/components/layout/Header";
+import NearbyResultsSheet from "@/components/nearby/NearbyResultsSheet";
+import { SERVICE_CATEGORIES } from "@/data/packageOptions";
+import type { ServiceCategory } from "@/type/package";
+import { useDealTime } from "@/features/consumer/dealTiming";
 
 const DEFAULT_LOCATION = {
   label: "서울시청",
@@ -147,6 +151,7 @@ async function requestOrientationPermission() {
 }
 
 export default function Nearby() {
+  const mainRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapsRef = useRef<KakaoMaps | null>(null);
   const mapRef = useRef<KakaoMapInstance | null>(null);
@@ -154,7 +159,7 @@ export default function Nearby() {
     useRef<KakaoCustomOverlayInstance | null>(null);
   const currentAccuracyCircleRef = useRef<KakaoCircleInstance | null>(null);
   const currentArrowRef = useRef<HTMLDivElement | null>(null);
-  const salonMarkersRef = useRef<KakaoMarkerInstance[]>([]);
+  const salonMarkersRef = useRef<KakaoCustomOverlayInstance[]>([]);
   const latestPositionRef = useRef<TrackedPosition | null>(null);
   const lastSearchSnapshotRef = useRef<MapSnapshot | null>(null);
   const mapIdleHandlerRef = useRef<(() => void) | null>(null);
@@ -174,6 +179,53 @@ export default function Nearby() {
   const [mapError, setMapError] = useState<string | null>(null);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [businessError, setBusinessError] = useState<string | null>(null);
+  const [category, setCategory] = useState<ServiceCategory | "all">("all");
+  const [listScrollRequest, setListScrollRequest] = useState(0);
+  const now = useDealTime();
+  const visibleBusinesses = useMemo(() => businesses.filter((business) => category === "all" || business.categories.includes(category)), [businesses, category]);
+  const activeDealKey = visibleBusinesses.filter((business) => hasActiveNearbyDeal(business, now)).map((business) => business.id).join(",");
+  const selectedId = selectedBusiness?.id;
+
+  useLayoutEffect(() => {
+    const main = mainRef.current;
+    if (!main) return;
+    const resize = () => {
+      const top = main.getBoundingClientRect().top + window.scrollY;
+      main.style.height = `calc(100dvh - ${top}px)`;
+      mapRef.current?.relayout();
+    };
+    resize();
+    const observer = new ResizeObserver(resize);
+    if (main.previousElementSibling) observer.observe(main.previousElementSibling);
+    window.addEventListener("resize", resize);
+    return () => { observer.disconnect(); window.removeEventListener("resize", resize); };
+  }, []);
+
+  useEffect(() => {
+    const maps = mapsRef.current;
+    const map = mapRef.current;
+    if (!maps || !map || isMapLoading) return;
+    const activeIds = new Set(activeDealKey.split(",").map(Number));
+    salonMarkersRef.current.forEach((marker) => marker.setMap(null));
+    salonMarkersRef.current = visibleBusinesses.map((business) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.title = business.name;
+      button.setAttribute("aria-label", `${business.name} 위치 보기`);
+      Object.assign(button.style, {
+        width: selectedId === business.id ? "36px" : "28px",
+        height: selectedId === business.id ? "36px" : "28px",
+        border: "3px solid white", borderRadius: "50%",
+        background: activeIds.has(business.id) ? "#da6b91" : "#e8acbf",
+        boxShadow: "0 2px 6px rgb(0 0 0 / 25%)", cursor: "pointer",
+      });
+      button.addEventListener("click", () => setSelectedBusiness(business));
+      return new maps.CustomOverlay({ map, content: button,
+        position: new maps.LatLng(business.latitude, business.longitude),
+        xAnchor: 0.5, yAnchor: 0.5, zIndex: selectedId === business.id ? 5 : 2 });
+    });
+    return () => { salonMarkersRef.current.forEach((marker) => marker.setMap(null)); };
+  }, [activeDealKey, isMapLoading, selectedId, visibleBusinesses]);
 
   const updateHeading = useCallback((heading: number | null) => {
     if (heading === null || !Number.isFinite(heading)) return;
@@ -256,21 +308,6 @@ export default function Nearby() {
     try {
       const nearbyBusinesses = await requestNearbyBusinesses(bounds);
       if (!mountedRef.current) return;
-
-      salonMarkersRef.current.forEach((marker) => marker.setMap(null));
-      salonMarkersRef.current = nearbyBusinesses.map((business) => {
-        const marker = new maps.Marker({
-          clickable: true,
-          map,
-          position: new maps.LatLng(business.latitude, business.longitude),
-          title: business.name,
-        });
-
-        maps.event.addListener(marker, "click", () => {
-          if (mountedRef.current) setSelectedBusiness(business);
-        });
-        return marker;
-      });
 
       lastSearchSnapshotRef.current = searchedSnapshot;
       initialSearchCompletedRef.current = true;
@@ -482,18 +519,27 @@ export default function Nearby() {
   }, [searchCurrentMapArea, updateCurrentPosition, updateHeading]);
 
   return (
-    <main className="h-dvh overflow-hidden bg-[#f3f4f6] pb-16">
-      <Header title="내 주변" />
-      <section className="relative h-[calc(100dvh-7.5rem)] min-h-80">
+    <main ref={mainRef} className="flex h-dvh flex-col overflow-hidden bg-white pb-16">
+      <header className="flex h-16 shrink-0 items-center justify-between gap-3 px-5">
+        <h1 className="text-xl font-bold text-page-heading">내 주변</h1>
+        <div className="flex items-center gap-3">
+          <Link to="/location" className="flex items-center gap-1 text-xs text-page-text"><MapPin size={15} className="text-accent" />{getCachedCurrentLocation()?.label ?? "현재 위치"}<ChevronDown size={14} /></Link>
+          <button type="button" aria-label="매장 목록으로 스크롤" onClick={() => setListScrollRequest((value) => value + 1)} className="rounded-xl bg-gray-100 p-2.5 text-page-text"><List size={19} /></button>
+        </div>
+      </header>
+      <nav aria-label="내 주변 카테고리" className="flex shrink-0 gap-2 overflow-x-auto px-5 pb-3">
+        {[{ id: "all" as const, label: "전체" }, ...SERVICE_CATEGORIES].map((item) => <button type="button" key={item.id} aria-pressed={category === item.id} onClick={() => { setCategory(item.id); setSelectedBusiness(null); }} className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold ${category === item.id ? "bg-[#da6b91] text-white" : "bg-gray-100 text-page-text"}`}>{item.label}</button>)}
+      </nav>
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+      <section className="relative min-h-0 flex-1">
         <div ref={containerRef} className="h-full w-full" aria-label="카카오 지도" />
 
-        {!mapError && !isMapLoading && (
+        {!mapError && !isMapLoading && !isSearching && (hasMapMoved || businessError) && (
           <div className="absolute left-1/2 top-4 z-10 -translate-x-1/2">
             <button
               type="button"
-              disabled={!hasMapMoved || isSearching}
               onClick={() => void searchCurrentMapArea()}
-              className="flex h-11 w-48 items-center justify-center gap-2 rounded-lg border border-page-border bg-white px-4 text-sm font-bold text-page-heading shadow-lg enabled:cursor-pointer enabled:border-accent enabled:text-accent enabled:hover:bg-pink-50 disabled:cursor-default disabled:text-gray-300"
+              className="flex h-11 w-56 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-accent bg-white px-4 text-xs font-bold text-accent shadow-lg hover:bg-pink-50"
             >
               <RefreshCw
                 className={`h-4 w-4 ${isSearching ? "animate-spin" : ""}`}
@@ -505,7 +551,7 @@ export default function Nearby() {
 
         {hasCompletedSearch && !isSearching && !businessError && (
           <p className="absolute left-1/2 top-[4.25rem] z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-page-heading/85 px-3 py-1 text-xs font-semibold text-white shadow">
-            주변 매장 {businesses.length}곳
+            주변 매장 {visibleBusinesses.length}곳 · 타임딜 {activeDealKey ? activeDealKey.split(",").length : 0}곳
           </p>
         )}
 
@@ -527,8 +573,9 @@ export default function Nearby() {
               </p>
               <p className="mt-2 text-sm text-page-text">{mapError}</p>
               <p className="mt-1 text-xs text-gray-400">
-                JavaScript 키, 등록 도메인, 카카오맵 사용 설정을 확인해주세요.
+                잠시 후 다시 시도하거나 검색에서 매장을 찾아보세요.
               </p>
+              <Link to="/search" className="mt-3 inline-block text-sm text-accent">매장 검색</Link>
             </div>
           </div>
         )}
@@ -538,26 +585,6 @@ export default function Nearby() {
             {locationError && <p>{locationError}</p>}
             {businessError && <p>주변 매장을 불러오지 못했습니다.</p>}
           </div>
-        )}
-
-        {selectedBusiness && !mapError && (
-          <article className="absolute bottom-5 left-4 right-20 z-10 rounded-lg border border-page-border bg-white p-4 shadow-xl">
-            <button
-              type="button"
-              aria-label="매장 정보 닫기"
-              title="닫기"
-              onClick={() => setSelectedBusiness(null)}
-              className="absolute right-2 top-2 grid h-8 w-8 cursor-pointer place-items-center text-gray-400 hover:text-page-heading"
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <p className="pr-7 text-sm font-black text-page-heading">
-              {selectedBusiness.name}
-            </p>
-            <p className="mt-1 truncate text-xs text-page-text">
-              {selectedBusiness.address}
-            </p>
-          </article>
         )}
 
         {!mapError && !isMapLoading && (
@@ -595,6 +622,16 @@ export default function Nearby() {
           </div>
         )}
       </section>
+      <NearbyResultsSheet
+        businesses={visibleBusinesses}
+        loading={isMapLoading || isSearching || (!hasCompletedSearch && !mapError && !businessError)}
+        error={businessError ?? mapError}
+        scrollRequest={listScrollRequest}
+        selectedId={selectedId}
+        now={now}
+        onRetry={() => { if (mapError) window.location.reload(); else void searchCurrentMapArea(); }}
+      />
+      </div>
     </main>
   );
 }

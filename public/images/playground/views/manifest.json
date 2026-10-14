@@ -1,0 +1,6 @@
+{
+  "head": true,
+  "atlases": ["base", "daily", "season", "dream", "tea", "adventure"],
+  "quarterHead": false,
+  "quarterAtlases": ["base", "daily", "season", "dream", "tea", "adventure"]
+}

@@ -144,3 +144,10 @@ export function requestCurrentLocation() {
 
   return pendingLocationRequest;
 }
+
+export function saveManualLocation(location: CurrentLocation) {
+  window.localStorage.setItem(LOCATION_CACHE_KEY, JSON.stringify({
+    ...location,
+    expiresAt: Date.now() + LOCATION_CACHE_DURATION,
+  } satisfies CachedLocation));
+}

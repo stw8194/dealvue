@@ -1,35 +1,8 @@
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { requestMe } from "@/api/auth";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export default function AuthIndexGuard() {
-  const user = useAuthStore(state => state.user);
-  const setUser = useAuthStore(state => state.setUser);
-  const [isChecking, setIsChecking] = useState(!user);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    if (user) {
-      setIsChecking(false);
-      return;
-    }
-
-    requestMe()
-      .then(data => {
-        if (isMounted && data) setUser(data);
-      })
-      .finally(() => {
-        if (isMounted) setIsChecking(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [user, setUser]);
-
-  if (isChecking) return null;
-
+  const { user, initialized } = useAuthStore();
+  if (!initialized) return <p role="status" className="p-6">로그인 상태를 확인하고 있습니다.</p>;
   return <Navigate to={user ? "/" : "/auth/login"} replace />;
 }

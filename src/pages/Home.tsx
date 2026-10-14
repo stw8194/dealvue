@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { usePreviewStore } from "@/features/consumer/preview";
+import { ConsumerHome } from "@/features/consumer/discovery/ConsumerHome";
 import { requestTimeDeals } from "@/api/home";
 import HomeHeader from "@/components/home/HomeHeader";
 import TimeDealBanner from "@/components/home/TimeDealBanner";
@@ -9,7 +11,6 @@ import IconCategoryGrid from "@/components/home/IconCategoryGrid";
 import MiniCategoryMenu from "@/components/home/MiniCategoryMenu";
 import PopularTimeDealList from "@/components/home/PopularTimeDealList";
 import DealKitRecommend from "@/components/home/DealKitRecommend";
-import MiniAdBanner from "@/components/home/MiniAdBanner";
 import {
   HomeCouponBanner,
   HomePlaygroundBanner,
@@ -24,6 +25,7 @@ function getDealTime(deal: TimeDeal) {
 }
 
 function isActiveTimeDeal(deal: TimeDeal, currentTime: number) {
+  if (deal.remaining_capacity <= 0) return false;
   if (!deal.endAt) return true;
 
   const endTime = new Date(deal.endAt).getTime();
@@ -35,11 +37,18 @@ function isServiceCategory(category: string): category is ServiceCategory {
 }
 
 export default function Home() {
+  const preview = usePreviewStore((state) => state.enabled);
+  return preview ? <ConsumerHome /> : <ConnectedHome />;
+}
+
+function ConnectedHome() {
   const [searchParams] = useSearchParams();
   const [timeDeals, setTimeDeals] = useState<TimeDeal[]>([]);
   const [isTimeDealsLoading, setIsTimeDealsLoading] = useState(true);
   const [currentTime, setCurrentTime] = useState(() => Date.now());
-  const [selectedTimeDeal, setSelectedTimeDeal] = useState<TimeDeal | null>(null);
+  const [selectedTimeDeal, setSelectedTimeDeal] = useState<TimeDeal | null>(
+    null,
+  );
   const closeTimeDealModal = useCallback(() => setSelectedTimeDeal(null), []);
   const selectedCategory = useMemo(() => {
     const categoryParam = searchParams.get("category");
@@ -118,12 +127,15 @@ export default function Home() {
               <span>실시간 인기 타임딜</span>
             </h2>
             <p className="mt-2 text-sm text-gray-400">
-              지금 가장 핫한 딜을 확인해보세요!
+              지금 가장 핫한 타임딜을 확인해보세요!
             </p>
           </div>
-          <button className="shrink-0 text-sm font-medium text-gray-400">
+          <Link
+            to="/search"
+            className="shrink-0 text-sm font-medium text-gray-400"
+          >
             더보기 ›
-          </button>
+          </Link>
         </div>
       </section>
       <PopularTimeDealList
@@ -135,13 +147,17 @@ export default function Home() {
       />
       <HomeCouponBanner />
       <section>
-        <h2 className="px-4 pt-4 text-base font-semibold text-page-heading">
-          딜키트 추천
-        </h2>
+        <div className="flex items-center justify-between px-4 pt-4">
+          <h2 className="text-base font-semibold text-page-heading">
+            딜키트 추천
+          </h2>
+          <Link to="/package" className="text-xs text-gray-400">
+            더보기 ›
+          </Link>
+        </div>
         <DealKitRecommend />
       </section>
       <HomePlaygroundBanner />
-      <MiniAdBanner />
       <TimeDealModal
         currentTime={currentTime}
         deal={visibleSelectedTimeDeal}

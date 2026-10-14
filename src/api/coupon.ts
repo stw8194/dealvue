@@ -76,13 +76,15 @@ export async function requestWelcomeCouponClaim(): Promise<CouponClaimResult | n
 }
 
 export async function requestUserCoupons(): Promise<UserCoupon[]> {
-  if (!(await hasSession())) return [];
+  const { data: auth, error: authError } = await getSupabaseClient().auth.getUser();
+  if (authError || !auth.user) throw new Error("로그인 후 쿠폰함을 확인해 주세요.");
 
   const { data, error } = await getSupabaseClient()
     .from("user_coupons")
     .select(
       "id, claimed_at, expires_at, used_at, coupons(title, description, discount_amount, minimum_order_amount)",
     )
+    .eq("user_id", auth.user.id)
     .order("claimed_at", { ascending: false });
 
   if (error) throw error;

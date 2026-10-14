@@ -1,4 +1,5 @@
 import type { TimeDeal } from "@/type/home";
+import { useNavigate } from "react-router-dom";
 import type { ServiceCategory } from "@/type/package";
 
 type PopularTimeDealListProps = {
@@ -33,6 +34,7 @@ export default function PopularTimeDealList({
   isLoading,
   onSelectDeal,
 }: PopularTimeDealListProps) {
+  const navigate = useNavigate();
   const filteredDeals = deals.filter((deal) => deal.category === category);
 
   if (isLoading) {
@@ -98,13 +100,13 @@ export default function PopularTimeDealList({
                     {deal.businessName}
                   </p>
                   <p className="mt-1 text-xs text-page-text min-[390px]:text-sm">
-                    <span className="text-[#ffbb00]">★</span> 4.9 · 0.3km
+                    실시간 타임딜
                   </p>
                 </div>
                 <button
                   type="button"
-                  aria-label="찜하기"
-                  onClick={(event) => event.stopPropagation()}
+                  aria-label="찜 목록 보기"
+                  onClick={(event) => { event.stopPropagation(); navigate("/wishlist"); }}
                   onKeyDown={(event) => event.stopPropagation()}
                   className="text-2xl leading-none text-[#cfd2d8] min-[390px]:text-3xl"
                 >
@@ -128,7 +130,7 @@ export default function PopularTimeDealList({
                   type="button"
                   onClick={(event) => {
                     event.stopPropagation();
-                    onSelectDeal(deal);
+                    navigate(`/deal/${deal.id}`);
                   }}
                   onKeyDown={(event) => event.stopPropagation()}
                   className="shrink-0 rounded-full bg-accent px-3 py-2 text-xs font-bold text-white min-[390px]:px-5 min-[390px]:py-3 min-[390px]:text-sm"
@@ -138,7 +140,6 @@ export default function PopularTimeDealList({
               </div>
 
               <p className="mt-2 text-xs text-page-text min-[390px]:mt-3 min-[390px]:text-sm">
-                <span className="text-[#ffbb00]">★</span> 4.9 ·{" "}
                 {deal.remaining_capacity.toLocaleString()}자리 남음
               </p>
             </div>

@@ -1,0 +1,96 @@
+/* Joint timing includes anticipation, the gesture, and a settling beat. The frame stays still. */
+.hair-follow { position: absolute; inset: 0; display: block; transform-origin: 50% 22%; }
+.avatar-gesture[class*="gesture-"] .avatar-joint { animation: none; }
+.gesture-hello .part-head .avatar-joint { animation: greet-head 2.25s cubic-bezier(.3,.1,.25,1); }
+.gesture-hello .part-arm-right .avatar-joint { animation: greet-hand 2.25s ease-in-out; }
+.gesture-hello .part-arm-left .avatar-joint { animation: greet-rest 2.25s ease-in-out; }
+.gesture-happy .part-head .avatar-joint { animation: delight-head 2.2s ease-in-out; }
+.gesture-happy .part-torso .avatar-joint { animation: delight-body 2.2s ease-in-out; }
+.gesture-happy .part-arm-left .avatar-joint { animation: delight-left 2.2s ease-in-out; }
+.gesture-happy .part-arm-right .avatar-joint { animation: delight-right 2.2s ease-in-out; }
+.gesture-happy .part-leg-left .avatar-joint { animation: delight-toe-left 2.2s ease-in-out; }
+.gesture-happy .part-leg-right .avatar-joint { animation: delight-toe-right 2.2s ease-in-out; }
+.gesture-twirl .part-head .avatar-joint { animation: dance-head 3s ease-in-out; }
+.gesture-twirl .part-torso .avatar-joint { animation: dance-body 3s ease-in-out; }
+.gesture-twirl .part-arm-left .avatar-joint { animation: dance-left 3s ease-in-out; }
+.gesture-twirl .part-arm-right .avatar-joint { animation: dance-right 3s ease-in-out; }
+.gesture-twirl .part-leg-left .avatar-joint { animation: dance-step-left 3s ease-in-out; }
+.gesture-twirl .part-leg-right .avatar-joint { animation: dance-step-right 3s ease-in-out; }
+.gesture-cozy .part-head .avatar-joint { animation: sleepy-nod 3.5s cubic-bezier(.35,.1,.3,1); }
+.gesture-cozy .part-torso .avatar-joint { animation: sleepy-breathe 3.5s ease-in-out; }
+.gesture-cozy .part-arm-left .avatar-joint { animation: sleepy-rest-left 3.5s ease-in-out; }
+.gesture-cozy .part-arm-right .avatar-joint { animation: sleepy-rest-right 3.5s ease-in-out; }
+.gesture-pose .part-head .avatar-joint { animation: camera-head 2.1s cubic-bezier(.25,.7,.3,1); }
+.gesture-pose .part-arm-right .avatar-joint { animation: camera-hand 2.1s cubic-bezier(.25,.7,.3,1); }
+.gesture-pose .part-arm-left .avatar-joint { animation: camera-rest 2.1s cubic-bezier(.25,.7,.3,1); }
+.gesture-pose .part-leg-right .avatar-joint { animation: camera-toe 2.1s cubic-bezier(.25,.7,.3,1); }
+@keyframes greet-head { 0%,100% { transform: rotate(0); } 12% { transform: rotate(1deg); } 28%,68% { transform: rotate(-3deg); } 82% { transform: rotate(.6deg); } }
+@keyframes greet-hand { 0%,100% { transform: rotate(0); } 10% { transform: rotate(3deg); } 26%,48%,70% { transform: rotate(-23deg); } 37%,59% { transform: rotate(-12deg); } 85% { transform: rotate(1deg); } }
+@keyframes greet-rest { 0%,100% { transform: rotate(0); } 30%,70% { transform: rotate(-2deg); } }
+@keyframes delight-head { 0%,100% { transform: translateY(0) rotate(0); } 16% { transform: translateY(2px) rotate(1deg); } 34% { transform: translateY(-5px) rotate(-2deg); } 48% { transform: translateY(1px); } 66% { transform: translateY(-3px) rotate(1.5deg); } 83% { transform: translateY(.5px); } }
+@keyframes delight-body { 0%,100% { transform: translateY(0) scaleY(1); } 16% { transform: translateY(1px) scaleY(.99); } 34% { transform: translateY(-3px) scaleY(1.01); } 48% { transform: translateY(1px); } 66% { transform: translateY(-2px); } }
+@keyframes delight-left { 0%,100% { transform: rotate(0) translateY(0); } 16% { transform: rotate(-3deg); } 34%,66% { transform: rotate(16deg) translateY(-2px); } 48% { transform: rotate(5deg); } 82% { transform: rotate(2deg); } }
+@keyframes delight-right { 0%,100% { transform: rotate(0) translateY(0); } 16% { transform: rotate(3deg); } 34%,66% { transform: rotate(-16deg) translateY(-2px); } 48% { transform: rotate(-5deg); } 82% { transform: rotate(-2deg); } }
+@keyframes delight-toe-left { 0%,100% { transform: rotate(0) translateY(0); } 16% { transform: rotate(-2deg); } 34%,66% { transform: rotate(3deg) translateY(-3px); } 48%,82% { transform: rotate(-1deg) translateY(.5px); } }
+@keyframes delight-toe-right { 0%,100% { transform: rotate(0) translateY(0); } 16% { transform: rotate(2deg); } 34%,66% { transform: rotate(-3deg) translateY(-3px); } 48%,82% { transform: rotate(1deg) translateY(.5px); } }
+@keyframes dance-head { 0%,100% { transform: rotate(0); } 12%,46% { transform: rotate(-4deg) translateY(-1px); } 29%,63% { transform: rotate(4deg); } 80% { transform: rotate(-2deg); } }
+@keyframes dance-body { 0%,100% { transform: rotate(0); } 12%,46% { transform: rotate(1.3deg); } 29%,63% { transform: rotate(-1.3deg); } 80% { transform: rotate(.6deg); } }
+@keyframes dance-left { 0%,100% { transform: rotate(0); } 12%,46% { transform: rotate(12deg); } 29%,63% { transform: rotate(-5deg); } 80% { transform: rotate(6deg); } }
+@keyframes dance-right { 0%,100% { transform: rotate(0); } 12%,46% { transform: rotate(5deg); } 29%,63% { transform: rotate(-12deg); } 80% { transform: rotate(-3deg); } }
+@keyframes dance-step-left { 0%,100% { transform: rotate(0) translate(0); } 12%,46% { transform: rotate(-5deg) translate(-1px,-2px); } 29%,63% { transform: rotate(2deg); } 80% { transform: rotate(-2deg) translateY(-1px); } }
+@keyframes dance-step-right { 0%,100% { transform: rotate(0) translate(0); } 12%,46% { transform: rotate(-2deg); } 29%,63% { transform: rotate(5deg) translate(1px,-2px); } 80% { transform: rotate(1deg); } }
+@keyframes sleepy-nod { 0%,100% { transform: rotate(0) translateY(0); } 12% { transform: rotate(-1deg); } 38%,55% { transform: rotate(5deg) translateY(4px) scaleY(.97); } 69% { transform: rotate(-2deg) translateY(-1px); } 83% { transform: rotate(.8deg) translateY(.5px); } }
+@keyframes sleepy-breathe { 0%,100% { transform: scaleY(1); } 38%,55% { transform: scaleY(.99); } 75% { transform: scaleY(1.012); } }
+@keyframes sleepy-rest-left { 0%,100% { transform: rotate(0); } 30%,60% { transform: rotate(-3deg); } }
+@keyframes sleepy-rest-right { 0%,100% { transform: rotate(0); } 30%,60% { transform: rotate(3deg); } }
+@keyframes camera-head { 0%,100% { transform: rotate(0); } 12% { transform: rotate(1deg); } 30%,72% { transform: rotate(-4deg); } 87% { transform: rotate(.5deg); } }
+@keyframes camera-hand { 0%,100% { transform: rotate(0); } 30%,72% { transform: rotate(-17deg); } 87% { transform: rotate(1deg); } }
+@keyframes camera-rest { 0%,100% { transform: rotate(0); } 30%,72% { transform: rotate(5deg); } }
+@keyframes camera-toe { 0%,100% { transform: rotate(0); } 30%,72% { transform: rotate(-6deg) translateX(-1px); } }
+
+/* Expressions belong to the active gesture; the chosen face returns afterwards. */
+.gesture-happy .eye-open { animation: smile-eye-open 2.2s linear; }
+.gesture-happy .eye-closed { animation: smile-eye-closed 2.2s linear; }
+.gesture-happy .closed-lid { transform: translateY(552px) scaleY(-1); }
+.gesture-happy .mouth-chosen { animation: expression-hide 2.2s linear; }
+.gesture-happy .mouth-happy { animation: expression-show 2.2s linear; }
+.gesture-cozy .eye-open { animation: sleepy-eye-open 3.5s ease-in-out; }
+.gesture-cozy .eye-closed { animation: sleepy-eye-closed 3.5s linear; }
+.gesture-cozy .mouth-chosen { animation: sleepy-mouth-hide 3.5s linear; }
+.gesture-cozy .mouth-sleepy { animation: sleepy-mouth-show 3.5s linear; }
+.gesture-pose .eye-left .eye-open { animation: wink-open 2.1s linear; }
+.gesture-pose .eye-left .eye-closed { animation: wink-closed 2.1s linear; }
+.gesture-pose .mouth-chosen { animation: expression-hide 2.1s linear; }
+.gesture-pose .mouth-camera { animation: expression-show 2.1s linear; }
+.gesture-twirl .mouth-chosen { animation: expression-hide 3s linear; }
+.gesture-twirl .mouth-happy { animation: expression-show 3s linear; }
+@keyframes expression-hide { 0%,15%,88%,100% { opacity: 1; } 22%,80% { opacity: 0; } }
+@keyframes expression-show { 0%,15%,88%,100% { opacity: 0; } 22%,80% { opacity: 1; } }
+@keyframes smile-eye-open { 0%,20%,80%,100% { opacity: 1; transform: scaleY(1); } 26%,73% { opacity: 0; transform: scaleY(.08); } }
+@keyframes smile-eye-closed { 0%,20%,80%,100% { opacity: 0; } 26%,73% { opacity: 1; } }
+@keyframes sleepy-eye-open { 0%,100% { opacity: 1; transform: scaleY(1); } 20% { transform: scaleY(.7); } 35%,60% { opacity: 0; transform: scaleY(.06); } 72% { opacity: 1; transform: scaleY(1.06); } }
+@keyframes sleepy-eye-closed { 0%,29%,69%,100% { opacity: 0; } 35%,60% { opacity: 1; } }
+@keyframes sleepy-mouth-hide { 0%,29%,69%,100% { opacity: 1; } 35%,60% { opacity: 0; } }
+@keyframes sleepy-mouth-show { 0%,29%,69%,100% { opacity: 0; } 35%,60% { opacity: 1; } }
+@keyframes wink-open { 0%,29%,65%,100% { opacity: 1; transform: scaleY(1); } 36%,57% { opacity: 0; transform: scaleY(.08); } }
+@keyframes wink-closed { 0%,29%,65%,100% { opacity: 0; } 36%,57% { opacity: 1; } }
+
+/* Light lag on hair preserves its fitted position while the head changes direction. */
+.gesture-hello .hair-follow { animation: hair-greet 2.25s ease-in-out; }
+.gesture-happy .hair-follow { animation: hair-bounce 2.2s ease-in-out; }
+.gesture-twirl .hair-follow { animation: hair-dance 3s ease-in-out; }
+.gesture-cozy .hair-follow { animation: hair-sleepy 3.5s ease-in-out; }
+.gesture-pose .hair-follow { animation: hair-camera 2.1s ease-in-out; }
+@keyframes hair-greet { 0%,100% { transform: rotate(0); } 32% { transform: rotate(.8deg); } 72% { transform: rotate(-.6deg); } 88% { transform: rotate(.2deg); } }
+@keyframes hair-bounce { 0%,100% { transform: translateY(0); } 20% { transform: translateY(.6px); } 40%,70% { transform: translateY(-.7px); } 54%,85% { transform: translateY(.5px); } }
+@keyframes hair-dance { 0%,100% { transform: rotate(0); } 18%,52% { transform: rotate(1deg); } 35%,69% { transform: rotate(-1deg); } 85% { transform: rotate(.4deg); } }
+@keyframes hair-sleepy { 0%,100% { transform: rotate(0); } 44% { transform: rotate(-.7deg) translateY(.5px); } 75% { transform: rotate(.5deg); } }
+@keyframes hair-camera { 0%,100% { transform: rotate(0); } 35% { transform: rotate(.8deg); } 53%,74% { transform: rotate(0); } 88% { transform: rotate(-.3deg); } }
+.particles-cozy span { left: calc(65% + var(--i) * 3%); top: 26%; color: #ad89c5; font-size: calc(9px + var(--i) * 2px); animation: sleepy-symbol 3.5s ease-out both; animation-delay: calc(var(--i) * .15s); }
+.particles-twirl span { color: #b264d4; animation-duration: 2.5s; }
+.particles-pose span { animation-delay: calc(.55s + var(--i) * .05s); }
+.particles-pose::after { animation: camera-flash 2.1s linear; }
+@keyframes sleepy-symbol { 0%,20% { opacity: 0; transform: translateY(8px) scale(.6); } 40% { opacity: .65; } 85%,100% { opacity: 0; transform: translate(10px,-26px) scale(1.1); } }
+@keyframes camera-flash { 0%,40%,48%,100% { opacity: 0; } 43% { opacity: .75; } }
+.has-play-modal .playground-shell .hair-follow, .ambient-scene[data-paused="true"] .hair-follow { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .avatar-gesture :is(.avatar-joint,.eye-open,.eye-closed,.mouth-chosen,.mouth-happy,.mouth-sleepy,.mouth-camera,.hair-follow) { animation: none !important; }.gesture-particles { display: none; } }

@@ -30,4 +30,19 @@ dist-ssr
 !.env.example
 
 .claude/
-supabase
+
+# Local database files
+/supabase/
+
+# Local development notes and generation records
+/docs/
+/public/images/deal-kits/README.md
+.codex/
+.agents/
+AGENTS.md
+CLAUDE.md
+*-prompts.json
+
+# Python caches
+__pycache__/
+*.py[cod]

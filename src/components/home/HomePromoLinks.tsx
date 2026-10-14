@@ -140,7 +140,7 @@ export function HomePlaygroundBanner() {
             딜뷰 놀이터
           </span>
           <span className="mt-1 block text-sm leading-snug text-page-text">
-            꾸미고, 포인트 받고! 나만의 캐릭터를 키워보세요
+            운세와 룰렛으로 행운을 모으고, 아바타를 꾸며보세요
           </span>
         </span>
         <ChevronRight

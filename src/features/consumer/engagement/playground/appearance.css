@@ -1,0 +1,48 @@
+.avatar-custom-head, .avatar-hair-layer, .avatar-face-features { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.avatar-hair-layer { transform-origin: 50% 0; transform: translate(-4.5%, -11.5%) scale(.89,.8); }
+/* Each hairstyle cutout is one atlas cell plus a margin (100×80 of 418×627 px, scripts/build-hair-cutouts.mjs), so it overhangs this cell-sized layer. */
+.hair-art { position: absolute; left: -23.923%; top: -12.759%; width: 147.847%; height: 125.518%; max-width: none; pointer-events: none; user-select: none; }
+.hair-front { clip-path: none; }
+.hair-waves .avatar-hair-layer { transform: translate(0%, -11.5%) scale(.89,.8); }
+.hair-twintails .avatar-hair-layer { transform: translate(3%, -11.5%) scale(.89,.8); }
+.hair-braids .avatar-hair-layer { transform: translate(-4%, -11.5%) scale(.89,.8); }
+.hair-bun .avatar-hair-layer { transform: translate(0%, -1%) scale(.89,.55); }
+/* The bun was laid out with a 194%-tall atlas: its cell sits 3% lower and 97% as tall. */
+.hair-bun .hair-art { top: -9.376%; height: 121.752%; }
+.hair-pixie .avatar-hair-layer { transform: translate(3%, -11.5%) scale(.89,.8); }
+.avatar-face-skin { position: absolute; left: 19%; top: 9.9%; width: 62%; height: 44%; object-fit: fill; pointer-events: none; }
+.body-region { mask-image: linear-gradient(transparent 49.7%, black 50.7%); }
+.part-torso .body-region { mask-image: linear-gradient(transparent 48.5%, black 49%); }
+.original-portrait { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hair-key-defs { position: absolute; width: 0; height: 0; }
+/* The original head has its own eyes, brows and mouth; overlays (and the skin patches under them) show only when changed. */
+.uses-original-portrait .face-eye > path, .uses-original-portrait:not(.custom-eyes) :is(.eye-open, .eye-cover), .uses-original-portrait:not(.custom-mouth) :is(.mouth-chosen, .mouth-cover), .avatar-custom-head:not(.uses-original-portrait) :is(.eye-cover, .mouth-cover) { visibility: hidden; }
+.avatar-face-features { overflow: visible; }
+.eye-closed, .mouth-happy, .mouth-sleepy, .mouth-camera { opacity: 0; }
+.eye-open { animation: face-blink 6.7s linear infinite; }
+.eye-right .eye-open { animation-delay: .035s; }
+.eye-closed { animation: face-blink-closed 6.7s linear infinite; }
+.eye-right .eye-closed { animation-delay: .035s; }
+.head-thumbnail :is(.eye-open,.eye-closed), .appearance-eye-grid :is(.eye-open,.eye-closed) { animation: none; }
+@keyframes face-blink-closed { 0%,43%,44%,44.8%,45.3%,100% { opacity: 0; } 43.5%,45% { opacity: 1; } }
+@keyframes face-blink { 0%,42%,46%,100% { transform: scaleY(1); } 43.5% { transform: scaleY(.06); } 44.5% { transform: scaleY(1); } 45% { transform: scaleY(.14); } }
+.appearance-editor { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.appearance-editor-scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #d7b9e7 transparent; overscroll-behavior: contain; padding: 0 3px 12px; }
+.appearance-intro { display: flex; align-items: center; gap: 5px; color: #a16b9e; font-size: 10px; margin: 2px 0 17px; }
+.appearance-section { margin-bottom: 20px; }
+.appearance-section h3 { display: flex; justify-content: space-between; margin: 0 0 9px; color: #805586; font-size: 12px; font-weight: 650; }.appearance-section h3 small { color: #b297bb; font-size: 8px; letter-spacing: 1px; }
+.appearance-hair-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.appearance-hair-grid button, .appearance-eye-grid button, .appearance-mouth-grid button { min-width: 0; padding: 5px 4px 8px; border: 1px solid #eadcf0; border-radius: 13px; background: #fff; cursor: pointer; transition: background .2s, border-color .2s; }
+.appearance-hair-grid button[aria-pressed="true"], .appearance-eye-grid button[aria-pressed="true"], .appearance-mouth-grid button[aria-pressed="true"] { border-color: #d860a3; background: #fff4fa; box-shadow: 0 0 0 2px #e780b514; }
+.appearance-hair-grid strong, .appearance-eye-grid strong, .appearance-mouth-grid strong { display: block; color: #956794; font-size: 9px; font-weight: 550; white-space: nowrap; }
+.head-thumbnail { position: relative; display: block; height: 78px; margin-bottom: 5px; overflow: hidden; border-radius: 8px; background: linear-gradient(130deg, #f9eefc, #ffeff5); }.head-thumbnail .avatar-custom-head { width: 94px; height: 141px; left: calc(50% - 47px); top: 4px; }
+.appearance-swatches { display: flex; gap: 5px; justify-content: space-between; }.appearance-swatches button { display: grid; justify-items: center; min-width: 0; flex: 1; gap: 4px; color: #a67a9f; cursor: pointer; padding: 3px 0; border-radius: 7px; }.appearance-swatches button > span { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; color: #fff; background: radial-gradient(circle at 30% 25%, #ffffff55, transparent 50%), var(--swatch); box-shadow: inset 0 0 0 1px #80587920, inset 0 -2px 3px #6c426d18; }.appearance-swatches button[aria-pressed="true"] > span { outline: 2px solid #d267a6; outline-offset: 3px; }.appearance-swatches small { font-size: 8px; white-space: nowrap; }
+.appearance-eye-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }.appearance-eye-grid svg { width: 100%; height: 35px; margin: 2px 0 5px; }.appearance-eye-grid .eye-open { animation: none; }
+.appearance-mouth-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 5px; }.appearance-mouth-grid svg { width: 33px; height: 25px; margin: 1px auto 5px; }
+.appearance-reset { display: flex; align-items: center; gap: 5px; margin: 8px auto 0; font-size: 9px; color: #b48fae; cursor: pointer; }
+.appearance-apply { flex-shrink: 0; padding: 9px 1px 0; border-top: 1px solid #edddec; background: #fff9fd; }.appearance-apply p { color: #ae8ba8; font-size: 9px; margin: 6px 0 0; text-align: center; line-height: 1.5; }
+.saved-look-apply > div { height: 130px; }.saved-look-apply .avatar-face-features { overflow: visible; }
+.has-play-modal .playground-shell :is(.eye-open,.eye-closed), .ambient-scene[data-paused="true"] :is(.eye-open,.eye-closed) { animation-play-state: paused; }
+.play-modal :is(button,a,input):focus-visible { outline: 2px solid #b880a0; outline-offset: 3px; }
+@media (max-width: 700px) { .appearance-intro { font-size: 9px; margin-bottom: 12px; }.appearance-section h3 { font-size: 11px; }.appearance-section { margin-bottom: 17px; }.appearance-hair-grid { gap: 6px; }.head-thumbnail { height: 69px; }.head-thumbnail .avatar-custom-head { width: 85px; height: 127.5px; left: calc(50% - 42.5px); }.appearance-eye-grid strong { font-size: 8px; }.appearance-mouth-grid strong { font-size: 8px; }.appearance-swatches small { font-size: 7px; } }
+@media (prefers-reduced-motion: reduce) { .eye-open, .eye-closed { animation: none !important; } }

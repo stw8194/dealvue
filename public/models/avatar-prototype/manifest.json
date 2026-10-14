@@ -1,0 +1,17 @@
+{
+  "name": "Caramel cafe doll",
+  "generator": "Blender 4.5 / scripts/build-avatar-3d.py + avatar_cafe_details.py",
+  "license": "Original procedural artwork made for Dealvue; no third-party character assets.",
+  "bones": 17,
+  "meshObjects": 26,
+  "vertices": 80894,
+  "triangles": 158020,
+  "clips": {
+    "idle": 4.8,
+    "wave": 4.2,
+    "dance": 5.4,
+    "pose": 3.9
+  },
+  "continuousSkinMesh": "Continuous body skin",
+  "outfit": "Caramel gingham dress, ruffled apron, patisserie embroidery, cocoa ribbon shoes"
+}

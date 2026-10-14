@@ -1,75 +1,30 @@
-# React + TypeScript + Vite
+# DEALVUE · 딜뷰
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+뷰티 타임딜을 탐색하고 매장 정보와 예약 내역을 확인하는 웹 앱입니다.
 
-Currently, two official plugins are available:
+## 실행
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+npm ci
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+React, TypeScript, Vite, Tailwind CSS, Zustand와 Three.js를 사용합니다. 실제 데이터 조회에는 Supabase 환경변수와 인증·지도 설정이 필요합니다. 환경변수는 로컬 `.env`에 설정합니다.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 주요 기능
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- 타임딜 검색, 카테고리 필터, 주변 매장 지도와 매장 상세
+- 찜, 예약 내역, 리뷰, 쿠폰과 마이페이지
+- 커뮤니티, 출석과 리워드
+- 아바타 드레스룸, 헤어·의상 변경, 회전 보기와 코디 저장
 
+전체 기능 미리보기에서는 예시 데이터와 브라우저 저장소로 화면 흐름을 확인할 수 있습니다. 미리보기의 예약·리워드 동작은 실제 결제나 서버 데이터 변경을 수행하지 않습니다. 실제 예약·결제 등은 서버 연동 상태에 따라 제한됩니다.
+
+## 빌드와 검증
+
+```sh
+npm run build
+npm run lint
 ```
+
+브라우저 검증 스크립트는 `scripts/`에 있습니다. 실행 중인 개발 서버와 Playwright가 필요하며, 서버 주소와 Playwright 경로는 `DEALVUE_TEST_URL`, `DEALVUE_PLAYWRIGHT_MODULE`로 지정할 수 있습니다.

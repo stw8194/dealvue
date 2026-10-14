@@ -18,9 +18,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { requestUserCoupons } from "@/api/coupon";
-import { requestRecentViewedShops } from "@/api/mypage";
+import { useBusinessHistory } from "@/features/consumer/history";
 import type { User } from "@/type/auth";
-import type { RecentViewedShop } from "@/type/mypage";
 
 type DashboardProps = {
   isCheckingUser: boolean;
@@ -99,7 +98,8 @@ export default function MyPageDashboard({
   user,
 }: DashboardProps) {
   const [couponCount, setCouponCount] = useState(0);
-  const [recentShops, setRecentShops] = useState<RecentViewedShop[]>([]);
+  const visits = useBusinessHistory((state) => state.visits);
+  const recentShops = visits.filter((visit) => !visit.preview).slice(0, 4);
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
@@ -112,10 +112,6 @@ export default function MyPageDashboard({
         if (isCurrent) setCouponCount(coupons.length);
       })
       .catch((error) => console.error(error));
-
-    requestRecentViewedShops().then((shops) => {
-      if (isCurrent && shops) setRecentShops(shops.slice(0, 4));
-    });
 
     return () => {
       isCurrent = false;
@@ -289,12 +285,8 @@ export default function MyPageDashboard({
           <ul className="mt-4 grid grid-cols-4 gap-3">
             {recentShops.map((shop) => (
               <li key={shop.id} className="min-w-0">
-                <Link to={`/product/${shop.id}`} className="block text-center">
-                  <img
-                    src={shop.thumbnail}
-                    alt={shop.name}
-                    className="mx-auto aspect-square w-full max-w-20 rounded-full object-cover"
-                  />
+                <Link to={`/business/${shop.id}`} className="block text-center">
+                  <span className="mx-auto grid aspect-square w-full max-w-20 place-items-center rounded-full bg-pink-50 text-accent">매장</span>
                   <span className="mt-2 block truncate text-xs text-page-text">
                     {shop.name}
                   </span>
@@ -323,7 +315,7 @@ export default function MyPageDashboard({
             <ChevronRight className="h-5 w-5 text-gray-300" />
           </Link>
           <Link
-            to="/mypage/edit?section=notifications"
+            to="/settings"
             className="flex h-16 w-full items-center gap-4 border-b border-page-border px-5 text-left text-page-text"
           >
             <Bell className="h-6 w-6 text-gray-400" strokeWidth={2} />
@@ -331,7 +323,7 @@ export default function MyPageDashboard({
             <ChevronRight className="h-5 w-5 text-gray-300" />
           </Link>
           <Link
-            to="/mypage/edit"
+            to="/settings"
             className="flex h-16 items-center gap-4 px-5 text-page-text"
           >
             <Settings className="h-6 w-6 text-gray-400" strokeWidth={2} />

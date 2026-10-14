@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
 import { Bell, Settings } from "lucide-react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
-import { requestMe } from "@/api/auth";
+import { ConsumerMyPage } from "@/features/consumer/engagement/UtilityPages";
+import { usePreviewStore } from "@/features/consumer/preview";
+import { NotFoundPage } from "@/features/consumer/ui";
 import MyPageDashboard from "@/components/mypage/MyPageDashboard";
 import { useAuthStore } from "@/store/useAuthStore";
 import ProfileEdit from "./ProfileEdit";
@@ -15,26 +16,10 @@ import Inquiry from "./Inquiry";
 export default function MyPage() {
   const { pathname } = useLocation();
   const user = useAuthStore((state) => state.user);
-  const setUser = useAuthStore((state) => state.setUser);
-  const [isCheckingUser, setIsCheckingUser] = useState(!user);
+  const isCheckingUser = !useAuthStore((state) => state.initialized);
+  const preview = usePreviewStore((state) => state.enabled);
 
-  useEffect(() => {
-    if (user) return;
-
-    let isCurrent = true;
-
-    requestMe()
-      .then((data) => {
-        if (isCurrent && data) setUser(data);
-      })
-      .finally(() => {
-        if (isCurrent) setIsCheckingUser(false);
-      });
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [setUser, user]);
+  if (pathname === "/mypage/playground" || pathname === "/mypage/playground/") return <Playground />;
 
   return (
     <main
@@ -46,14 +31,14 @@ export default function MyPage() {
         <h1 className="text-xl font-black text-page-heading">마이페이지</h1>
         <div className="ml-auto flex items-center gap-1">
           <Link
-            to="/mypage/edit?section=notifications"
+            to="/notifications"
             aria-label="알림"
             className="grid h-10 w-10 cursor-pointer place-items-center text-page-heading"
           >
             <Bell className="h-6 w-6" strokeWidth={2.1} />
           </Link>
           <Link
-            to="/mypage/edit"
+            to="/settings"
             aria-label="설정"
             className="grid h-10 w-10 place-items-center text-page-heading"
           >
@@ -66,7 +51,7 @@ export default function MyPage() {
         <Route
           index
           element={
-            <MyPageDashboard user={user} isCheckingUser={isCheckingUser} />
+            preview ? <ConsumerMyPage /> : <MyPageDashboard user={user} isCheckingUser={isCheckingUser} />
           }
         />
         <Route path="edit" element={<ProfileEdit />} />
@@ -76,6 +61,7 @@ export default function MyPage() {
         <Route path="point" element={<PointList />} />
         <Route path="recent" element={<RecentViewed />} />
         <Route path="playground" element={<Playground />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </main>
   );

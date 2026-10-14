@@ -10,9 +10,7 @@ export type SocialLoginProvider = Extract<
 interface UserProfileRow {
   id: string;
   email: string | null;
-  nickname: string;
-  level: number;
-  total_saved_amount: number;
+  name: string | null;
 }
 
 function getOAuthRedirectUrl() {
@@ -54,19 +52,19 @@ function mapSupabaseSessionToUser(
   return {
     id: session.user.id,
     email: profile?.email ?? session.user.email ?? "",
-    nickname: profile?.nickname ?? getSessionNickname(session),
+    nickname: profile?.name ?? getSessionNickname(session),
     profileImage: null,
-    level: profile?.level ?? 1,
-    totalSavedAmount: profile?.total_saved_amount ?? 0,
+    level: 1,
+    totalSavedAmount: 0,
   };
 }
 
-async function getUserFromSession(session: Session) {
+export async function getUserFromSession(session: Session) {
   const supabase = getSupabaseClient();
   const fallbackUser = mapSupabaseSessionToUser(session);
   const { data, error } = await supabase
-    .from("user_profiles")
-    .select("id, email, nickname, level, total_saved_amount")
+    .from("users")
+    .select("id, email, name")
     .eq("id", session.user.id)
     .maybeSingle<UserProfileRow>();
 
@@ -75,27 +73,7 @@ async function getUserFromSession(session: Session) {
     return fallbackUser;
   }
 
-  if (data) return mapSupabaseSessionToUser(session, data);
-
-  const { data: createdProfile, error: createError } = await supabase
-    .from("user_profiles")
-    .upsert(
-      {
-        id: session.user.id,
-        email: session.user.email ?? null,
-        nickname: getSessionNickname(session),
-      },
-      { onConflict: "id" },
-    )
-    .select("id, email, nickname, level, total_saved_amount")
-    .single<UserProfileRow>();
-
-  if (createError) {
-    console.error("사용자 프로필을 저장하지 못했습니다.", createError);
-    return fallbackUser;
-  }
-
-  return mapSupabaseSessionToUser(session, createdProfile);
+  return data ? mapSupabaseSessionToUser(session, data) : fallbackUser;
 }
 
 function getSocialLoginScopes(provider: SocialLoginProvider) {
@@ -114,11 +92,11 @@ function getAuthErrorMessage(error: unknown, fallback: string) {
   if (!(error instanceof Error)) return fallback;
 
   if (error.message.includes("Invalid login credentials")) {
-    return "비밀번호를 확인해 주세요.";
+    return "이메일 또는 비밀번호를 확인해 주세요.";
   }
 
   if (error.message.includes("Email not confirmed")) {
-    return fallback;
+    return "받으신 이메일에서 인증을 완료한 뒤 로그인해 주세요.";
   }
 
   if (error.message.includes("User already registered")) {
@@ -131,18 +109,6 @@ function getAuthErrorMessage(error: unknown, fallback: string) {
 export async function requestLogin(form: LoginForm) {
   const supabase = getSupabaseClient();
   const email = form.email.trim().toLowerCase();
-  const { data: isRegistered, error: lookupError } = await supabase.rpc(
-    "is_email_registered",
-    { email_to_check: email },
-  );
-
-  if (lookupError) {
-    throw new Error("이메일 가입 여부를 확인하지 못했습니다.");
-  }
-  if (!isRegistered) {
-    throw new Error("가입되지 않은 이메일입니다.");
-  }
-
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password: form.password,
@@ -180,7 +146,7 @@ export async function requestRegister(
   }
 
   if (!data.session) {
-    throw new Error("회원가입에 실패했습니다. 잠시 후 다시 시도해 주세요.");
+    return null;
   }
 
   sessionStorage.setItem("userToken", data.session.access_token);
@@ -205,10 +171,11 @@ export async function requestMe() {
 }
 
 export async function requestLogout() {
-  sessionStorage.removeItem("userToken");
   if (isSupabaseConfigured) {
-    await getSupabaseClient().auth.signOut();
+    const { error } = await getSupabaseClient().auth.signOut();
+    if (error) throw error;
   }
+  sessionStorage.removeItem("userToken");
 }
 
 export async function requestSocialLogin(provider: SocialLoginProvider) {

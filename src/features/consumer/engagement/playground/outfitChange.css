@@ -1,0 +1,83 @@
+/* Preserve the original portrait; use its own artwork on a closed volume during the turn. */
+.hair-follow { position: absolute; inset: 0; display: block; }
+.avatar-dressing-turn, .avatar-static-body, .avatar-static-head { position: absolute; inset: 0; }
+.avatar-dress-up .fashion-avatar-body { animation: none; }
+.avatar-dress-up :is(.eye-open, .eye-closed) { animation: none; }
+.avatar-dress-up .avatar-static-body { display: block; mask-image: linear-gradient(transparent 49.7%, black 50.7%); }
+/* The original head is cut out with two shoulder notches (AvatarHead clip path, x 184–227 and 286–328, y 362–384 of 512×768);
+   show the current outfit there, or the background shows through as two light squares. */
+.avatar-dress-up.has-original-portrait .avatar-static-body { mask-image: linear-gradient(transparent 49.7%, black 50.7%), linear-gradient(#000, #000), linear-gradient(#000, #000); mask-size: 100% 100%, 9% 3.4%, 9% 3.4%; mask-position: 0 0, 39.06% 48.65%, 60.94% 48.65%; mask-repeat: no-repeat; }
+.wardrobe-3d-canvas, .wardrobe-design-portrait, .wardrobe-design-source { position: absolute; inset: 0; }
+/* Turn views (docs/avatar-turn-views.md): the generated skin/hair views share the front layers' framing,
+   but the outfit art places the profile and back head differently, so each view shifts its layers onto it. */
+/* Drawn-view turn: stacked real drawings; only opacity and transform change per frame. */
+.drawn-turn-stage { position: absolute; inset: 0; transform-origin: 50% 100%; will-change: transform; pointer-events: none; }
+/* Transparent rather than hidden, so each drawing is rasterized once up front instead of on first appearance. */
+.drawn-turn-face { position: absolute; inset: 0; opacity: 0; will-change: opacity; }
+.wardrobe-drawn-avatar.is-turning .wardrobe-design-portrait { visibility: hidden; }
+/* Turn effects, timed to the phases in turnMotion.ts. They stay mounted after the turn so the landing finishes.
+   Transform/opacity, plus a small SVG stroke for the swooshes. */
+.turn-fx { position: absolute; inset: 0; pointer-events: none; }
+.turn-fx > * { position: absolute; opacity: 0; animation-fill-mode: both; animation-timing-function: cubic-bezier(.2, .7, .3, 1); }
+.turn-fx-ring { left: 8%; bottom: 0; width: 84%; height: 12%; border-radius: 50%; border: 4px solid #ffffff; box-shadow: 0 0 0 3px #ff9ccbcc, 0 0 18px 4px #ff8fc4aa, inset 0 0 12px #fff; }
+.turn-fx-ring.is-launch { animation: turn-ring 520ms calc(var(--turn-ms) * var(--wind-at)) both; }
+.turn-fx-ring.is-land { animation: turn-ring 600ms calc(var(--turn-ms) * var(--land-at)) both; border-width: 5px; }
+.turn-fx-swoosh { inset: 0; width: 100%; height: 100%; overflow: visible; opacity: 1 !important; }
+.turn-fx-swoosh path { fill: none; stroke: #ffffff; stroke-width: 3.4; stroke-linecap: round; stroke-dasharray: 46 100; opacity: 0; animation: turn-swoosh calc(var(--turn-ms) * (var(--land-at) - var(--wind-at)) + 140ms) linear calc(var(--turn-ms) * var(--wind-at)) both; filter: drop-shadow(0 0 3px #ff7fb8); }
+.turn-fx-swoosh path + path { animation-delay: calc(var(--turn-ms) * (var(--wind-at) + .06)); stroke-width: 2.6; }
+.turn-fx-flash { left: -4%; top: 6%; width: 108%; height: 70%; border-radius: 50%; background: radial-gradient(closest-side, #ffffff 0%, #fff4fa 30%, #ffc6e2cc 58%, #ffb0d466 78%, transparent 100%); animation: turn-flash 420ms calc(var(--turn-ms) * (var(--swap-at) - .08)) both; }
+.turn-fx-star { left: 50%; top: 40%; margin: -15px 0 0 -12px; color: #ffd23f; font-size: 30px; line-height: 1; text-shadow: 0 0 2px #fff, 0 0 8px #fff8d0, 0 0 14px #ff8cc0; --angle: calc(var(--i) * 36deg + 14deg); animation: turn-star 780ms calc(var(--turn-ms) * (var(--swap-at) - .04)) both; }
+.turn-fx-star:nth-child(odd) { font-size: 20px; color: #ffffff; --reach: 100px; }
+.turn-fx-dust { bottom: -2%; width: 36%; height: 15%; border-radius: 50%; background: radial-gradient(closest-side, #ffffff 0%, #fff0f7 40%, #f2cfe2dd 68%, transparent); }
+.turn-fx-dust.is-left { left: 10%; animation: turn-dust-left 640ms calc(var(--turn-ms) * var(--land-at)) both; }
+.turn-fx-dust.is-right { right: 10%; animation: turn-dust-right 640ms calc(var(--turn-ms) * var(--land-at)) both; }
+.turn-fx-twinkle { color: #ffe27a; font-size: 18px; text-shadow: 0 0 6px #fff, 0 0 12px #ff9cc9; animation: turn-twinkle 520ms calc(var(--turn-ms) * var(--land-at) + 120ms + var(--i) * 70ms) both; }
+@keyframes turn-ring { 0% { opacity: 0; transform: scale(.3); } 18% { opacity: 1; } 100% { opacity: 0; transform: scale(1.45); } }
+@keyframes turn-swoosh { 0% { stroke-dashoffset: 100; opacity: 0; } 12%, 72% { opacity: 1; } 100% { stroke-dashoffset: -46; opacity: 0; } }
+@keyframes turn-flash { 0% { opacity: 0; transform: scale(.4); } 30% { opacity: .95; transform: scale(1); } 100% { opacity: 0; transform: scale(1.2); } }
+@keyframes turn-star { 0% { opacity: 0; transform: rotate(var(--angle)) translateX(10px) rotate(calc(-1 * var(--angle))) scale(.3) rotate(0deg); } 20% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; transform: rotate(var(--angle)) translateX(var(--reach, 140px)) rotate(calc(-1 * var(--angle))) scale(.8) rotate(90deg); } }
+@keyframes turn-dust-left { 0% { opacity: 0; transform: translate(35%, 0) scale(.3); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-75%, -55%) scale(1.35); } }
+@keyframes turn-dust-right { 0% { opacity: 0; transform: translate(-35%, 0) scale(.3); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(75%, -55%) scale(1.35); } }
+@keyframes turn-twinkle { 0% { opacity: 0; transform: scale(0) rotate(-30deg); } 40% { opacity: 1; transform: scale(1.25) rotate(10deg); } 100% { opacity: 0; transform: scale(.6) rotate(30deg); } }
+.turn-view-own-head .avatar-static-body { mask-image: none; }
+/* Recoloured copies of the outfit art's own head (above the collar line). */
+.turn-view-head-region { position: absolute; inset: 0; mask-image: linear-gradient(black 49.7%, transparent 50.7%); }
+.turn-view-hair-recolor { position: absolute; inset: 0; }
+.turn-view-skin, .turn-view-hair, .turn-view-eye { position: absolute; inset: 0; transform-origin: 0 0; }
+/* The front hair art needs per-style clips against neighbouring cells; the view atlases have clear gutters. */
+.turn-view-head .avatar-hair-layer { clip-path: none; }
+.turn-view-skin { transform: translate(var(--skin-x, 0%), var(--skin-y, 0%)) scale(var(--skin-scale-x, 1), var(--skin-scale-y, 1)); }
+.turn-view-hair { transform: translate(var(--hair-x, 0%), var(--hair-y, 0%)) scale(var(--hair-scale-x, 1), var(--hair-scale-y, 1)); }
+.turn-view-eye { mask-image: radial-gradient(ellipse var(--eye-rx, 7%) var(--eye-ry, 5%) at var(--eye-x, 57%) var(--eye-y, 33%), black 55%, transparent 100%); }
+/* Measured against the outfit art's own bob head (scratch align script, 512×768 frame). */
+.turn-view-side { --hair-x: -4.1%; --hair-y: 1.7%; --hair-scale-x: .966; --hair-scale-y: .98; --skin-x: .6%; --skin-y: -.7%; --eye-x: 64.5%; --eye-y: 33.2%; --eye-rx: 6.5%; --eye-ry: 5%; }
+.turn-view-back { --hair-x: 2.8%; --hair-y: 1.6%; --hair-scale-x: 1.037; --hair-scale-y: .967; }
+/* The front diagonal shows the whole face, so it borrows both eyes and the mouth. */
+.turn-view-front-quarter { --hair-x: -2%; --hair-y: 1.6%; --hair-scale-x: 1.016; --hair-scale-y: 1; --skin-x: 1%; --skin-scale-x: 1.03; --eye-x: 55.7%; --eye-y: 36%; --eye-rx: 21.5%; --eye-ry: 6.8%; }
+.turn-view-back-quarter { --hair-x: 3%; --hair-y: 1.7%; --hair-scale-x: .969; --hair-scale-y: .97; }
+/* Overhang matches STAGE_PAD in WardrobeScene.ts (1.12 → 6% each side). */
+.wardrobe-3d-canvas canvas { position: absolute; display: block; inset: -6%; width: 112%; height: 112%; }
+.wardrobe-3d-canvas { opacity: 0; }
+.wardrobe-design-source { opacity: 0; pointer-events: none; }
+.wardrobe-3d-avatar.status-ready:has(.wardrobe-3d-canvas[data-turning="true"]) .wardrobe-3d-canvas { opacity: 1; }
+.wardrobe-3d-avatar.status-ready:has(.wardrobe-3d-canvas[data-turning="true"]) .wardrobe-design-portrait { visibility: hidden; }
+.outfit-change-effects { position: absolute; inset: 0; pointer-events: none; }
+.outfit-change-ring { position: absolute; left: 5%; top: 59%; width: 90%; height: 13%; border: 2px solid #fff4bd; border-radius: 50%; box-shadow: 0 0 12px #ffebbd99; animation: outfit-ring .76s ease-out both; }
+.outfit-change-star { position: absolute; left: 50%; top: 60%; color: #fff5ce; font-size: 15px; text-shadow: 0 0 8px #efb5cd; animation: outfit-sparkle .76s ease-out both; --angle: calc(var(--i) * 45deg); }
+@keyframes outfit-ring {
+  0%, 25% { opacity: 0; transform: scale(.55); }
+  44% { opacity: .9; }
+  100% { opacity: 0; transform: scale(1.3); }
+}
+@keyframes outfit-sparkle {
+  0%, 32% { opacity: 0; transform: rotate(var(--angle)) translateX(12px) rotate(calc(-1 * var(--angle))) scale(.2); }
+  52% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--angle)) translateX(88px) rotate(calc(-1 * var(--angle))) scale(.65); }
+}
+@media (max-width: 700px) { .outfit-change-star { font-size: 11px; } }
+@media (prefers-reduced-motion: reduce) {
+  .avatar-dress-up .avatar-dressing-turn { animation: none !important; transform: none; }
+  .avatar-dress-up .figure-leaving { display: none; }
+  .avatar-dress-up .figure-entering { animation: none; opacity: 1; }
+  .outfit-change-effects { display: none; }
+}
