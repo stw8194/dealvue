@@ -1,12 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useBusinessHistory } from "@/features/consumer/history";
-import { usePreviewStore } from "@/features/consumer/preview";
 
 export default function RecentViewed() {
   const navigate = useNavigate();
-  const preview = usePreviewStore((state) => state.enabled);
   const visits = useBusinessHistory((state) => state.visits);
-  const shops = visits.filter((visit) => visit.preview === preview);
+  const shops = visits.filter((visit) => !visit.preview);
 
   return (
     <ul className="flex flex-col gap-3 px-4 py-4">

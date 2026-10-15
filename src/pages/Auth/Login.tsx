@@ -218,7 +218,7 @@ export default function Login() {
         </Link>
       </p>
 
-      <div className="fixed bottom-0 left-1/2 z-20 w-[calc(100%-3rem)] max-w-[432px] -translate-x-1/2 rounded-t-2xl border border-b-0 border-page-border bg-white px-5 py-4 shadow-[0_8px_24px_rgb(0_0_0/8%)]">
+      <div className="mt-10 rounded-2xl border border-page-border bg-white px-5 py-4 shadow-[0_2px_12px_rgb(0_0_0/7%)]">
         <p className="text-center text-base font-semibold text-page-heading">
           로그인하면 더 많은 혜택을 받을 수 있어요
         </p>

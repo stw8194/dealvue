@@ -14,6 +14,18 @@ export interface TimeDeal {
   capacity: number;
   remaining_capacity: number;
   endAt: string | null;
+  startAt?: string;
+}
+
+export interface TimeDealBusiness {
+  businessId: number;
+  businessName: string;
+  category: ServiceCategory | null;
+  imageUrl: string | null;
+  deals: TimeDeal[];
+  endAt: string;
+  remainingCapacity: number;
+  discountLabel: string;
 }
 
 export interface PopularSearchKeyword {

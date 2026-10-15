@@ -1,7 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useConsumerCatalog } from "@/features/consumer/catalog";
-import { usePreviewStore } from "@/features/consumer/preview";
 import { EmptyState, Page } from "@/features/consumer/ui";
 import BusinessProfile from "./BusinessProfile";
 import { readConsumerBusiness, type ConsumerBusiness } from "./business";
@@ -9,12 +8,11 @@ import { useBusinessHistory } from "@/features/consumer/history";
 
 export function BusinessDetailPage() {
   const { businessId } = useParams();
-  const preview = usePreviewStore((state) => state.enabled);
+  const preview = false;
   const { deals, loading: catalogLoading, error: catalogError } = useConsumerCatalog();
   const [result, setResult] = useState<{ key: string; business: ConsumerBusiness | null; error: string | null } | null>(null);
   const requestKey = `${preview}:${businessId}`;
   useEffect(() => {
-    if (preview) return;
     let current = true;
     const id = Number(businessId);
     if (!Number.isSafeInteger(id) || id <= 0) return;
@@ -26,17 +24,10 @@ export function BusinessDetailPage() {
     return () => { current = false; };
   }, [businessId, preview, requestKey]);
   const businessDeals = deals.filter((deal) => deal.businessId === Number(businessId));
-  const first = businessDeals[0];
-  const previewBusiness: ConsumerBusiness | null = first ? {
-    id: first.businessId, name: first.businessName, address: first.address,
-    number: "", description: "시술과 방문 일정을 확인하고 나에게 맞는 타임딜을 찾아보세요.",
-    services: [...new Map(businessDeals.filter((deal) => deal.serviceId !== null).map((deal) => [deal.serviceId, { id: deal.serviceId!, name: deal.serviceName, price: deal.originalPrice, duration_minutes: null, description: deal.description }])).values()],
-    staff: [], categories: first.category ? [first.category] : [], images: first.imageUrl ? [first.imageUrl] : [],
-  } : null;
   const invalidId = !Number.isSafeInteger(Number(businessId)) || Number(businessId) <= 0;
-  const loading = !invalidId && (preview ? catalogLoading : result?.key !== requestKey);
-  const error = preview ? catalogError : result?.key === requestKey ? result.error : null;
-  const business = preview ? previewBusiness : result?.key === requestKey ? result.business : null;
+  const loading = !invalidId && result?.key !== requestKey;
+  const error = result?.key === requestKey ? result.error : null;
+  const business = result?.key === requestKey ? result.business : null;
   const visitedId = business?.id;
   const visitedName = business?.name;
   useEffect(() => {

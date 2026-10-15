@@ -64,6 +64,7 @@ export default function BusinessProfile({
   const now = useDealTime();
   const activeDeals = dealsLoading || dealsError ? [] : deals.filter((deal) => isOpenDeal(deal, now));
   const images = [...new Set(business.images ?? [])];
+  const supplied = business.source_details;
   const phone = business.number?.replace(/[^\d+]/g, "");
   const categories = (business.categories ?? [])
     .map((id) => SERVICE_CATEGORIES.find((item) => item.id === id)?.label)
@@ -223,7 +224,7 @@ export default function BusinessProfile({
         </button>
       </header>
       <div className="mx-auto max-w-3xl">
-        <div className={`relative flex aspect-[16/8] items-center justify-center overflow-hidden bg-[#fff0f5] ${activeDeals.length ? "min-h-[300px]" : ""}`}>
+        <div className={`relative flex w-full min-w-0 items-center justify-center overflow-hidden bg-[#fff0f5] ${activeDeals.length ? "h-[300px]" : "aspect-[2/1]"}`}>
           <div className="flex flex-col items-center gap-3 text-[#d795ae]">
             <Store size={48} strokeWidth={1.4} />
             <span className="text-xs">
@@ -271,6 +272,11 @@ export default function BusinessProfile({
           <h1 className="text-2xl font-black tracking-tight">
             {business.name}
           </h1>
+          {supplied && <div className="space-y-2 text-sm">
+            <p>★ {supplied.average_rating.toFixed(1)} <span className="text-page-text">리뷰 {supplied.review_count.toLocaleString()} · 찜 {supplied.favorite_count.toLocaleString()}</span></p>
+            <p className="leading-6 text-page-text">{supplied.hashtags}</p>
+            <p className="leading-6">{supplied.opening_hours} <span className="text-page-text">· {supplied.closed_days}</span></p>
+          </div>}
           <p className="flex items-start gap-1.5 text-sm text-page-text">
             <MapPin size={16} className="mt-0.5 shrink-0" />
             {business.address || "주소 정보 준비 중"}
@@ -290,7 +296,7 @@ export default function BusinessProfile({
                 전화 미등록
               </span>
             )}
-            {preview ? (
+            {(
               <button
                 type="button"
                 aria-pressed={liked}
@@ -303,13 +309,6 @@ export default function BusinessProfile({
                 />
                 {liked ? "매장 찜 해제" : "매장 찜 추가"}
               </button>
-            ) : (
-              <Link
-                to="/wishlist"
-                className="flex flex-col items-center gap-1.5"
-              >
-                <Heart size={19} />내 찜
-              </Link>
             )}
             <button
               type="button"
@@ -344,6 +343,7 @@ export default function BusinessProfile({
           )}
           {tab === "홈" && (
             <>
+              {supplied && <section className={box}><h2 className="mb-3 text-lg font-bold">방문 안내</h2><dl className="space-y-3 text-sm leading-6"><div><dt className="font-semibold">영업시간 · 휴무</dt><dd>{supplied.opening_hours} · {supplied.closed_days}</dd></div><div><dt className="font-semibold">편의시설</dt><dd>{supplied.amenities}</dd></div><div><dt className="font-semibold">주차</dt><dd>{supplied.parking}</dd></div></dl></section>}
               <BusinessDealKits businessId={business.id} />
               <section className={box}>
                 <h2 className="mb-3 text-lg font-bold">매장 소개</h2>
@@ -498,6 +498,7 @@ export default function BusinessProfile({
               key={`${preview}:${business.id}`}
               businessId={business.id}
               preview={preview}
+              supplied={supplied}
             />
           )}
           {tab === "정보" && (
@@ -508,6 +509,7 @@ export default function BusinessProfile({
               </section>
               <section className={box}>
                 <h2 className="mb-3 text-lg font-bold">예약 · 이용 안내</h2>
+                {supplied ? <dl className="space-y-3 text-sm leading-6"><div><dt className="font-semibold">영업시간</dt><dd>{supplied.opening_hours}</dd></div><div><dt className="font-semibold">휴무일</dt><dd>{supplied.closed_days}</dd></div><div><dt className="font-semibold">편의정보 · 주차</dt><dd>{supplied.amenities}<br />{supplied.parking}</dd></div><div><dt className="font-semibold">예약금</dt><dd>{supplied.deposit}</dd></div><div><dt className="font-semibold">취소·환불 안내</dt><dd>{supplied.cancellation_policy}</dd></div></dl> : <>
                 <ul className="space-y-3 text-sm leading-6 text-page-text">
                   <li>시술 메뉴에서 가격과 소요시간을 확인해 주세요.</li>
                   <li>
@@ -518,6 +520,7 @@ export default function BusinessProfile({
                   </li>
                   <li>예약 변경·취소는 내 예약내역에서 확인할 수 있어요.</li>
                 </ul>
+                </>}
                 <Link
                   to="/reservation"
                   className="mt-4 inline-block text-sm font-semibold text-accent"
@@ -542,7 +545,7 @@ export default function BusinessProfile({
           <button
             type="button"
             onClick={() => setBookingOpen(true)}
-            className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-white"
+            className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-white disabled:bg-gray-300"
           >
             예약하기
           </button>
@@ -552,6 +555,7 @@ export default function BusinessProfile({
         <BusinessBookingFlow
           business={business}
           preview={preview}
+          offers={deals}
           onClose={() => setBookingOpen(false)}
         />
       )}
@@ -631,11 +635,14 @@ export default function BusinessProfile({
                   예상 소요시간 {selectedService.duration_minutes}분
                 </p>
               )}
+              {selectedService.source_details?.hashtags && <p className="text-sm leading-6 text-page-text">{selectedService.source_details.hashtags}</p>}
+              {selectedService.source_details?.additional_charge && <p className="text-sm leading-6 text-page-text">추가금 안내: {selectedService.source_details.additional_charge}</p>}
               <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-page-text">
                 {selectedService.description ||
                   "자세한 시술 내용은 매장에 문의해 주세요."}
               </p>
             </div>
+            {activeDeals.find(deal => deal.serviceId === selectedService.id) && <Link to={`/checkout/${activeDeals.find(deal => deal.serviceId === selectedService.id)!.id}`} className="block rounded-xl bg-accent p-3 text-center text-sm font-bold text-white">이 시술 예약하기</Link>}
           </div>
         )}
       </dialog>

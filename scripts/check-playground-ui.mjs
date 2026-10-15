@@ -126,7 +126,7 @@ try {
   assert.equal(await reduced.page.locator(".crystal-mist").first().evaluate(node => getComputedStyle(node).animationName), "none");
   await reduced.page.getByRole("button", { name: "오늘의 운세 열어보기 · 5 P" }).click(); await reduced.page.getByText("오늘의 5 P 선물을 받았어요", { exact: false }).waitFor({ timeout: 1500 });
   await open(reduced.page, "roulette"); await reduced.page.getByRole("button", { name: "행운 룰렛 돌리기", exact: true }).click(); await reduced.page.getByRole("button", { name: "오늘 참여 완료 · 내일 다시 만나요", exact: true }).waitFor({ timeout: 1500 }); assert.equal(balance(await state(reduced.page)), 55); await reduced.context.close();
-  const readonly = await setup("reduce", false); await go(readonly.page, "/rewards?tab=roulette"); assert.equal(await readonly.page.locator("dialog[open]").count(), 0); await readonly.context.close();
+  const unified = await setup("reduce", false); await go(unified.page, "/rewards?tab=roulette"); assert.equal(await unified.page.locator("dialog[open]").count(), 1); await unified.page.getByRole("button", { name: "행운 룰렛 돌리기", exact: true }).click(); await complete(unified.page); assert.equal(balance(await state(unified.page)), 50); await unified.context.close();
   assert.deepEqual(errors, []); assert.deepEqual(requests, []);
-  console.log("PASS reload/close recovery, reduced motion, preview boundary and 320–1440 px popup layouts; no browser errors");
+  console.log("PASS reload/close recovery, reduced motion, features available regardless of old mode flag, and 320–1440 px popup layouts; no browser errors");
 } finally { await browser.close(); }

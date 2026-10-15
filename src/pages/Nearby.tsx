@@ -19,6 +19,7 @@ import NearbyResultsSheet from "@/components/nearby/NearbyResultsSheet";
 import { SERVICE_CATEGORIES } from "@/data/packageOptions";
 import type { ServiceCategory } from "@/type/package";
 import { useDealTime } from "@/features/consumer/dealTiming";
+import { useConsumerCatalog } from "@/features/consumer/catalog";
 
 const DEFAULT_LOCATION = {
   label: "서울시청",
@@ -182,7 +183,11 @@ export default function Nearby() {
   const [category, setCategory] = useState<ServiceCategory | "all">("all");
   const [listScrollRequest, setListScrollRequest] = useState(0);
   const now = useDealTime();
-  const visibleBusinesses = useMemo(() => businesses.filter((business) => category === "all" || business.categories.includes(category)), [businesses, category]);
+  const { deals: catalogDeals } = useConsumerCatalog();
+  const visibleBusinesses = useMemo(() => businesses.filter((business) => category === "all" || business.categories.includes(category)).map(business => catalogDeals.length ? {
+    ...business,
+    timeDeals: catalogDeals.filter(deal => deal.businessId === business.id).map(deal => ({ remaining_capacity: deal.remainingCapacity, start_at: deal.startAt, end_at: deal.endAt })),
+  } : business), [businesses, category, catalogDeals]);
   const activeDealKey = visibleBusinesses.filter((business) => hasActiveNearbyDeal(business, now)).map((business) => business.id).join(",");
   const selectedId = selectedBusiness?.id;
 

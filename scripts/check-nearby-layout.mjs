@@ -29,6 +29,7 @@ try {
   await context.route('**/*', async (route) => {
     const url = new URL(route.request().url());
     if (url.href.startsWith(base)) return route.continue();
+    if (url.pathname.endsWith('/provided_deal_templates') || url.pathname.endsWith('/time_deals')) return route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
     if (url.pathname.endsWith('/businesses')) {
       await new Promise((resolve) => setTimeout(resolve, 150));
       return route.fulfill({ status: fail ? 500 : 200, contentType: 'application/json', body: JSON.stringify(fail ? { message: 'test failure' } : url.searchParams.has('or') ? [] : rows) });

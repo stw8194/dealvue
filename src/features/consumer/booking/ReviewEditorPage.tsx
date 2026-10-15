@@ -28,12 +28,12 @@ function ReviewForm({ reservation, existing }: { reservation: Reservation; exist
   return (
     <form onSubmit={submit} className="space-y-5">
       <div><h2 className="font-semibold">{reservation.productName}</h2><p className="mt-1 text-sm text-page-text">{reservation.shopName} · 이용 완료</p></div>
-      <p className="text-sm text-page-text">미리보기 리뷰는 이 기기에 저장되며 공개 게시되지 않습니다. 예약 한 건에 리뷰 한 개를 작성하고 수정할 수 있습니다.</p>
+      <p className="text-sm text-page-text">리뷰는 이 기기에 저장됩니다. 예약 한 건에 리뷰 한 개를 작성하고 수정할 수 있습니다.</p>
       <fieldset><legend className="mb-2 text-sm font-semibold">평점</legend><div className="flex flex-wrap gap-3">{[1, 2, 3, 4, 5].map(value => <label key={value} className="flex items-center gap-1 rounded-lg border border-page-border p-2 text-sm"><input type="radio" name="rating" value={value} checked={rating === value} onChange={() => setRating(value)} />{value}점</label>)}</div></fieldset>
       <div className="space-y-2"><label htmlFor="review-content" className="block text-sm font-semibold">이용 후기</label><textarea id="review-content" required minLength={10} maxLength={1000} rows={6} value={content} onChange={event => setContent(event.target.value)} className="w-full rounded-lg border border-page-border bg-page-bg p-3" placeholder="시술과 방문 경험을 10자 이상 남겨 주세요." /><p className="text-right text-xs text-page-text">{content.length} / 1,000자</p></div>
       <p className="text-xs text-page-text">사진 첨부와 항목별 평점은 준비 중입니다.</p>
       {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-      <button type="submit" disabled={submitting} className="w-full rounded-lg bg-accent p-3 font-semibold text-white disabled:opacity-40">{submitting ? "저장 중…" : existing ? "테스트 리뷰 수정" : "테스트 리뷰 저장"}</button>
+      <button type="submit" disabled={submitting} className="w-full rounded-lg bg-accent p-3 font-semibold text-white disabled:opacity-40">{submitting ? "저장 중…" : existing ? "리뷰 수정" : "리뷰 저장"}</button>
       <Link to={`/reservation/${reservation.id}`} className="block text-center text-sm text-accent underline">예약 상세로</Link>
     </form>
   );

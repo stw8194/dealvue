@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Clock3, Tag, Users, X } from "lucide-react";
-import type { TimeDeal } from "@/type/home";
+import type { TimeDealBusiness } from "@/type/home";
 
 type TimeDealModalProps = {
   currentTime: number;
-  deal: TimeDeal | null;
+  business: TimeDealBusiness | null;
   onClose: () => void;
 };
 
@@ -41,11 +41,14 @@ function formatEndAt(endAt: string | null) {
 
 export default function TimeDealModal({
   currentTime,
-  deal,
+  business,
   onClose,
 }: TimeDealModalProps) {
+  const [selectedId, setSelectedId] = useState("");
+  const open = business !== null;
+  const deal = business?.deals.length === 1 ? business.deals[0] : business?.deals.find(item => String(item.id) === selectedId);
   useEffect(() => {
-    if (!deal) return;
+    if (!open) return;
 
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -60,9 +63,9 @@ export default function TimeDealModal({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [deal, onClose]);
+  }, [open, onClose]);
 
-  if (!deal) return null;
+  if (!business) return null;
 
   return (
     <div
@@ -78,11 +81,11 @@ export default function TimeDealModal({
         className="max-h-[90dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-white shadow-[0_16px_50px_rgb(0_0_0/24%)] sm:rounded-2xl"
       >
         <div className="relative aspect-[16/9] overflow-hidden bg-[#f3f4f6]">
-          {deal.imageUrl ? (
+          {business.imageUrl ? (
             <img
-              src={deal.imageUrl}
-              alt={deal.businessName}
-              className="h-full w-full object-cover"
+              src={business.imageUrl}
+              alt={business.businessName}
+              className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
             <div className="grid h-full w-full place-items-center text-sm font-medium text-gray-400">
@@ -98,32 +101,40 @@ export default function TimeDealModal({
             <X className="h-5 w-5" strokeWidth={2.3} />
           </button>
           <span className="absolute bottom-3 left-3 rounded-lg bg-accent px-3 py-2 text-sm font-black text-white">
-            {deal.discountRate}% 할인
+            {deal ? `${deal.discountRate}%` : business.discountLabel} 할인
           </span>
         </div>
 
         <div className="p-5">
           <p className="text-sm font-semibold text-page-text">
-            {deal.businessName}
+            {business.businessName}
           </p>
           <h2
             id="time-deal-modal-title"
             className="mt-1 text-xl font-black text-page-heading"
           >
-            {deal.serviceName}
+            {deal?.serviceName ?? "타임딜 선택"}
           </h2>
 
+          {business.deals.length > 1 && <label className="mt-4 block space-y-2 text-sm font-semibold text-page-heading">
+            <span>시술 선택</span>
+            <select aria-label="시술 선택" value={selectedId} onChange={event => setSelectedId(event.target.value)} className="w-full rounded-xl border border-page-border bg-white p-3 text-sm">
+              <option value="">원하는 타임딜을 선택해 주세요</option>
+              {business.deals.map(item => <option key={item.id} value={item.id}>{item.serviceName} · {item.discountRate}% 할인</option>)}
+            </select>
+          </label>}
+
           <div className="mt-5 grid gap-3 rounded-xl bg-[#fafafa] p-4 text-sm">
-            <p className="flex items-center gap-3 text-page-text">
+            <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-page-text">
               <Clock3 className="h-5 w-5 shrink-0 text-accent" />
               <span className="font-bold text-page-heading">
-                {getRemainingLabel(deal.endAt, currentTime)}
+                {getRemainingLabel(deal?.endAt ?? business.endAt, currentTime)}
               </span>
-              <span className="ml-auto text-xs">{formatEndAt(deal.endAt)} 마감</span>
+              <span className="ml-auto basis-full whitespace-nowrap pl-8 text-xs min-[360px]:basis-auto min-[360px]:pl-0">{formatEndAt(deal?.endAt ?? business.endAt)} 마감</span>
             </p>
             <p className="flex items-center gap-3 text-page-text">
               <Users className="h-5 w-5 shrink-0 text-accent" />
-              <span>{deal.remaining_capacity.toLocaleString()}자리 남음</span>
+              <span>{deal ? `${deal.remaining_capacity.toLocaleString()}자리 남음` : `진행 중인 타임딜 ${business.deals.length}개`}</span>
             </p>
             <p className="flex items-center gap-3 text-page-text">
               <Tag className="h-5 w-5 shrink-0 text-accent" />
@@ -131,22 +142,22 @@ export default function TimeDealModal({
             </p>
           </div>
 
-          <div className="mt-5 flex items-end justify-between gap-4">
+          <div className="mt-5 flex flex-col gap-4 min-[360px]:flex-row min-[360px]:items-end min-[360px]:justify-between">
             <div>
-              <p className="text-sm text-gray-400 line-through">
+              {deal && <p className="text-sm text-gray-400 line-through">
                 {deal.originalPrice.toLocaleString()}원
-              </p>
-              <p className="mt-1 text-2xl font-black text-accent">
-                {deal.price.toLocaleString()}원
+              </p>}
+              <p className="mt-1 whitespace-nowrap text-2xl font-black text-accent">
+                {deal ? `${deal.price.toLocaleString()}원` : business.discountLabel}
               </p>
             </div>
-            <Link
-              to={`/deal/${deal.id}`}
+            {deal ? <Link
+              to={`/checkout/${deal.id}`}
               onClick={onClose}
-              className="h-12 min-w-28 cursor-pointer rounded-full bg-accent px-6 text-sm font-bold text-white hover:opacity-85"
+              className="flex h-12 w-full shrink-0 items-center justify-center whitespace-nowrap rounded-full bg-accent px-4 text-sm font-bold text-white hover:opacity-85 min-[360px]:w-auto"
             >
-              상세 · 일정 확인
-            </Link>
+              일정 선택 · 예약하기
+            </Link> : <button type="button" disabled className="h-12 w-full rounded-full bg-gray-100 px-4 text-sm text-gray-400 min-[360px]:w-auto">시술을 선택해 주세요</button>}
           </div>
         </div>
       </section>

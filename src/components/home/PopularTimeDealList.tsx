@@ -1,17 +1,17 @@
-import type { TimeDeal } from "@/type/home";
-import { useNavigate } from "react-router-dom";
+import type { TimeDealBusiness } from "@/type/home";
 import type { ServiceCategory } from "@/type/package";
+import { useDiscoveryFavorites } from "@/features/consumer/discovery/favorites";
 
 type PopularTimeDealListProps = {
   category: ServiceCategory;
   currentTime: number | null;
-  deals: TimeDeal[];
+  deals: TimeDealBusiness[];
   isLoading: boolean;
-  onSelectDeal: (deal: TimeDeal) => void;
+  onSelectDeal: (deal: TimeDealBusiness) => void;
 };
 
 function getCountdown(endAt: string | null, currentTime: number | null) {
-  if (!endAt || currentTime === null) return "00:00:00";
+  if (!endAt || currentTime === null) return "--:--:--";
 
   const remainingMilliseconds = Math.max(
     new Date(endAt).getTime() - currentTime,
@@ -34,7 +34,8 @@ export default function PopularTimeDealList({
   isLoading,
   onSelectDeal,
 }: PopularTimeDealListProps) {
-  const navigate = useNavigate();
+  const likedBusinesses = useDiscoveryFavorites(state => state.businessIds);
+  const toggleBusiness = useDiscoveryFavorites(state => state.toggleBusiness);
   const filteredDeals = deals.filter((deal) => deal.category === category);
 
   if (isLoading) {
@@ -54,16 +55,19 @@ export default function PopularTimeDealList({
   }
 
   return (
-    <ul className="space-y-5 px-4 py-6 min-[390px]:px-5">
-      {filteredDeals.map((deal) => (
+    <ul aria-label="진행 중인 매장 타임딜 목록" className="space-y-4 px-4 py-6 min-[390px]:px-5">
+      {filteredDeals.map((deal) => {
+        const singleDeal = deal.deals.length === 1 ? deal.deals[0] : null;
+        return (
         <li
-          key={deal.id}
-          className="rounded-[18px] border border-page-border bg-white p-3 shadow-[0_2px_10px_rgb(0_0_0/10%)] min-[390px]:p-4"
+          key={deal.businessId}
+          data-business-id={deal.businessId}
+          className="rounded-[18px] border border-page-border bg-white p-3 shadow-[0_2px_10px_rgb(0_0_0/10%)] min-[390px]:p-3.5"
         >
           <article
             role="button"
             tabIndex={0}
-            aria-label={`${deal.businessName} ${deal.serviceName} 타임딜 상세 보기`}
+            aria-label={`${deal.businessName} 타임딜 상세 보기`}
             onClick={() => onSelectDeal(deal)}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
@@ -71,24 +75,24 @@ export default function PopularTimeDealList({
                 onSelectDeal(deal);
               }
             }}
-            className="grid cursor-pointer grid-cols-[40%_1fr] gap-3 min-[390px]:grid-cols-[42%_1fr] min-[390px]:gap-4"
+            className="grid cursor-pointer grid-cols-[minmax(0,35%)_minmax(0,1fr)] gap-3 min-[390px]:gap-4"
           >
-            <div className="relative aspect-square overflow-hidden rounded-[14px] bg-[#f3f4f6]">
+            <div className="relative aspect-square self-start overflow-hidden rounded-[14px] bg-[#f3f4f6]">
               {deal.imageUrl ? (
                 <img
                   src={deal.imageUrl}
                   alt={deal.businessName}
-                  className="h-full w-full object-cover"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               ) : (
                 <div className="grid h-full w-full place-items-center px-3 text-center text-[11px] font-medium text-[#a0a4ad]">
                   이미지 준비중
                 </div>
               )}
-              <span className="absolute left-2 top-2 rounded-md bg-accent px-3 py-1 text-sm font-bold text-white">
-                -{deal.discountRate}%
+              <span className="absolute left-2 top-2 rounded-md bg-accent px-2 py-1 text-xs font-bold text-white">
+                {deal.discountLabel}
               </span>
-              <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-md bg-black/70 px-2.5 py-1 text-base font-black text-white min-[390px]:px-3 min-[390px]:text-lg">
+              <span aria-label="마감까지 남은 시간" className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/70 px-2 py-1 text-xs font-black tabular-nums text-white min-[390px]:text-sm">
                 {getCountdown(deal.endAt, currentTime)}
               </span>
             </div>
@@ -96,56 +100,56 @@ export default function PopularTimeDealList({
             <div className="min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <p className="line-clamp-2 text-sm font-bold leading-snug text-page-heading min-[390px]:text-base">
+                  <p className="line-clamp-2 text-sm font-bold leading-snug text-page-heading">
                     {deal.businessName}
                   </p>
-                  <p className="mt-1 text-xs text-page-text min-[390px]:text-sm">
+                  <p className="mt-1 text-xs text-page-text">
                     실시간 타임딜
                   </p>
                 </div>
                 <button
                   type="button"
-                  aria-label="찜 목록 보기"
-                  onClick={(event) => { event.stopPropagation(); navigate("/wishlist"); }}
+                  aria-label={`${deal.businessName} ${likedBusinesses.includes(deal.businessId) ? "매장 찜 해제" : "매장 찜 추가"}`}
+                  aria-pressed={likedBusinesses.includes(deal.businessId)}
+                  onClick={(event) => { event.stopPropagation(); toggleBusiness(deal.businessId); }}
                   onKeyDown={(event) => event.stopPropagation()}
-                  className="text-2xl leading-none text-[#cfd2d8] min-[390px]:text-3xl"
+                  className={`shrink-0 text-2xl leading-none ${likedBusinesses.includes(deal.businessId) ? "text-accent" : "text-[#cfd2d8]"}`}
                 >
-                  ♡
+                  {likedBusinesses.includes(deal.businessId) ? "♥" : "♡"}
                 </button>
               </div>
 
-              <p className="mt-2 line-clamp-2 text-base font-black leading-snug text-page-heading min-[390px]:mt-3 min-[390px]:text-lg">
-                {deal.serviceName}
+              <p className="mt-2 line-clamp-2 text-base font-black leading-snug text-page-heading">
+                {singleDeal ? singleDeal.serviceName : `진행 중인 타임딜 ${deal.deals.length}개`}
               </p>
 
-              <p className="mt-3 text-xs text-page-text line-through min-[390px]:mt-4 min-[390px]:text-sm">
-                {deal.originalPrice.toLocaleString()}원
-              </p>
-              <div className="mt-1 flex items-end justify-between gap-2 min-[390px]:gap-3">
-                <p className="text-xl font-black text-accent min-[390px]:text-2xl">
-                  {deal.price.toLocaleString()}{" "}
-                  <span className="text-base">원</span>
+              {singleDeal && <p className="mt-3 text-xs text-page-text line-through">
+                {singleDeal.originalPrice.toLocaleString()}원
+              </p>}
+              <div className={`${singleDeal ? "mt-1" : "mt-3"} flex items-center justify-between gap-2`}>
+                <p className="whitespace-nowrap text-lg font-black text-accent min-[390px]:text-xl">
+                  {singleDeal ? <>{singleDeal.price.toLocaleString()} <span className="text-sm">원</span></> : deal.discountLabel}
                 </p>
                 <button
                   type="button"
                   onClick={(event) => {
                     event.stopPropagation();
-                    navigate(`/deal/${deal.id}`);
+                    onSelectDeal(deal);
                   }}
                   onKeyDown={(event) => event.stopPropagation()}
-                  className="shrink-0 rounded-full bg-accent px-3 py-2 text-xs font-bold text-white min-[390px]:px-5 min-[390px]:py-3 min-[390px]:text-sm"
+                  className="shrink-0 whitespace-nowrap rounded-full bg-accent px-3 py-2 text-xs font-bold text-white"
                 >
                   예약하기
                 </button>
               </div>
 
-              <p className="mt-2 text-xs text-page-text min-[390px]:mt-3 min-[390px]:text-sm">
-                {deal.remaining_capacity.toLocaleString()}자리 남음
+              <p className="mt-2 text-xs text-page-text">
+                {singleDeal ? `${deal.remainingCapacity.toLocaleString()}자리 남음` : "시술을 선택하고 예약하세요"}
               </p>
             </div>
           </article>
         </li>
-      ))}
+      ); })}
     </ul>
   );
 }

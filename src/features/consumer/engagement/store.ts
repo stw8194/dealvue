@@ -1,7 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_APPEARANCE, normalizeAppearance, type AvatarAppearance } from "./playground/appearance";
-import { usePreviewStore } from "@/features/consumer/preview";
 import { ACCESSORIES, BACKDROPS, DEFAULT_ACCESSORIES, LOOKS, ROULETTE_REWARDS, type Accessories, type AccessoryId, type BackdropId, type Outfit, type RoulettePlay, type SavedLook } from "./playground/data";
 
 export const PREVIEW_AUTHOR = "preview-consumer";
@@ -89,7 +88,7 @@ type EngagementStore = ReturnType<typeof initialData> & {
   reset: () => void;
 };
 
-function canChange() { return usePreviewStore.getState().enabled; }
+function canChange() { return true; }
 function identifier() { return crypto.randomUUID(); }
 function newPoint(reason: string, amount: number): PointEntry { return { id: identifier(), reason, amount, createdAt: new Date().toISOString() }; }
 function notice(title: string, body: string, link: string, kind: Notification["kind"] = "benefits"): Notification {

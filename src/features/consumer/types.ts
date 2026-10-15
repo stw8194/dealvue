@@ -15,4 +15,10 @@ export interface ConsumerDeal {
   remainingCapacity: number;
   endAt: string;
   slots: string[];
+  durationMinutes?: number;
+  startAt?: string;
+  scheduleKind?: "rotation";
+  rotationKey?: string;
+  timeWindow?: string;
+  discountRate?: number;
 }

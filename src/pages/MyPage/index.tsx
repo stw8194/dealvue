@@ -1,7 +1,5 @@
 import { Bell, Settings } from "lucide-react";
 import { Link, Route, Routes, useLocation } from "react-router-dom";
-import { ConsumerMyPage } from "@/features/consumer/engagement/UtilityPages";
-import { usePreviewStore } from "@/features/consumer/preview";
 import { NotFoundPage } from "@/features/consumer/ui";
 import MyPageDashboard from "@/components/mypage/MyPageDashboard";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -17,13 +15,12 @@ export default function MyPage() {
   const { pathname } = useLocation();
   const user = useAuthStore((state) => state.user);
   const isCheckingUser = !useAuthStore((state) => state.initialized);
-  const preview = usePreviewStore((state) => state.enabled);
 
   if (pathname === "/mypage/playground" || pathname === "/mypage/playground/") return <Playground />;
 
   return (
     <main
-      className={`min-h-screen bg-[#fafafa] ${
+      className={`mx-auto min-h-screen w-full max-w-[480px] bg-[#fafafa] ${
         pathname === "/mypage/inquiry" ? "pb-0" : "pb-24"
       }`}
     >
@@ -51,7 +48,7 @@ export default function MyPage() {
         <Route
           index
           element={
-            preview ? <ConsumerMyPage /> : <MyPageDashboard user={user} isCheckingUser={isCheckingUser} />
+            <MyPageDashboard user={user} isCheckingUser={isCheckingUser} />
           }
         />
         <Route path="edit" element={<ProfileEdit />} />

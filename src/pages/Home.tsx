@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { usePreviewStore } from "@/features/consumer/preview";
-import { ConsumerHome } from "@/features/consumer/discovery/ConsumerHome";
-import { requestTimeDeals } from "@/api/home";
+import { toHomeTimeDeals } from "@/api/home";
+import { useConsumerCatalog } from "@/features/consumer/catalog";
+import { useDealTime } from "@/features/consumer/dealTiming";
+import { groupActiveTimeDeals } from "@/features/consumer/dealSchedule";
 import HomeHeader from "@/components/home/HomeHeader";
 import TimeDealBanner from "@/components/home/TimeDealBanner";
 import TimeDealModal from "@/components/home/TimeDealModal";
@@ -16,40 +17,25 @@ import {
   HomePlaygroundBanner,
 } from "@/components/home/HomePromoLinks";
 import { SERVICE_CATEGORIES } from "@/data/packageOptions";
-import type { TimeDeal } from "@/type/home";
+import type { TimeDealBusiness } from "@/type/home";
 import type { ServiceCategory } from "@/type/package";
 import { Clock } from "lucide-react";
-
-function getDealTime(deal: TimeDeal) {
-  return deal.endAt ? new Date(deal.endAt).getTime() : Number.POSITIVE_INFINITY;
-}
-
-function isActiveTimeDeal(deal: TimeDeal, currentTime: number) {
-  if (deal.remaining_capacity <= 0) return false;
-  if (!deal.endAt) return true;
-
-  const endTime = new Date(deal.endAt).getTime();
-  return Number.isFinite(endTime) && endTime > currentTime;
-}
 
 function isServiceCategory(category: string): category is ServiceCategory {
   return SERVICE_CATEGORIES.some((item) => item.id === category);
 }
 
 export default function Home() {
-  const preview = usePreviewStore((state) => state.enabled);
-  return preview ? <ConsumerHome /> : <ConnectedHome />;
+  return <ConnectedHome />;
 }
 
 function ConnectedHome() {
   const [searchParams] = useSearchParams();
-  const [timeDeals, setTimeDeals] = useState<TimeDeal[]>([]);
-  const [isTimeDealsLoading, setIsTimeDealsLoading] = useState(true);
-  const [currentTime, setCurrentTime] = useState(() => Date.now());
-  const [selectedTimeDeal, setSelectedTimeDeal] = useState<TimeDeal | null>(
-    null,
-  );
-  const closeTimeDealModal = useCallback(() => setSelectedTimeDeal(null), []);
+  const { deals, loading: isTimeDealsLoading } = useConsumerCatalog();
+  const currentTime = useDealTime();
+  const [selection, setSelection] = useState<{ businessId: number; endAt: string } | null>(null);
+  const closeTimeDealModal = useCallback(() => setSelection(null), []);
+  const selectTimeDealBusiness = useCallback((business: TimeDealBusiness) => setSelection({ businessId: business.businessId, endAt: business.endAt }), []);
   const selectedCategory = useMemo(() => {
     const categoryParam = searchParams.get("category");
     return categoryParam && isServiceCategory(categoryParam)
@@ -57,69 +43,28 @@ function ConnectedHome() {
       : SERVICE_CATEGORIES[0].id;
   }, [searchParams]);
   const activeTimeDeals = useMemo(
-    () => timeDeals.filter((deal) => isActiveTimeDeal(deal, currentTime)),
-    [currentTime, timeDeals],
+    () => groupActiveTimeDeals(toHomeTimeDeals(deals), currentTime),
+    [currentTime, deals],
   );
   const bannerDeals = useMemo(
     () =>
-      [...activeTimeDeals]
-        .sort((a, b) => getDealTime(a) - getDealTime(b))
-        .slice(0, 5),
+      activeTimeDeals.slice(0, 5),
     [activeTimeDeals],
   );
-  const visibleSelectedTimeDeal =
-    selectedTimeDeal && isActiveTimeDeal(selectedTimeDeal, currentTime)
-      ? selectedTimeDeal
-      : null;
-
-  useEffect(() => {
-    let isCurrent = true;
-
-    async function loadTimeDeals() {
-      setIsTimeDealsLoading(true);
-
-      try {
-        const deals = await requestTimeDeals();
-        if (isCurrent) {
-          setTimeDeals(deals);
-        }
-      } catch (error) {
-        console.error(error);
-        if (isCurrent) {
-          setTimeDeals([]);
-        }
-      } finally {
-        if (isCurrent) {
-          setIsTimeDealsLoading(false);
-        }
-      }
-    }
-
-    loadTimeDeals();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    const timerId = window.setInterval(() => setCurrentTime(Date.now()), 1000);
-
-    return () => window.clearInterval(timerId);
-  }, []);
+  const visibleSelectedTimeDeal = activeTimeDeals.find(business => business.businessId === selection?.businessId && business.endAt === selection.endAt) ?? null;
 
   return (
-    <main className="min-h-screen w-full bg-page-background pb-20 md:pb-16">
+    <main className="mx-auto min-h-screen w-full max-w-[480px] bg-page-background pb-20 md:pb-16">
       <HomeHeader />
       <TimeDealBanner
         currentTime={currentTime}
         deals={bannerDeals}
-        onSelectDeal={setSelectedTimeDeal}
+        onSelectDeal={selectTimeDealBusiness}
       />
       <PopularSearchBar />
       <IconCategoryGrid />
       <MiniCategoryMenu />
-      <section className="px-5 pt-4">
+      {(isTimeDealsLoading || activeTimeDeals.length > 0) && <><section className="px-5 pt-4">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <h2 className="flex items-center gap-2 whitespace-nowrap text-lg font-black text-page-heading md:text-xl">
@@ -143,8 +88,9 @@ function ConnectedHome() {
         currentTime={currentTime}
         deals={activeTimeDeals}
         isLoading={isTimeDealsLoading}
-        onSelectDeal={setSelectedTimeDeal}
+        onSelectDeal={selectTimeDealBusiness}
       />
+      </>}
       <HomeCouponBanner />
       <section>
         <div className="flex items-center justify-between px-4 pt-4">
@@ -159,8 +105,9 @@ function ConnectedHome() {
       </section>
       <HomePlaygroundBanner />
       <TimeDealModal
+        key={selection ? `${selection.businessId}:${selection.endAt}` : "closed"}
         currentTime={currentTime}
-        deal={visibleSelectedTimeDeal}
+        business={visibleSelectedTimeDeal}
         onClose={closeTimeDealModal}
       />
     </main>

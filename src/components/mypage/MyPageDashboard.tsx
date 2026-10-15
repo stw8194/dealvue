@@ -19,6 +19,8 @@ import {
 import { Link } from "react-router-dom";
 import { requestUserCoupons } from "@/api/coupon";
 import { useBusinessHistory } from "@/features/consumer/history";
+import { pointBalance, useEngagementStore } from "@/features/consumer/engagement/store";
+import { useReservations } from "@/features/consumer/booking/useReservations";
 import type { User } from "@/type/auth";
 
 type DashboardProps = {
@@ -97,6 +99,8 @@ export default function MyPageDashboard({
   isCheckingUser,
   user,
 }: DashboardProps) {
+  const { reservations } = useReservations();
+  const pointHistory = useEngagementStore(state => state.pointHistory);
   const [couponCount, setCouponCount] = useState(0);
   const visits = useBusinessHistory((state) => state.visits);
   const recentShops = visits.filter((visit) => !visit.preview).slice(0, 4);
@@ -131,14 +135,14 @@ export default function MyPageDashboard({
   };
 
   const summaryItems = [
-    { label: "예약내역", value: "-", icon: CalendarDays, path: "/reservation" },
+    { label: "예약내역", value: String(reservations.length), icon: CalendarDays, path: "/reservation" },
     {
       label: "쿠폰",
       value: user ? String(couponCount) : "-",
       icon: Tag,
       path: "/mypage/coupon",
     },
-    { label: "포인트", value: "-", icon: Gift, path: "/mypage/point" },
+    { label: "포인트", value: pointBalance(pointHistory).toLocaleString(), icon: Gift, path: "/mypage/point" },
   ];
 
   return (
@@ -214,7 +218,7 @@ export default function MyPageDashboard({
         })}
       </section>
 
-      <nav className="grid grid-cols-4 gap-x-2 gap-y-5 rounded-2xl border border-page-border bg-white px-3 py-6 shadow-[0_2px_12px_rgb(0_0_0/7%)]">
+      <nav aria-label="마이페이지 바로가기" className="grid grid-cols-4 gap-x-2 gap-y-5 rounded-2xl border border-page-border bg-white px-3 py-4 shadow-[0_2px_12px_rgb(0_0_0/7%)]">
         {MENU_ITEMS.map((item) => {
           const Icon = item.icon;
 
@@ -225,14 +229,14 @@ export default function MyPageDashboard({
               className="flex min-w-0 flex-col items-center gap-2 text-center"
             >
               <span
-                className={`grid h-14 w-14 place-items-center rounded-2xl ${item.iconBackgroundClassName}`}
+                className={`grid h-[44px] w-[44px] place-items-center rounded-2xl ${item.iconBackgroundClassName}`}
               >
                 <Icon
-                  className={`h-7 w-7 ${item.iconClassName}`}
+                  className={`h-[22px] w-[22px] ${item.iconClassName}`}
                   strokeWidth={2.1}
                 />
               </span>
-              <span className="w-full truncate text-xs font-medium text-page-text">
+              <span className="w-full whitespace-nowrap text-[11px] font-medium leading-4 text-page-text">
                 {item.label}
               </span>
             </Link>

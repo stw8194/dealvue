@@ -22,6 +22,7 @@ export default function BottomNav() {
   const lastScrollY = useRef(0);
   const frameId = useRef<number | null>(null);
   const [isVisible, setIsVisible] = useState(true);
+  const hasCompactPage = pathname === "/" || pathname.startsWith("/mypage") && !pathname.startsWith("/mypage/playground") && pathname !== "/mypage/inquiry";
 
   useEffect(() => {
     lastScrollY.current = window.scrollY;
@@ -70,7 +71,7 @@ export default function BottomNav() {
         isVisible ? "translate-y-0" : "pointer-events-none translate-y-full"
       }`}
     >
-      <div className="mx-auto flex h-16 w-full max-w-2xl items-center justify-around px-2 pb-[env(safe-area-inset-bottom)]">
+      <div className={`mx-auto flex h-16 w-full items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] ${hasCompactPage ? "max-w-[480px]" : "max-w-2xl"}`}>
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
 

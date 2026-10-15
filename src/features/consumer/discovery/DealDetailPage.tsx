@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import { useConsumerCatalog } from "@/features/consumer/catalog";
-import { usePreviewStore } from "@/features/consumer/preview";
 import { EmptyState, Page } from "@/features/consumer/ui";
 import { useDiscoveryFavorites } from "./favorites";
 import { isOpenDeal, remainingLabel, useDealTime } from "@/features/consumer/dealTiming";
@@ -8,7 +7,6 @@ import { isOpenDeal, remainingLabel, useDealTime } from "@/features/consumer/dea
 export function DealDetailPage() {
   const { dealId } = useParams();
   const { deals, loading, error } = useConsumerCatalog();
-  const preview = usePreviewStore((state) => state.enabled);
   const liked = useDiscoveryFavorites((state) => state.dealIds.includes(Number(dealId)));
   const toggleDeal = useDiscoveryFavorites((state) => state.toggleDeal);
   const now = useDealTime();
@@ -30,11 +28,11 @@ export function DealDetailPage() {
           <p className="text-2xl font-bold text-accent">{deal.price.toLocaleString()}원</p>
           <p className="text-sm">{closed ? "예약 마감" : `${deal.remainingCapacity}자리 남음`}</p>
           <p className="text-sm">{remainingLabel(deal.endAt, now)}</p>
-          <p className="text-sm text-page-text">마감: {new Date(deal.endAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</p>
+          {deal.endAt ? <p className="text-sm text-page-text">마감: {new Date(deal.endAt).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}</p> : <p className="text-sm text-page-text">타임딜 시간 {deal.timeWindow} · {deal.durationMinutes}분</p>}
         </section>
         <section className="rounded-xl border border-page-border p-4">
           <h2 className="font-semibold">예약 일정</h2>
-          {deal.slots.length ? <><p className="mt-2 text-sm text-page-text">예약 단계에서 아래 일정 중 하나를 선택할 수 있습니다.</p><ul className="mt-2 space-y-1 text-sm">{deal.slots.map((slot) => <li key={slot}>{new Date(slot).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}</li>)}</ul></> : <p className="mt-2 text-sm text-page-text">예약 가능한 일정은 준비 중입니다.</p>}
+          {deal.slots.length ? <><p className="mt-2 text-sm text-page-text">예약 단계에서 희망 방문 일정을 선택할 수 있습니다.</p><ul className="mt-2 space-y-1 text-sm">{deal.slots.map((slot) => <li key={slot}>{new Date(slot).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}</li>)}</ul></> : <p className="mt-2 text-sm text-page-text">방문 일정은 매장에 문의해 주세요.</p>}
         </section>
         <section className="space-y-2 text-sm text-page-text">
           <h2 className="font-semibold text-page-heading">이용 안내</h2>
@@ -42,8 +40,8 @@ export function DealDetailPage() {
           <p>취소 · 환불 안내는 예약 확인 화면에서 확인할 수 있습니다.</p>
         </section>
         <div className="flex gap-2">
-          {preview ? <button type="button" aria-pressed={liked} onClick={() => toggleDeal(deal.id)} className="rounded-lg border border-page-border px-4 py-3 text-sm">{liked ? "찜 해제" : "찜 추가"}</button> : <Link to="/wishlist" className="rounded-lg border border-page-border px-4 py-3 text-sm">내 찜</Link>}
-          {closed || !deal.serviceId ? <p className="flex-1 rounded-lg bg-gray-100 px-4 py-3 text-center text-sm text-page-text">{closed ? "마감된 타임딜입니다" : "예약할 시술을 준비 중입니다"}</p> : <Link to={`/checkout/${deal.id}`} className="flex-1 rounded-lg bg-accent px-4 py-3 text-center text-sm font-bold text-white">{preview ? "일정 선택 · 예약하기" : "예약 안내 확인"}</Link>}
+          {<button type="button" aria-pressed={liked} onClick={() => toggleDeal(deal.id)} className="rounded-lg border border-page-border px-4 py-3 text-sm">{liked ? "찜 해제" : "찜 추가"}</button>}
+          {closed || !deal.serviceId ? <p className="flex-1 rounded-lg bg-gray-100 px-4 py-3 text-center text-sm text-page-text">{closed ? "마감된 타임딜입니다" : "예약할 시술을 준비 중입니다"}</p> : <Link to={`/checkout/${deal.id}`} className="flex-1 rounded-lg bg-accent px-4 py-3 text-center text-sm font-bold text-white">일정 선택 · 예약하기</Link>}
         </div>
       </div>
     </Page>

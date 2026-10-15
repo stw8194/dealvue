@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Ticket } from "lucide-react";
 import { requestUserCoupons, type UserCoupon } from "@/api/coupon";
-import { usePreviewStore } from "@/features/consumer/preview";
 
 function formatDate(date: string | null) {
   if (!date) return "사용 기한 없음";
@@ -14,13 +13,9 @@ function formatDate(date: string | null) {
 }
 
 export default function CouponList() {
-  const preview = usePreviewStore((state) => state.enabled);
-  return preview ? <PreviewCouponList /> : <ConnectedCouponList />;
+  return <ConnectedCouponList />;
 }
 
-function PreviewCouponList() {
-  return <section className="space-y-4 p-4"><p className="text-sm">쿠폰 화면 예시입니다. 실제 쿠폰 발급이나 주문 할인은 적용하지 않습니다.</p><article className="space-y-2 rounded border border-page-border p-4"><h2 className="font-semibold">첫 방문 쿠폰 (예시)</h2><p className="text-lg text-accent">3,000원 할인</p><p className="text-sm">15,000원 이상 예약 시 · 미사용</p></article><p className="text-sm">예약 단계의 쿠폰 선택과 사용 처리는 DB 제안 검토 후 연결합니다.</p></section>;
-}
 
 function ConnectedCouponList() {
   const [coupons, setCoupons] = useState<UserCoupon[]>([]);

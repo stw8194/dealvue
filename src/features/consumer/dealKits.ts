@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/api/supabase";
-import { usePreviewStore } from "./preview";
 
 export type DealKitType = "special" | "oneShop" | "shopShop";
 export interface DealKitTemplate {
@@ -105,18 +104,15 @@ export async function saveDealKit(businessId: number, input: DealKitInput, id?: 
 }
 
 export function useDealKits(businessId?: number) {
-  const preview = usePreviewStore((state) => state.enabled);
-  const key = `${preview}:${businessId}`;
+  const key = `${businessId}`;
   const [result, setResult] = useState<{ key: string; kits: DealKit[]; error: string | null } | null>(null);
   useEffect(() => {
-    if (preview) return;
     let current = true;
     void readDealKits(businessId).then(
       (kits) => { if (current) setResult({ key, kits, error: null }); },
       (error: unknown) => { if (current) setResult({ key, kits: [], error: error instanceof Error ? error.message : "딜키트를 불러오지 못했습니다." }); },
     );
     return () => { current = false; };
-  }, [preview, businessId, key]);
-  return preview ? { kits: PREVIEW_DEAL_KITS.filter((kit) => businessId === undefined || kit.business_id === businessId), loading: false, error: null }
-    : { kits: result?.key === key ? result.kits : [], loading: result?.key !== key, error: result?.key === key ? result.error : null };
+  }, [businessId, key]);
+  return { kits: result?.key === key ? result.kits : [], loading: result?.key !== key, error: result?.key === key ? result.error : null };
 }

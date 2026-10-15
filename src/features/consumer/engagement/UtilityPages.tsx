@@ -4,7 +4,7 @@ import { requestLogout } from "@/api/auth";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useBookingStore } from "@/features/consumer/booking/store";
 import { useDiscoveryFavorites } from "@/features/consumer/discovery/favorites";
-import { PreviewBoundary, usePreviewStore } from "@/features/consumer/preview";
+import { PreviewBoundary } from "@/features/consumer/preview";
 import { EmptyState, Page } from "@/features/consumer/ui";
 import { useBusinessHistory } from "@/features/consumer/history";
 import { pointBalance, TAGS, useEngagementStore } from "./store";
@@ -20,7 +20,6 @@ function NotificationList() {
 
 export function SettingsPage() {
   const user = useAuthStore((state) => state.user);
-  const preview = usePreviewStore((state) => state.enabled);
   const { notificationSettings, setNotificationSetting, reset } = useEngagementStore();
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
@@ -28,18 +27,18 @@ export function SettingsPage() {
     <Link to="/mypage/edit" className="block rounded border border-page-border p-4">프로필 설정 →</Link>
     <Link to="/location" className="block rounded border border-page-border p-4">동네 설정 →</Link>
     <Link to="/onboarding" className="block rounded border border-page-border p-4">관심 카테고리 설정 →</Link>
-    <fieldset disabled={!preview} className="space-y-3 rounded border border-page-border p-4 disabled:opacity-60"><legend>알림 설정 (미리보기)</legend>{([["activity", "활동 알림"], ["benefits", "혜택 알림"]] as const).map(([key, label]) => <label key={key} className="flex items-center justify-between gap-3"><span>{label}</span><input type="checkbox" checked={notificationSettings[key]} onChange={(event) => setNotificationSetting(key, event.target.checked)} /></label>)}</fieldset>
-    <p className="text-sm">알림 설정은 이 브라우저의 미리보기 알림에 적용됩니다. 실제 푸시는 연결 준비 중입니다.</p>
-    {preview && <button type="button" className="rounded border border-red-200 px-4 py-3 text-sm text-red-600" onClick={() => {
-      if (!window.confirm("이 브라우저의 예시 예약, 찜, 게시글, 리워드를 초기화할까요? 실제 계정 데이터는 변경하지 않습니다.")) return;
+    <fieldset className="space-y-3 rounded border border-page-border p-4 disabled:opacity-60"><legend>알림 설정</legend>{([["activity", "활동 알림"], ["benefits", "혜택 알림"]] as const).map(([key, label]) => <label key={key} className="flex items-center justify-between gap-3"><span>{label}</span><input type="checkbox" checked={notificationSettings[key]} onChange={(event) => setNotificationSetting(key, event.target.checked)} /></label>)}</fieldset>
+    <p className="text-sm">활동 알림과 혜택 알림을 설정할 수 있어요.</p>
+    {<button type="button" className="rounded border border-red-200 px-4 py-3 text-sm text-red-600" onClick={() => {
+      if (!window.confirm("이 기기에 저장한 예약, 찜, 게시글, 포인트, 아바타 꾸미기를 모두 초기화할까요?")) return;
       reset(); useBookingStore.getState().resetDemo(); useDiscoveryFavorites.setState({ dealIds: [], businessIds: [] });
       useBusinessHistory.setState((state) => ({ visits: state.visits.filter((visit) => !visit.preview) }));
       localStorage.removeItem("dealvue-preview-profile");
-      setMessage("예시 데이터를 초기화했습니다.");
-    }}>예시 데이터 초기화</button>}
+      setMessage("기기 저장 데이터를 초기화했습니다.");
+    }}>기기 저장 데이터 초기화</button>}
     {user && <button type="button" className="block rounded border border-page-border px-4 py-3 text-sm" onClick={() => {
       void requestLogout().then(() => { useAuthStore.getState().setUser(null); navigate("/", { replace: true }); }).catch((error: unknown) => setMessage(error instanceof Error ? error.message : "로그아웃하지 못했습니다."));
-    }}>실제 계정 로그아웃</button>}
+    }}>로그아웃</button>}
     {!user && <Link to="/auth/login" className="block text-accent">로그인 / 회원가입</Link>}
     {message && <p role="status" className="text-sm">{message}</p>}
   </Page>;

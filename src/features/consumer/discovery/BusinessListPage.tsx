@@ -18,7 +18,6 @@ export function BusinessListPage() {
   const requestKey = `${categoryId}:${attempt}`;
 
   useEffect(() => {
-    if (!categoryId) return;
     let current = true;
     readCategoryBusinesses(categoryId).then((businesses) => {
       if (current) setResult({ key: requestKey, businesses, error: null });
@@ -37,6 +36,7 @@ export function BusinessListPage() {
   return (
     <Page title={category ? `${category.label} 매장` : "카테고리별 매장"}>
       <nav aria-label="매장 카테고리" className="flex flex-wrap gap-2">
+        <Link to="/businesses" className={`rounded-full border px-4 py-2 text-sm font-semibold ${!categoryId ? "border-accent bg-accent text-white" : "border-page-border text-page-text"}`}>전체</Link>
         {SERVICE_CATEGORIES.map((item) => (
           <Link
             key={item.id}
@@ -48,9 +48,7 @@ export function BusinessListPage() {
           </Link>
         ))}
       </nav>
-      {!category ? (
-        <EmptyState title="카테고리를 선택해 주세요" description="원하는 카테고리의 모든 매장을 확인할 수 있어요." />
-      ) : !currentResult ? (
+      {!currentResult ? (
         <p role="status">매장 목록을 불러오는 중입니다.</p>
       ) : currentResult.error ? (
         <EmptyState title="매장 목록을 불러오지 못했습니다" description={currentResult.error} action={
@@ -58,12 +56,13 @@ export function BusinessListPage() {
         } />
       ) : (
         <section className="space-y-3">
-          <h1 className="text-lg font-bold text-page-heading">{category.label} 전체 매장 <span className="text-accent">{currentResult.businesses.length}</span></h1>
+          <h1 className="text-lg font-bold text-page-heading">{category?.label ?? ""} 전체 매장 <span className="text-accent">{currentResult.businesses.length}</span></h1>
           {currentResult.businesses.length ? (
             <ul className="grid gap-3 sm:grid-cols-2">
               {currentResult.businesses.map((business) => (
                 <li key={business.id}>
                   <Link to={`/business/${business.id}`} className="block h-full space-y-2 rounded-xl border border-page-border p-4 hover:border-accent">
+                    {business.business_images?.[0]?.img_url && <img src={business.business_images[0].img_url} alt={business.name} loading="lazy" className="aspect-video w-full rounded-lg object-cover" />}
                     <h2 className="font-bold text-page-heading">{business.name}</h2>
                     <p className="text-sm text-page-text">{business.address || "주소 정보 준비 중"}</p>
                     {business.description && <p className="line-clamp-2 text-sm text-page-text">{business.description}</p>}

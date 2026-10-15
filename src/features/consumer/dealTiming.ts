@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ConsumerDeal } from "./types";
+import { hasActiveSale } from "./dealSchedule";
 
 export function useDealTime() {
   const [now, setNow] = useState(() => Date.now());
@@ -8,10 +9,11 @@ export function useDealTime() {
 }
 
 export function isOpenDeal(deal: ConsumerDeal, now: number) {
-  return deal.remainingCapacity > 0 && Number.isFinite(Date.parse(deal.endAt)) && Date.parse(deal.endAt) > now;
+  return hasActiveSale(deal.startAt, deal.endAt, deal.remainingCapacity, now);
 }
 
 export function remainingLabel(endAt: string, now: number) {
+  if (!endAt) return "방문 일정 선택";
   const seconds = Math.max(0, Math.floor((Date.parse(endAt) - now) / 1000));
   if (!Number.isFinite(seconds) || seconds === 0) return "마감";
   const days = Math.floor(seconds / 86400);

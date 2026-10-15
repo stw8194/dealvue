@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { TimeDeal } from "@/type/home";
+import type { TimeDealBusiness } from "@/type/home";
 
 type TimeDealBannerProps = {
   currentTime: number | null;
-  deals: TimeDeal[];
-  onSelectDeal: (deal: TimeDeal) => void;
+  deals: TimeDealBusiness[];
+  onSelectDeal: (deal: TimeDealBusiness) => void;
 };
 
 function getRemainingTime(endAt: string | null, currentTime: number | null) {
@@ -46,10 +46,11 @@ function TimeDealSlide({
   onSelectDeal,
 }: {
   currentTime: number | null;
-  deal: TimeDeal;
-  onSelectDeal: (deal: TimeDeal) => void;
+  deal: TimeDealBusiness;
+  onSelectDeal: (deal: TimeDealBusiness) => void;
 }) {
   const remainingTime = getRemainingTime(deal.endAt, currentTime);
+  const singleDeal = deal.deals.length === 1 ? deal.deals[0] : null;
 
   const openDeal = () => onSelectDeal(deal);
 
@@ -57,7 +58,8 @@ function TimeDealSlide({
     <article
       role="button"
       tabIndex={0}
-      aria-label={`${deal.businessName} ${deal.serviceName} 타임딜 상세 보기`}
+      aria-label={`${deal.businessName} 타임딜 상세 보기`}
+      data-business-id={deal.businessId}
       onClick={openDeal}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -65,14 +67,14 @@ function TimeDealSlide({
           openDeal();
         }
       }}
-      className="relative aspect-[1.78/1] min-w-full shrink-0 snap-center cursor-pointer overflow-hidden rounded-[6vw] bg-[#262128] shadow-[0_8px_24px_rgb(0_0_0/18%)] md:aspect-[1.68/1] md:rounded-[26px]"
+      className="relative aspect-[1.78/1] w-full min-w-0 shrink-0 snap-center cursor-pointer overflow-hidden rounded-[6vw] bg-[#262128] shadow-[0_8px_24px_rgb(0_0_0/18%)] md:aspect-[1.68/1] md:rounded-[26px]"
     >
       {deal.imageUrl ? (
         <img
           src={deal.imageUrl}
           alt=""
           draggable={false}
-          className="h-full w-full select-none object-cover"
+          className="absolute inset-0 h-full w-full select-none object-cover"
         />
       ) : (
         <div className="grid h-full w-full place-items-center text-sm font-semibold text-white/55">
@@ -86,7 +88,7 @@ function TimeDealSlide({
           LIVE
         </span>
         <span className="rounded-full bg-black/45 px-3 py-1 text-[clamp(9px,2.7vw,12px)] font-bold text-white backdrop-blur-sm md:px-4 md:py-1.5 md:text-sm">
-          {deal.remaining_capacity.toLocaleString()}자리 남음
+          {singleDeal ? `${deal.remainingCapacity.toLocaleString()}자리 남음` : `타임딜 ${deal.deals.length}개`}
         </span>
       </div>
 
@@ -95,7 +97,7 @@ function TimeDealSlide({
           {deal.businessName}
         </p>
         <h2 className="mt-[0.7vw] truncate text-[clamp(15px,4.5vw,21px)] font-black md:mt-1 md:text-2xl">
-          {deal.serviceName}
+          {singleDeal ? singleDeal.serviceName : `진행 중인 타임딜 ${deal.deals.length}개`}
         </h2>
 
         <div className="mt-[2.2vw] flex items-end justify-between gap-3 md:mt-4">
@@ -105,11 +107,11 @@ function TimeDealSlide({
             <TimeBox value={remainingTime.seconds} label="초" />
           </div>
           <div className="min-w-0 pb-[3vw] text-right md:pb-4">
-            <p className="truncate text-[clamp(9px,2.7vw,12px)] text-white/65 line-through md:text-sm">
-              {deal.originalPrice.toLocaleString()}원
-            </p>
+            {singleDeal && <p className="truncate text-[clamp(9px,2.7vw,12px)] text-white/65 line-through md:text-sm">
+              {singleDeal.originalPrice.toLocaleString()}원
+            </p>}
             <p className="truncate text-[clamp(16px,5vw,24px)] font-black text-white md:text-3xl">
-              {deal.price.toLocaleString()}원
+              {singleDeal ? `${singleDeal.price.toLocaleString()}원` : deal.discountLabel}
             </p>
           </div>
         </div>
@@ -200,7 +202,7 @@ export default function TimeDealBanner({
   const visibleActiveIndex = activeIndex < deals.length ? activeIndex : 0;
 
   return (
-    <section className="px-[4vw] pb-4 pt-2 sm:px-5">
+    <section aria-label="진행 중인 매장 타임딜 배너" className="px-[4vw] pb-4 pt-2 sm:px-5">
       <div className="relative">
         <div
           ref={carouselRef}
@@ -211,7 +213,7 @@ export default function TimeDealBanner({
         >
           {deals.map((deal) => (
             <TimeDealSlide
-              key={deal.id}
+              key={deal.businessId}
               currentTime={currentTime}
               deal={deal}
               onSelectDeal={onSelectDeal}
@@ -223,7 +225,7 @@ export default function TimeDealBanner({
           <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 md:bottom-4">
             {deals.map((deal, index) => (
               <button
-                key={deal.id}
+                key={deal.businessId}
                 type="button"
                 aria-label={`${index + 1}번째 타임딜 보기`}
                 aria-current={visibleActiveIndex === index ? "true" : undefined}

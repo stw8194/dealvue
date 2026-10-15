@@ -46,7 +46,7 @@ export function PackageListPage({ type }: { type: DealKitType }) {
 function offerPhoto(offer: DealKit) {
   const path = offer.business?.business_images?.find((image) => image.img_url?.trim())?.img_url;
   if (!path) return offer.template?.image_url;
-  return /^https?:\/\//i.test(path) ? path : getSupabaseClient().storage.from(import.meta.env.VITE_SUPABASE_BUSINESS_IMAGES_BUCKET ?? "businesses").getPublicUrl(path).data.publicUrl;
+  return /^https?:\/\//i.test(path) || path.startsWith("/") ? path : getSupabaseClient().storage.from(import.meta.env.VITE_SUPABASE_BUSINESS_IMAGES_BUCKET ?? "businesses").getPublicUrl(path).data.publicUrl;
 }
 
 export function OfferCard({ offer }: { offer: DealKit }) {

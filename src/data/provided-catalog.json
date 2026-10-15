@@ -1,0 +1,3912 @@
+{
+  "version": 1,
+  "priceBasis": "타임딜_예약",
+  "locationBasis": "user-approved approximate sample areas",
+  "businesses": [
+    {
+      "source_key": "provided:ongyeol",
+      "name": "온결",
+      "category": "aesthetic",
+      "address": "서울특별시 강남구 신사동 (예시 지역)",
+      "latitude": 37.5219,
+      "longitude": 127.0228,
+      "number": "02-0000-1101",
+      "description": "페이셜과 릴랙싱 바디 관리를 함께 받을 수 있는 조용한 분위기의 관리샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:00~21:00",
+        "closed_days": "매주 월요일",
+        "hashtags": "#페이셜 #수분관리 #릴랙싱 #바디관리",
+        "amenities": "예약제 / 개인 관리실 / 파우더존",
+        "parking": "주차 불가",
+        "average_rating": 4.9,
+        "review_count": 186,
+        "favorite_count": 432,
+        "deposit": "없음",
+        "cancellation_policy": "예약 3시간 전까지 무료 취소, 이후 취소 시 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/ongyeol/review-01.png",
+          "/images/provided/ongyeol/review-02.png"
+        ],
+        "review_samples": [
+          {
+            "id": "ongyeol-review-1",
+            "service_name": "베이직 페이셜 케어",
+            "rating": 5,
+            "content": "요즘 피곤해서 베이직 페이셜 케어 받아봤는데 처음 상담할 때 원하는 강도랑 신경 쓰이는 부분을 먼저 물어봐줘서 좋았어요. 관리도 급하게 끝내는 느낌이 없고 순서마다 설명을 해줘서 편하게 받을 수 있었어요. 끝나고 거울 봤을 때 전체적으로 정돈된 느낌이라 다음에는 다른 프로그램도 받아보려고요."
+          },
+          {
+            "id": "ongyeol-review-2",
+            "service_name": "수분 밸런스 케어",
+            "rating": 5,
+            "content": "수분 밸런스 케어 예약했는데 매장도 조용하고 관리실이 깔끔해서 첫인상이 좋았어요. 제가 피부가 예민한 편이라 걱정했는데 중간중간 불편한지 체크해주셨고, 끝나고 나서 당기던 느낌이 줄어서 만족했습니다. 타임딜로 받아서 가격도 괜찮았어요."
+          },
+          {
+            "id": "ongyeol-review-3",
+            "service_name": "릴랙싱 페이셜 스파",
+            "rating": 5,
+            "content": "친구 추천으로 릴랙싱 페이셜 스파 받았어요. 관리 전에 오늘 컨디션을 자세히 물어보고 그날 상태에 맞춰 진행해주는 점이 마음에 들었고, 특히 목이랑 어깨 쪽까지 꼼꼼하게 해줘서 훨씬 편했어요. 다음에 시간 맞으면 타임딜 뜰 때 또 예약할 생각이에요."
+          },
+          {
+            "id": "ongyeol-review-4",
+            "service_name": "바디 릴랙스 케어",
+            "rating": 4,
+            "content": "바디 릴랙스 케어 받았는데 압도 잘 맞춰주시고 전체적으로 편안했어요. 가격 대비 구성도 괜찮아서 만족합니다."
+          },
+          {
+            "id": "ongyeol-review-5",
+            "service_name": "스파 풀케어",
+            "rating": 5,
+            "content": "스파 풀케어 처음 받아봤는데 생각보다 시간도 넉넉하고 꼼꼼했어요. 재방문 의사 있어요."
+          }
+        ],
+        "search_filters": {
+          "구분": "피부샵",
+          "샵명": "온결",
+          "샵 해시태그": "#페이셜 #수분관리 #릴랙싱 #바디관리",
+          "주요 서비스": "베이직 페이셜 케어, 수분 밸런스 케어, 릴랙싱 페이셜 스파",
+          "가격대": "8만~18만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 불가"
+        },
+        "deal_templates": [
+          {
+            "service_name": "베이직 페이셜 케어",
+            "start_time": "13:00",
+            "end_time": "15:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "수분 밸런스 케어",
+            "start_time": "15:00",
+            "end_time": "18:00",
+            "original_price": 100000,
+            "deal_price": 65000,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "릴랙싱 페이셜 스파",
+            "start_time": "17:00",
+            "end_time": "20:00",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "바디 릴랙스 케어",
+            "start_time": "12:00",
+            "end_time": "15:00",
+            "original_price": 130000,
+            "deal_price": 78000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "스파 풀케어",
+            "start_time": "14:00",
+            "end_time": "18:00",
+            "original_price": 180000,
+            "deal_price": 126000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/ongyeol/representative-01.jpg",
+        "/images/provided/ongyeol/representative-02.png",
+        "/images/provided/ongyeol/representative-03.png",
+        "/images/provided/ongyeol/representative-04.png",
+        "/images/provided/ongyeol/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:ongyeol:service:1",
+          "name": "베이직 페이셜 케어",
+          "description": "클렌징부터 기본 수기관리와 마무리 팩까지 진행하는 기본 페이셜 관리",
+          "price": 80000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#페이셜 #기초관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 56000,
+            "original_workbook_regular_price": 80000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "15:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:ongyeol:service:2",
+          "name": "수분 밸런스 케어",
+          "description": "수분 공급과 진정에 초점을 둔 페이셜 관리",
+          "price": 100000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#수분관리 #진정",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 65000,
+            "original_workbook_regular_price": 100000
+          },
+          "deal": {
+            "start_time": "15:00",
+            "end_time": "18:00",
+            "original_price": 100000,
+            "deal_price": 65000,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:ongyeol:service:3",
+          "name": "릴랙싱 페이셜 스파",
+          "description": "페이셜 관리와 목·어깨 릴랙싱 관리를 함께 진행",
+          "price": 120000,
+          "display_duration_minutes": 80,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#페이셜스파 #릴랙싱",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 84000,
+            "original_workbook_regular_price": 120000
+          },
+          "deal": {
+            "start_time": "17:00",
+            "end_time": "20:00",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:ongyeol:service:4",
+          "name": "바디 릴랙스 케어",
+          "description": "등과 어깨 중심의 편안한 수기 바디 관리",
+          "price": 130000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#바디관리 #상체관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 78000,
+            "original_workbook_regular_price": 130000
+          },
+          "deal": {
+            "start_time": "12:00",
+            "end_time": "15:00",
+            "original_price": 130000,
+            "deal_price": 78000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:ongyeol:service:5",
+          "name": "스파 풀케어",
+          "description": "페이셜과 바디를 함께 구성한 종합 관리",
+          "price": 180000,
+          "display_duration_minutes": 100,
+          "duration_minutes": 120,
+          "source_details": {
+            "hashtags": "#스파 #풀케어",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 126000,
+            "original_workbook_regular_price": 180000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "18:00",
+            "original_price": 180000,
+            "deal_price": 126000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:damon",
+      "name": "담온",
+      "category": "aesthetic",
+      "address": "서울특별시 성동구 성수동 (예시 지역)",
+      "latitude": 37.5446,
+      "longitude": 127.0559,
+      "number": "02-0000-1102",
+      "description": "아로마와 전신 관리를 중심으로 피로한 날 편하게 방문하기 좋은 바디관리샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "11:00~22:00",
+        "closed_days": "연중무휴",
+        "hashtags": "#아로마 #전신관리 #발관리 #릴랙싱",
+        "amenities": "예약제 / 샤워실 / 개인 관리실",
+        "parking": "1시간 무료",
+        "average_rating": 4.8,
+        "review_count": 241,
+        "favorite_count": 517,
+        "deposit": "10,000원",
+        "cancellation_policy": "예약 4시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/damon/review-01.png",
+          "/images/provided/damon/review-02.png"
+        ],
+        "review_samples": [
+          {
+            "id": "damon-review-1",
+            "service_name": "전신 건식 관리",
+            "rating": 5,
+            "content": "요즘 피곤해서 전신 건식 관리 받아봤는데 처음 상담할 때 원하는 강도랑 신경 쓰이는 부분을 먼저 물어봐줘서 좋았어요. 관리도 급하게 끝내는 느낌이 없고 순서마다 설명을 해줘서 편하게 받을 수 있었어요. 끝나고 거울 봤을 때 전체적으로 정돈된 느낌이라 다음에는 다른 프로그램도 받아보려고요."
+          },
+          {
+            "id": "damon-review-2",
+            "service_name": "아로마 후면 관리",
+            "rating": 5,
+            "content": "아로마 후면 관리 예약했는데 매장도 조용하고 관리실이 깔끔해서 첫인상이 좋았어요. 제가 피부가 예민한 편이라 걱정했는데 중간중간 불편한지 체크해주셨고, 끝나고 나서 당기던 느낌이 줄어서 만족했습니다. 타임딜로 받아서 가격도 괜찮았어요."
+          },
+          {
+            "id": "damon-review-3",
+            "service_name": "전신 아로마 관리",
+            "rating": 5,
+            "content": "친구 추천으로 전신 아로마 관리 받았어요. 관리 전에 오늘 컨디션을 자세히 물어보고 그날 상태에 맞춰 진행해주는 점이 마음에 들었고, 특히 목이랑 어깨 쪽까지 꼼꼼하게 해줘서 훨씬 편했어요. 다음에 시간 맞으면 타임딜 뜰 때 또 예약할 생각이에요."
+          },
+          {
+            "id": "damon-review-4",
+            "service_name": "전신 아로마 + 발관리",
+            "rating": 4,
+            "content": "전신 아로마 + 발관리 받았는데 압도 잘 맞춰주시고 전체적으로 편안했어요. 가격 대비 구성도 괜찮아서 만족합니다."
+          },
+          {
+            "id": "damon-review-5",
+            "service_name": "스페셜 케어",
+            "rating": 5,
+            "content": "스페셜 케어 처음 받아봤는데 생각보다 시간도 넉넉하고 꼼꼼했어요. 재방문 의사 있어요."
+          }
+        ],
+        "search_filters": {
+          "구분": "피부샵",
+          "샵명": "담온",
+          "샵 해시태그": "#아로마 #전신관리 #발관리 #릴랙싱",
+          "주요 서비스": "전신 건식 관리, 아로마 후면 관리, 전신 아로마 관리",
+          "가격대": "6만~15만원대",
+          "평균 별점": 4.8,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "1시간 무료"
+        },
+        "deal_templates": [
+          {
+            "service_name": "전신 건식 관리",
+            "start_time": "14:00",
+            "end_time": "17:00",
+            "original_price": 60000,
+            "deal_price": 42000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "아로마 후면 관리",
+            "start_time": "18:00",
+            "end_time": "21:00",
+            "original_price": 75000,
+            "deal_price": 48800,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "전신 아로마 관리",
+            "start_time": "13:00",
+            "end_time": "16:00",
+            "original_price": 100000,
+            "deal_price": 70000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "전신 아로마 + 발관리",
+            "start_time": "16:00",
+            "end_time": "20:00",
+            "original_price": 120000,
+            "deal_price": 72000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "스페셜 케어",
+            "start_time": "19:00",
+            "end_time": "22:00",
+            "original_price": 150000,
+            "deal_price": 105000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/damon/representative-01.png",
+        "/images/provided/damon/representative-02.png",
+        "/images/provided/damon/representative-03.png",
+        "/images/provided/damon/representative-04.png",
+        "/images/provided/damon/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:damon:service:1",
+          "name": "전신 건식 관리",
+          "description": "오일 없이 전신을 중심으로 진행하는 수기관리",
+          "price": 60000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#전신관리 #건식",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 42000,
+            "original_workbook_regular_price": 60000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "17:00",
+            "original_price": 60000,
+            "deal_price": 42000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:damon:service:2",
+          "name": "아로마 후면 관리",
+          "description": "등과 하체 후면을 중심으로 진행하는 아로마 관리",
+          "price": 75000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#아로마 #후면관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 48800,
+            "original_workbook_regular_price": 75000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "21:00",
+            "original_price": 75000,
+            "deal_price": 48800,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:damon:service:3",
+          "name": "전신 아로마 관리",
+          "description": "아로마 오일을 활용한 전신 관리",
+          "price": 100000,
+          "display_duration_minutes": 80,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#아로마 #전신관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 70000,
+            "original_workbook_regular_price": 100000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "16:00",
+            "original_price": 100000,
+            "deal_price": 70000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:damon:service:4",
+          "name": "전신 아로마 + 발관리",
+          "description": "전신 아로마와 발관리를 함께 구성",
+          "price": 120000,
+          "display_duration_minutes": 90,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#아로마 #발관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 72000,
+            "original_workbook_regular_price": 120000
+          },
+          "deal": {
+            "start_time": "16:00",
+            "end_time": "20:00",
+            "original_price": 120000,
+            "deal_price": 72000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:damon:service:5",
+          "name": "스페셜 케어",
+          "description": "전신 중심의 프리미엄 릴랙싱 프로그램",
+          "price": 150000,
+          "display_duration_minutes": 100,
+          "duration_minutes": 120,
+          "source_details": {
+            "hashtags": "#스페셜케어 #릴랙싱",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 105000,
+            "original_workbook_regular_price": 150000
+          },
+          "deal": {
+            "start_time": "19:00",
+            "end_time": "22:00",
+            "original_price": 150000,
+            "deal_price": 105000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:yunseul",
+      "name": "윤슬",
+      "category": "aesthetic",
+      "address": "서울특별시 마포구 연남동 (예시 지역)",
+      "latitude": 37.5627,
+      "longitude": 126.9252,
+      "number": "02-0000-1103",
+      "description": "손기술 중심의 약손·수기 관리를 편안한 분위기에서 받을 수 있는 관리샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:30~21:30",
+        "closed_days": "매주 화요일",
+        "hashtags": "#약손관리 #수기관리 #어깨관리 #하체관리",
+        "amenities": "예약제 / 개인 관리실 / 탈의공간",
+        "parking": "주차 가능",
+        "average_rating": 4.9,
+        "review_count": 154,
+        "favorite_count": 398,
+        "deposit": "없음",
+        "cancellation_policy": "예약 2시간 전까지 무료 취소, 이후 당일 취소 처리",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/yunseul/review-01.png",
+          "/images/provided/yunseul/review-02.png",
+          "/images/provided/yunseul/review-03.png"
+        ],
+        "review_samples": [
+          {
+            "id": "yunseul-review-1",
+            "service_name": "약손 전신관리",
+            "rating": 5,
+            "content": "요즘 피곤해서 약손 전신관리 받아봤는데 처음 상담할 때 원하는 강도랑 신경 쓰이는 부분을 먼저 물어봐줘서 좋았어요. 관리도 급하게 끝내는 느낌이 없고 순서마다 설명을 해줘서 편하게 받을 수 있었어요. 끝나고 거울 봤을 때 전체적으로 정돈된 느낌이라 다음에는 다른 프로그램도 받아보려고요."
+          },
+          {
+            "id": "yunseul-review-2",
+            "service_name": "어깨·등 집중관리",
+            "rating": 5,
+            "content": "어깨·등 집중관리 예약했는데 매장도 조용하고 관리실이 깔끔해서 첫인상이 좋았어요. 제가 피부가 예민한 편이라 걱정했는데 중간중간 불편한지 체크해주셨고, 끝나고 나서 당기던 느낌이 줄어서 만족했습니다. 타임딜로 받아서 가격도 괜찮았어요."
+          },
+          {
+            "id": "yunseul-review-3",
+            "service_name": "하체 집중관리",
+            "rating": 5,
+            "content": "친구 추천으로 하체 집중관리 받았어요. 관리 전에 오늘 컨디션을 자세히 물어보고 그날 상태에 맞춰 진행해주는 점이 마음에 들었고, 특히 목이랑 어깨 쪽까지 꼼꼼하게 해줘서 훨씬 편했어요. 다음에 시간 맞으면 타임딜 뜰 때 또 예약할 생각이에요."
+          },
+          {
+            "id": "yunseul-review-4",
+            "service_name": "전신 + 발관리",
+            "rating": 4,
+            "content": "전신 + 발관리 받았는데 압도 잘 맞춰주시고 전체적으로 편안했어요. 가격 대비 구성도 괜찮아서 만족합니다."
+          },
+          {
+            "id": "yunseul-review-5",
+            "service_name": "스페셜 전신관리",
+            "rating": 5,
+            "content": "스페셜 전신관리 처음 받아봤는데 생각보다 시간도 넉넉하고 꼼꼼했어요. 재방문 의사 있어요."
+          }
+        ],
+        "search_filters": {
+          "구분": "피부샵",
+          "샵명": "윤슬",
+          "샵 해시태그": "#약손관리 #수기관리 #어깨관리 #하체관리",
+          "주요 서비스": "약손 전신관리, 어깨·등 집중관리, 하체 집중관리",
+          "가격대": "6만~14만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 가능"
+        },
+        "deal_templates": [
+          {
+            "service_name": "약손 전신관리",
+            "start_time": "12:00",
+            "end_time": "15:00",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "어깨·등 집중관리",
+            "start_time": "15:00",
+            "end_time": "18:00",
+            "original_price": 65000,
+            "deal_price": 42300,
+            "discount_rate": 35,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "하체 집중관리",
+            "start_time": "17:00",
+            "end_time": "20:00",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "전신 + 발관리",
+            "start_time": "13:00",
+            "end_time": "17:00",
+            "original_price": 100000,
+            "deal_price": 60000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "스페셜 전신관리",
+            "start_time": "18:00",
+            "end_time": "21:00",
+            "original_price": 140000,
+            "deal_price": 98000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/yunseul/representative-01.png",
+        "/images/provided/yunseul/representative-02.png",
+        "/images/provided/yunseul/representative-03.png",
+        "/images/provided/yunseul/representative-04.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:yunseul:service:1",
+          "name": "약손 전신관리",
+          "description": "손기술 중심의 전신 수기관리",
+          "price": 70000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#약손관리 #전신관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 49000,
+            "original_workbook_regular_price": 70000
+          },
+          "deal": {
+            "start_time": "12:00",
+            "end_time": "15:00",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:yunseul:service:2",
+          "name": "어깨·등 집중관리",
+          "description": "어깨와 등 부위를 집중적으로 관리",
+          "price": 65000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#어깨관리 #등관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 42300,
+            "original_workbook_regular_price": 65000
+          },
+          "deal": {
+            "start_time": "15:00",
+            "end_time": "18:00",
+            "original_price": 65000,
+            "deal_price": 42300,
+            "discount_rate": 35,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:yunseul:service:3",
+          "name": "하체 집중관리",
+          "description": "허벅지와 종아리 등 하체 중심 관리",
+          "price": 70000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#하체관리 #수기관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 49000,
+            "original_workbook_regular_price": 70000
+          },
+          "deal": {
+            "start_time": "17:00",
+            "end_time": "20:00",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:yunseul:service:4",
+          "name": "전신 + 발관리",
+          "description": "전신 수기관리와 발관리를 함께 진행",
+          "price": 100000,
+          "display_duration_minutes": 90,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#전신관리 #발관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 60000,
+            "original_workbook_regular_price": 100000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "17:00",
+            "original_price": 100000,
+            "deal_price": 60000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:yunseul:service:5",
+          "name": "스페셜 전신관리",
+          "description": "전신 수기관리와 릴랙싱 케어 결합",
+          "price": 140000,
+          "display_duration_minutes": 100,
+          "duration_minutes": 120,
+          "source_details": {
+            "hashtags": "#스페셜케어 #약손관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 98000,
+            "original_workbook_regular_price": 140000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "21:00",
+            "original_price": 140000,
+            "deal_price": 98000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:raon",
+      "name": "라온",
+      "category": "aesthetic",
+      "address": "서울특별시 송파구 잠실동 (예시 지역)",
+      "latitude": 37.511,
+      "longitude": 127.098,
+      "number": "02-0000-1104",
+      "description": "스포츠 관리와 아로마 관리를 취향에 맞게 선택할 수 있는 전신 바디관리샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "12:00~23:00",
+        "closed_days": "둘째·넷째 일요일",
+        "hashtags": "#스포츠관리 #아로마 #전신관리 #발관리",
+        "amenities": "예약제 / 샤워실 / 커플 관리 가능",
+        "parking": "주차 가능",
+        "average_rating": 4.7,
+        "review_count": 209,
+        "favorite_count": 366,
+        "deposit": "10,000원",
+        "cancellation_policy": "예약 3시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/raon/review-01.png",
+          "/images/provided/raon/review-02.png",
+          "/images/provided/raon/review-03.png"
+        ],
+        "review_samples": [
+          {
+            "id": "raon-review-1",
+            "service_name": "스포츠 후면관리",
+            "rating": 5,
+            "content": "요즘 피곤해서 스포츠 후면관리 받아봤는데 처음 상담할 때 원하는 강도랑 신경 쓰이는 부분을 먼저 물어봐줘서 좋았어요. 관리도 급하게 끝내는 느낌이 없고 순서마다 설명을 해줘서 편하게 받을 수 있었어요. 끝나고 거울 봤을 때 전체적으로 정돈된 느낌이라 다음에는 다른 프로그램도 받아보려고요."
+          },
+          {
+            "id": "raon-review-2",
+            "service_name": "전신 스포츠관리",
+            "rating": 5,
+            "content": "전신 스포츠관리 예약했는데 매장도 조용하고 관리실이 깔끔해서 첫인상이 좋았어요. 제가 피부가 예민한 편이라 걱정했는데 중간중간 불편한지 체크해주셨고, 끝나고 나서 당기던 느낌이 줄어서 만족했습니다. 타임딜로 받아서 가격도 괜찮았어요."
+          },
+          {
+            "id": "raon-review-3",
+            "service_name": "전신 아로마관리",
+            "rating": 5,
+            "content": "친구 추천으로 전신 아로마관리 받았어요. 관리 전에 오늘 컨디션을 자세히 물어보고 그날 상태에 맞춰 진행해주는 점이 마음에 들었고, 특히 목이랑 어깨 쪽까지 꼼꼼하게 해줘서 훨씬 편했어요. 다음에 시간 맞으면 타임딜 뜰 때 또 예약할 생각이에요."
+          },
+          {
+            "id": "raon-review-4",
+            "service_name": "아로마 + 발관리",
+            "rating": 4,
+            "content": "아로마 + 발관리 받았는데 압도 잘 맞춰주시고 전체적으로 편안했어요. 가격 대비 구성도 괜찮아서 만족합니다."
+          },
+          {
+            "id": "raon-review-5",
+            "service_name": "VIP 바디케어",
+            "rating": 5,
+            "content": "VIP 바디케어 처음 받아봤는데 생각보다 시간도 넉넉하고 꼼꼼했어요. 재방문 의사 있어요."
+          }
+        ],
+        "search_filters": {
+          "구분": "피부샵",
+          "샵명": "라온",
+          "샵 해시태그": "#스포츠관리 #아로마 #전신관리 #발관리",
+          "주요 서비스": "스포츠 후면관리, 전신 스포츠관리, 전신 아로마관리",
+          "가격대": "6만~15만원대",
+          "평균 별점": 4.7,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 가능"
+        },
+        "deal_templates": [
+          {
+            "service_name": "스포츠 후면관리",
+            "start_time": "13:00",
+            "end_time": "16:00",
+            "original_price": 60000,
+            "deal_price": 42000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "전신 스포츠관리",
+            "start_time": "16:00",
+            "end_time": "19:00",
+            "original_price": 80000,
+            "deal_price": 52000,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "전신 아로마관리",
+            "start_time": "18:00",
+            "end_time": "22:00",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "아로마 + 발관리",
+            "start_time": "14:00",
+            "end_time": "17:00",
+            "original_price": 110000,
+            "deal_price": 66000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "VIP 바디케어",
+            "start_time": "19:00",
+            "end_time": "22:00",
+            "original_price": 150000,
+            "deal_price": 105000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/raon/representative-01.png",
+        "/images/provided/raon/representative-02.png",
+        "/images/provided/raon/representative-03.png",
+        "/images/provided/raon/representative-04.png",
+        "/images/provided/raon/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:raon:service:1",
+          "name": "스포츠 후면관리",
+          "description": "등과 하체 후면 중심의 바디 관리",
+          "price": 60000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#스포츠관리 #후면관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 42000,
+            "original_workbook_regular_price": 60000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "16:00",
+            "original_price": 60000,
+            "deal_price": 42000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:raon:service:2",
+          "name": "전신 스포츠관리",
+          "description": "전신을 중심으로 진행하는 집중 관리",
+          "price": 80000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#스포츠관리 #전신",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 52000,
+            "original_workbook_regular_price": 80000
+          },
+          "deal": {
+            "start_time": "16:00",
+            "end_time": "19:00",
+            "original_price": 80000,
+            "deal_price": 52000,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:raon:service:3",
+          "name": "전신 아로마관리",
+          "description": "아로마 오일을 활용한 전신 릴랙싱 관리",
+          "price": 90000,
+          "display_duration_minutes": 80,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#아로마 #릴랙싱",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 63000,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "22:00",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:raon:service:4",
+          "name": "아로마 + 발관리",
+          "description": "아로마 전신관리와 발관리 구성",
+          "price": 110000,
+          "display_duration_minutes": 90,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#아로마 #발관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 66000,
+            "original_workbook_regular_price": 110000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "17:00",
+            "original_price": 110000,
+            "deal_price": 66000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:raon:service:5",
+          "name": "VIP 바디케어",
+          "description": "전신 중심 프리미엄 바디케어",
+          "price": 150000,
+          "display_duration_minutes": 100,
+          "duration_minutes": 120,
+          "source_details": {
+            "hashtags": "#VIP #바디케어",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 105000,
+            "original_workbook_regular_price": 150000
+          },
+          "deal": {
+            "start_time": "19:00",
+            "end_time": "22:00",
+            "original_price": 150000,
+            "deal_price": 105000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:gyeolchae",
+      "name": "결채",
+      "category": "aesthetic",
+      "address": "서울특별시 서초구 서초동 (예시 지역)",
+      "latitude": 37.5027,
+      "longitude": 127.0247,
+      "number": "02-0000-1105",
+      "description": "페이스부터 전신까지 수기 경락관리를 집중적으로 운영하는 관리샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:00~20:30",
+        "closed_days": "매주 일요일",
+        "hashtags": "#경락 #얼굴선관리 #상체관리 #전신경락",
+        "amenities": "100% 예약제 / 개인 관리실 / 파우더존",
+        "parking": "인근 유료주차장 이용",
+        "average_rating": 4.9,
+        "review_count": 128,
+        "favorite_count": 471,
+        "deposit": "20,000원",
+        "cancellation_policy": "예약 6시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/gyeolchae/review-01.png",
+          "/images/provided/gyeolchae/review-02.png"
+        ],
+        "review_samples": [
+          {
+            "id": "gyeolchae-review-1",
+            "service_name": "페이스 경락관리",
+            "rating": 5,
+            "content": "요즘 피곤해서 페이스 경락관리 받아봤는데 처음 상담할 때 원하는 강도랑 신경 쓰이는 부분을 먼저 물어봐줘서 좋았어요. 관리도 급하게 끝내는 느낌이 없고 순서마다 설명을 해줘서 편하게 받을 수 있었어요. 끝나고 거울 봤을 때 전체적으로 정돈된 느낌이라 다음에는 다른 프로그램도 받아보려고요."
+          },
+          {
+            "id": "gyeolchae-review-2",
+            "service_name": "얼굴선 집중관리",
+            "rating": 5,
+            "content": "얼굴선 집중관리 예약했는데 매장도 조용하고 관리실이 깔끔해서 첫인상이 좋았어요. 제가 피부가 예민한 편이라 걱정했는데 중간중간 불편한지 체크해주셨고, 끝나고 나서 당기던 느낌이 줄어서 만족했습니다. 타임딜로 받아서 가격도 괜찮았어요."
+          },
+          {
+            "id": "gyeolchae-review-3",
+            "service_name": "상체 경락관리",
+            "rating": 5,
+            "content": "친구 추천으로 상체 경락관리 받았어요. 관리 전에 오늘 컨디션을 자세히 물어보고 그날 상태에 맞춰 진행해주는 점이 마음에 들었고, 특히 목이랑 어깨 쪽까지 꼼꼼하게 해줘서 훨씬 편했어요. 다음에 시간 맞으면 타임딜 뜰 때 또 예약할 생각이에요."
+          },
+          {
+            "id": "gyeolchae-review-4",
+            "service_name": "전신 경락관리",
+            "rating": 4,
+            "content": "전신 경락관리 받았는데 압도 잘 맞춰주시고 전체적으로 편안했어요. 가격 대비 구성도 괜찮아서 만족합니다."
+          },
+          {
+            "id": "gyeolchae-review-5",
+            "service_name": "시그니처 경락",
+            "rating": 5,
+            "content": "시그니처 경락 처음 받아봤는데 생각보다 시간도 넉넉하고 꼼꼼했어요. 재방문 의사 있어요."
+          }
+        ],
+        "search_filters": {
+          "구분": "피부샵",
+          "샵명": "결채",
+          "샵 해시태그": "#경락 #얼굴선관리 #상체관리 #전신경락",
+          "주요 서비스": "페이스 경락관리, 얼굴선 집중관리, 상체 경락관리",
+          "가격대": "9만~18만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "인근 유료주차장 이용"
+        },
+        "deal_templates": [
+          {
+            "service_name": "페이스 경락관리",
+            "start_time": "11:00",
+            "end_time": "14:00",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "얼굴선 집중관리",
+            "start_time": "14:00",
+            "end_time": "17:00",
+            "original_price": 110000,
+            "deal_price": 71500,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "상체 경락관리",
+            "start_time": "16:00",
+            "end_time": "19:00",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "전신 경락관리",
+            "start_time": "12:00",
+            "end_time": "16:00",
+            "original_price": 150000,
+            "deal_price": 90000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "시그니처 경락",
+            "start_time": "17:00",
+            "end_time": "20:00",
+            "original_price": 180000,
+            "deal_price": 126000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/gyeolchae/representative-01.png",
+        "/images/provided/gyeolchae/representative-02.png",
+        "/images/provided/gyeolchae/representative-03.png",
+        "/images/provided/gyeolchae/representative-04.png",
+        "/images/provided/gyeolchae/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:gyeolchae:service:1",
+          "name": "페이스 경락관리",
+          "description": "페이스 중심의 수기 경락관리",
+          "price": 90000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#경락 #페이스관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 63000,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "11:00",
+            "end_time": "14:00",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:gyeolchae:service:2",
+          "name": "얼굴선 집중관리",
+          "description": "얼굴선과 페이스 중심 집중 관리",
+          "price": 110000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#얼굴선 #경락",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 71500,
+            "original_workbook_regular_price": 110000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "17:00",
+            "original_price": 110000,
+            "deal_price": 71500,
+            "discount_rate": 35,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:gyeolchae:service:3",
+          "name": "상체 경락관리",
+          "description": "목·어깨·등 상체 중심 경락관리",
+          "price": 120000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#상체관리 #경락",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 84000,
+            "original_workbook_regular_price": 120000
+          },
+          "deal": {
+            "start_time": "16:00",
+            "end_time": "19:00",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:gyeolchae:service:4",
+          "name": "전신 경락관리",
+          "description": "전신을 대상으로 진행하는 경락관리",
+          "price": 150000,
+          "display_duration_minutes": 90,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#전신경락 #수기관리",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 90000,
+            "original_workbook_regular_price": 150000
+          },
+          "deal": {
+            "start_time": "12:00",
+            "end_time": "16:00",
+            "original_price": 150000,
+            "deal_price": 90000,
+            "discount_rate": 40,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:gyeolchae:service:5",
+          "name": "시그니처 경락",
+          "description": "페이스와 바디를 함께 구성한 프리미엄 관리",
+          "price": 180000,
+          "display_duration_minutes": 110,
+          "duration_minutes": 120,
+          "source_details": {
+            "hashtags": "#시그니처 #경락",
+            "additional_charge": "선택 옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 126000,
+            "original_workbook_regular_price": 180000
+          },
+          "deal": {
+            "start_time": "17:00",
+            "end_time": "20:00",
+            "original_price": 180000,
+            "deal_price": 126000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:bellunique",
+      "name": "벨루니크 메이크업",
+      "category": "makeup",
+      "address": "서울특별시 강남구 신사동 (예시 지역)",
+      "latitude": 37.5219,
+      "longitude": 127.0228,
+      "number": "02-0000-2101",
+      "description": "📸 증명사진도 첫인상입니다! 취업, 이력서, 학생증, 각종 서류 사진까지. 작은 사진 한 장이지만 생각보다 오래 사용하게 되죠. 과한 메이크업보다는 내 장점을 자연스럽게 살려 또렷하고 깨끗한 인상을 만들어드립니다. \"사진 잘 나왔다\"는 말 듣고 싶은 분들께 추천드려요.",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:00~20:00",
+        "closed_days": "매주 월요일",
+        "hashtags": "#증명사진전문 #자연스러운메이크업 #깔끔한이미지",
+        "amenities": "예약제 / 파우더존 / 촬영 전 수정 메이크업 상담",
+        "parking": "인근 유료주차장 이용",
+        "average_rating": 4.9,
+        "review_count": 187,
+        "favorite_count": 1248,
+        "deposit": "10,000원",
+        "cancellation_policy": "예약 3시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/bellunique/review-01.png",
+          "/images/provided/bellunique/review-02.png",
+          "/images/provided/bellunique/review-03.png",
+          "/images/provided/bellunique/review-04.png",
+          "/images/provided/bellunique/review-05.png"
+        ],
+        "review_samples": [
+          {
+            "id": "bellunique-review-1",
+            "service_name": "증명사진 메이크업",
+            "rating": 5,
+            "content": "증명사진 촬영 전에 받았는데 피부 표현이 정말 깨끗하고 눈매도 과하지 않게 또렷해졌어요. 실제 얼굴과 크게 다르지 않으면서 사진에서는 훨씬 정돈돼 보여서 오래 사용할 사진을 만족스럽게 남겼습니다."
+          },
+          {
+            "id": "bellunique-review-2",
+            "service_name": "취업 프로필 메이크업",
+            "rating": 5,
+            "content": "취업 프로필 촬영 때문에 예약했어요. 너무 진하면 어쩌나 걱정했는데 피부는 깨끗하게, 눈썹과 눈매는 단정하게 잡아주셔서 사진에서 인상이 훨씬 좋아 보였습니다. 이력서 사진용으로 딱 좋은 느낌이었어요."
+          },
+          {
+            "id": "bellunique-review-3",
+            "service_name": "여권사진 메이크업",
+            "rating": 5,
+            "content": "여권사진은 보정도 제한적이라 걱정했는데 번들거림 없이 피부를 깔끔하게 잡아주시고 얼굴 윤곽도 자연스럽게 정리해주셨어요. 사진이 또렷하면서도 실제 모습과 비슷하게 나와 만족합니다."
+          },
+          {
+            "id": "bellunique-review-4",
+            "service_name": "학생증·사원증 메이크업",
+            "rating": 5,
+            "content": "사원증 사진을 새로 찍게 돼서 받았는데 회사에서 오래 쓸 사진이라 자연스러운 쪽으로 부탁드렸어요. 피부톤과 눈매가 깔끔하게 정리돼서 부담스럽지 않고 사진도 훨씬 단정하게 나왔습니다."
+          },
+          {
+            "id": "bellunique-review-5",
+            "service_name": "프로필 촬영 메이크업",
+            "rating": 5,
+            "content": "개인 프로필 촬영 전에 받았는데 조명 아래에서도 얼굴이 평면적으로 보이지 않게 음영과 눈매를 자연스럽게 잡아주셨어요. 실제로 보면 과하지 않은데 촬영본에서는 이목구비가 또렷하게 살아서 만족했습니다."
+          }
+        ],
+        "search_filters": {
+          "구분": "메이크업샵",
+          "샵명": "벨루니크 메이크업",
+          "샵 해시태그": "#증명사진전문 #자연스러운메이크업 #깔끔한이미지",
+          "주요 서비스": "증명사진 메이크업, 취업 프로필 메이크업, 여권사진 메이크업",
+          "가격대": "3만~7만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "인근 유료주차장 이용"
+        },
+        "deal_templates": [
+          {
+            "service_name": "증명사진 메이크업",
+            "start_time": "13:00",
+            "end_time": "13:40",
+            "original_price": 50000,
+            "deal_price": 35000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "40분"
+          },
+          {
+            "service_name": "취업 프로필 메이크업",
+            "start_time": "15:30",
+            "end_time": "16:20",
+            "original_price": 65000,
+            "deal_price": 45500,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "50분"
+          },
+          {
+            "service_name": "여권사진 메이크업",
+            "start_time": "17:00",
+            "end_time": "17:35",
+            "original_price": 45000,
+            "deal_price": 33750,
+            "discount_rate": 25,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "35분"
+          },
+          {
+            "service_name": "학생증·사원증 메이크업",
+            "start_time": "18:00",
+            "end_time": "18:40",
+            "original_price": 50000,
+            "deal_price": 35000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "40분"
+          },
+          {
+            "service_name": "프로필 촬영 메이크업",
+            "start_time": "19:00",
+            "end_time": "19:55",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "55분"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/bellunique/representative-01.png",
+        "/images/provided/bellunique/representative-02.png",
+        "/images/provided/bellunique/representative-03.png",
+        "/images/provided/bellunique/representative-04.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:bellunique:service:1",
+          "name": "증명사진 메이크업",
+          "description": "증명사진에 맞춘 자연스럽고 또렷한 메이크업",
+          "price": 50000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#증명사진전문 #자연스러운메이크업 #깔끔한이미지",
+            "additional_charge": "속눈썹 추가 시 5,000원",
+            "regular_discount_price": 35000,
+            "original_workbook_regular_price": 50000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "13:40",
+            "original_price": 50000,
+            "deal_price": 35000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "40분"
+          }
+        },
+        {
+          "source_key": "provided:bellunique:service:2",
+          "name": "취업 프로필 메이크업",
+          "description": "취업 프로필 촬영을 위한 단정한 이미지 메이크업",
+          "price": 65000,
+          "display_duration_minutes": 50,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#취업프로필 #이력서사진 #단정한이미지",
+            "additional_charge": "속눈썹 추가 시 5,000원",
+            "regular_discount_price": 45500,
+            "original_workbook_regular_price": 65000
+          },
+          "deal": {
+            "start_time": "15:30",
+            "end_time": "16:20",
+            "original_price": 65000,
+            "deal_price": 45500,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "50분"
+          }
+        },
+        {
+          "source_key": "provided:bellunique:service:3",
+          "name": "여권사진 메이크업",
+          "description": "여권사진 촬영에 맞춘 깔끔한 피부 표현 메이크업",
+          "price": 45000,
+          "display_duration_minutes": 35,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#여권사진 #촬영메이크업 #깔끔한피부",
+            "additional_charge": "속눈썹 추가 시 5,000원",
+            "regular_discount_price": 33750,
+            "original_workbook_regular_price": 45000
+          },
+          "deal": {
+            "start_time": "17:00",
+            "end_time": "17:35",
+            "original_price": 45000,
+            "deal_price": 33750,
+            "discount_rate": 25,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "35분"
+          }
+        },
+        {
+          "source_key": "provided:bellunique:service:4",
+          "name": "학생증·사원증 메이크업",
+          "description": "학생증·사원증 사진을 위한 자연스러운 메이크업",
+          "price": 50000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#학생증메이크업 #사원증사진 #내추럴메이크업",
+            "additional_charge": "속눈썹 추가 시 5,000원",
+            "regular_discount_price": 35000,
+            "original_workbook_regular_price": 50000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "18:40",
+            "original_price": 50000,
+            "deal_price": 35000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "40분"
+          }
+        },
+        {
+          "source_key": "provided:bellunique:service:5",
+          "name": "프로필 촬영 메이크업",
+          "description": "프로필 촬영에 맞춘 또렷한 이미지 메이크업",
+          "price": 70000,
+          "display_duration_minutes": 55,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#프로필메이크업 #촬영메이크업 #포트폴리오",
+            "additional_charge": "속눈썹 포함",
+            "regular_discount_price": 49000,
+            "original_workbook_regular_price": 70000
+          },
+          "deal": {
+            "start_time": "19:00",
+            "end_time": "19:55",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "55분"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:moaren",
+      "name": "모아렌 뷰티랩",
+      "category": "makeup",
+      "address": "서울특별시 성동구 성수동 (예시 지역)",
+      "latitude": 37.5446,
+      "longitude": 127.0559,
+      "number": "02-0000-2102",
+      "description": "💼 첫 만남에서 좋은 인상을 남기고 싶다면 면접관에게 신뢰감 있고 단정한 이미지를 전달할 수 있도록 업종과 분위기에 맞춰 메이크업을 진행해드립니다. 자연스럽지만 확실히 정돈된 모습으로 자신감을 더해보세요.",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "09:00~20:00",
+        "closed_days": "매주 화요일",
+        "hashtags": "#면접메이크업 #취업준비 #신뢰감있는이미지",
+        "amenities": "예약제 / 면접 이미지 상담 / 파우더존",
+        "parking": "1시간 무료",
+        "average_rating": 4.8,
+        "review_count": 243,
+        "favorite_count": 1764,
+        "deposit": "20,000원",
+        "cancellation_policy": "예약 4시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/moaren/review-01.png",
+          "/images/provided/moaren/review-02.png",
+          "/images/provided/moaren/review-03.png",
+          "/images/provided/moaren/review-04.png"
+        ],
+        "review_samples": [
+          {
+            "id": "moaren-review-1",
+            "service_name": "면접 메이크업",
+            "rating": 5,
+            "content": "공기업 면접을 앞두고 받았는데 지원 분야에 맞게 과하지 않고 단정한 이미지로 잡아주셨어요. 대기 시간이 길었는데도 피부와 눈매가 깔끔하게 유지돼서 자신감 있게 면접을 볼 수 있었습니다."
+          },
+          {
+            "id": "moaren-review-2",
+            "service_name": "임원면접 이미지 메이크업",
+            "rating": 5,
+            "content": "최종면접이라 평소보다 조금 더 신경 쓰고 싶어서 예약했어요. 화려함보다는 전문적이고 안정적인 느낌으로 정리해주셔서 정장과도 잘 어울렸고, 사진으로 봐도 인상이 차분하게 보여 만족했습니다."
+          },
+          {
+            "id": "moaren-review-3",
+            "service_name": "승무원 면접 메이크업",
+            "rating": 5,
+            "content": "서비스직 면접이라 밝고 친근한 인상을 원했는데 미소 지었을 때 가장 자연스러워 보이도록 색조를 맞춰주셨어요. 눈매도 선명하지만 세지 않게 표현돼서 전체적으로 원하는 이미지가 잘 나왔습니다."
+          },
+          {
+            "id": "moaren-review-4",
+            "service_name": "남성 면접 그루밍",
+            "rating": 5,
+            "content": "남자라 메이크업이 부담스러웠는데 티 나지 않게 피부톤과 눈썹만 정돈해주셔서 좋았습니다. 번들거림도 잡아주셔서 면접 사진과 실제 면접에서 훨씬 깔끔한 인상으로 보였어요."
+          },
+          {
+            "id": "moaren-review-5",
+            "service_name": "면접 헤어·메이크업 패키지",
+            "rating": 5,
+            "content": "아침부터 면접 준비를 따로 하기 어려워 헤어와 메이크업을 같이 받았어요. 얼굴 이미지와 정장 스타일에 맞춰 전체적으로 통일감 있게 정리해주셔서 준비 시간이 줄었고 끝까지 흐트러짐도 적었습니다."
+          }
+        ],
+        "search_filters": {
+          "구분": "메이크업샵",
+          "샵명": "모아렌 뷰티랩",
+          "샵 해시태그": "#면접메이크업 #취업준비 #신뢰감있는이미지",
+          "주요 서비스": "면접 메이크업, 임원면접 이미지 메이크업, 면접 헤어·메이크업 패키지",
+          "가격대": "6만~12만원대",
+          "평균 별점": 4.8,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "1시간 무료"
+        },
+        "deal_templates": [
+          {
+            "service_name": "면접 메이크업",
+            "start_time": "10:00",
+            "end_time": "11:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          },
+          {
+            "service_name": "임원면접 이미지 메이크업",
+            "start_time": "12:00",
+            "end_time": "13:10",
+            "original_price": 95000,
+            "deal_price": 66500,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "70분"
+          },
+          {
+            "service_name": "승무원 면접 메이크업",
+            "start_time": "14:00",
+            "end_time": "15:05",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          },
+          {
+            "service_name": "남성 면접 그루밍",
+            "start_time": "17:00",
+            "end_time": "17:45",
+            "original_price": 60000,
+            "deal_price": 45000,
+            "discount_rate": 25,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "45분"
+          },
+          {
+            "service_name": "면접 헤어·메이크업 패키지",
+            "start_time": "18:00",
+            "end_time": "19:30",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "90분"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/moaren/representative-01.png",
+        "/images/provided/moaren/representative-02.png",
+        "/images/provided/moaren/representative-03.png",
+        "/images/provided/moaren/representative-04.png",
+        "/images/provided/moaren/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:moaren:service:1",
+          "name": "면접 메이크업",
+          "description": "면접에 맞춘 단정하고 신뢰감 있는 메이크업",
+          "price": 80000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#면접메이크업 #취업준비 #신뢰감있는이미지",
+            "additional_charge": "속눈썹 포함, 헤어 추가 시 별도",
+            "regular_discount_price": 56000,
+            "original_workbook_regular_price": 80000
+          },
+          "deal": {
+            "start_time": "10:00",
+            "end_time": "11:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          }
+        },
+        {
+          "source_key": "provided:moaren:service:2",
+          "name": "임원면접 이미지 메이크업",
+          "description": "최종면접을 위한 차분하고 전문적인 이미지 메이크업",
+          "price": 95000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#임원면접 #최종면접 #전문이미지",
+            "additional_charge": "헤어 스타일링 추가 시 20,000원",
+            "regular_discount_price": 66500,
+            "original_workbook_regular_price": 95000
+          },
+          "deal": {
+            "start_time": "12:00",
+            "end_time": "13:10",
+            "original_price": 95000,
+            "deal_price": 66500,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "70분"
+          }
+        },
+        {
+          "source_key": "provided:moaren:service:3",
+          "name": "승무원 면접 메이크업",
+          "description": "승무원·서비스직 면접을 위한 밝은 인상 메이크업",
+          "price": 90000,
+          "display_duration_minutes": 65,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#승무원면접 #서비스직면접 #밝은인상",
+            "additional_charge": "업스타일 헤어는 별도 상담",
+            "regular_discount_price": 63000,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "15:05",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          }
+        },
+        {
+          "source_key": "provided:moaren:service:4",
+          "name": "남성 면접 그루밍",
+          "description": "남성 면접을 위한 자연스러운 피부·눈썹 메이크업",
+          "price": 60000,
+          "display_duration_minutes": 45,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#남성면접 #남성그루밍 #눈썹정리",
+            "additional_charge": "헤어 스타일링 추가 시 15,000원",
+            "regular_discount_price": 45000,
+            "original_workbook_regular_price": 60000
+          },
+          "deal": {
+            "start_time": "17:00",
+            "end_time": "17:45",
+            "original_price": 60000,
+            "deal_price": 45000,
+            "discount_rate": 25,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "45분"
+          }
+        },
+        {
+          "source_key": "provided:moaren:service:5",
+          "name": "면접 헤어·메이크업 패키지",
+          "description": "면접용 메이크업과 단정한 헤어 스타일링 패키지",
+          "price": 120000,
+          "display_duration_minutes": 90,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#면접헤메 #취업패키지 #단정한스타일",
+            "additional_charge": "기장에 따라 헤어 추가금 최대 10,000원",
+            "regular_discount_price": 84000,
+            "original_workbook_regular_price": 120000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "19:30",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "90분"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:nouvelic",
+      "name": "누벨릭 메이크업룸",
+      "category": "makeup",
+      "address": "서울특별시 마포구 연남동 (예시 지역)",
+      "latitude": 37.5627,
+      "longitude": 126.9252,
+      "number": "02-0000-2103",
+      "description": "💐 특별한 날, 사진 속에서도 예쁘게 결혼식, 돌잔치, 가족 행사 등 소중한 날을 위한 메이크업입니다. 너무 진하지도, 밋밋하지도 않게. 행사 내내 무너지지 않는 화사한 메이크업으로 분위기에 맞는 스타일을 완성해드립니다.",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "08:00~19:00",
+        "closed_days": "연중무휴",
+        "hashtags": "#하객메이크업 #행사메이크업 #화사한분위기",
+        "amenities": "100% 예약제 / 파우더존 / 속눈썹 옵션 상담",
+        "parking": "주차 가능",
+        "average_rating": 4.9,
+        "review_count": 321,
+        "favorite_count": 2537,
+        "deposit": "20,000원",
+        "cancellation_policy": "예약 6시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/nouvelic/review-01.png",
+          "/images/provided/nouvelic/review-02.png",
+          "/images/provided/nouvelic/review-03.png",
+          "/images/provided/nouvelic/review-04.png",
+          "/images/provided/nouvelic/review-05.png"
+        ],
+        "review_samples": [
+          {
+            "id": "nouvelic-review-1",
+            "service_name": "하객 메이크업",
+            "rating": 5,
+            "content": "친언니 결혼식이라 가족사진까지 생각해서 받았어요. 과하게 화려하지 않으면서 피부와 색조가 화사하게 표현됐고 결혼식이 끝날 때까지 무너짐이 거의 없어 만족스러웠습니다."
+          },
+          {
+            "id": "nouvelic-review-2",
+            "service_name": "혼주 메이크업",
+            "rating": 5,
+            "content": "어머니 혼주 메이크업으로 예약했는데 연령대와 한복 색상에 맞춰 너무 진하지 않게 우아한 느낌으로 해주셨어요. 사진에서도 피부가 깨끗하고 인상이 부드럽게 나와 가족 모두 만족했습니다."
+          },
+          {
+            "id": "nouvelic-review-3",
+            "service_name": "돌잔치 메이크업",
+            "rating": 5,
+            "content": "돌잔치라 아이를 계속 안고 움직여야 해서 지속력이 중요했는데 행사 끝날 때까지 깔끔하게 유지됐어요. 가족사진에서도 얼굴이 생기 있어 보이고 과한 느낌이 없어서 정말 만족했습니다."
+          },
+          {
+            "id": "nouvelic-review-4",
+            "service_name": "웨딩 촬영 게스트 메이크업",
+            "rating": 5,
+            "content": "가족 웨딩촬영 때문에 받았는데 실내와 야외에서 모두 얼굴이 또렷하게 보이도록 표현해주셨어요. 실제로 보면 자연스러운데 촬영본에서는 훨씬 완성도 있게 나와 만족스러웠습니다."
+          },
+          {
+            "id": "nouvelic-review-5",
+            "service_name": "졸업식 메이크업",
+            "rating": 5,
+            "content": "졸업식이랑 학사모 촬영 때문에 받았어요. 사진에서 얼굴이 칙칙해 보이지 않도록 화사하게 해주시면서도 너무 진하지 않게 맞춰주셔서 좋았습니다. 행사 끝날 때까지 메이크업도 깔끔하게 유지됐어요."
+          }
+        ],
+        "search_filters": {
+          "구분": "메이크업샵",
+          "샵명": "누벨릭 메이크업룸",
+          "샵 해시태그": "#하객메이크업 #행사메이크업 #화사한분위기",
+          "주요 서비스": "하객 메이크업, 혼주 메이크업, 돌잔치 메이크업",
+          "가격대": "5만~13만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 가능"
+        },
+        "deal_templates": [
+          {
+            "service_name": "하객 메이크업",
+            "start_time": "09:00",
+            "end_time": "10:10",
+            "original_price": 100000,
+            "deal_price": 69000,
+            "discount_rate": 31,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "70분"
+          },
+          {
+            "service_name": "혼주 메이크업",
+            "start_time": "10:30",
+            "end_time": "11:50",
+            "original_price": 130000,
+            "deal_price": 91000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "80분"
+          },
+          {
+            "service_name": "돌잔치 메이크업",
+            "start_time": "11:00",
+            "end_time": "12:15",
+            "original_price": 110000,
+            "deal_price": 77000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "75분"
+          },
+          {
+            "service_name": "웨딩 촬영 게스트 메이크업",
+            "start_time": "13:00",
+            "end_time": "14:20",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "80분"
+          },
+          {
+            "service_name": "졸업식 메이크업",
+            "start_time": "16:00",
+            "end_time": "17:05",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/nouvelic/representative-01.png",
+        "/images/provided/nouvelic/representative-02.png",
+        "/images/provided/nouvelic/representative-03.png",
+        "/images/provided/nouvelic/representative-04.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:nouvelic:service:1",
+          "name": "하객 메이크업",
+          "description": "결혼식과 가족 행사에 어울리는 화사한 하객 메이크업",
+          "price": 100000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#하객메이크업 #행사메이크업 #화사한분위기",
+            "additional_charge": "속눈썹 포함, 얼리타임 추가금 별도",
+            "regular_discount_price": 69000,
+            "original_workbook_regular_price": 100000
+          },
+          "deal": {
+            "start_time": "09:00",
+            "end_time": "10:10",
+            "original_price": 100000,
+            "deal_price": 69000,
+            "discount_rate": 31,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "70분"
+          }
+        },
+        {
+          "source_key": "provided:nouvelic:service:2",
+          "name": "혼주 메이크업",
+          "description": "혼주 의상과 분위기에 맞춘 우아한 메이크업",
+          "price": 130000,
+          "display_duration_minutes": 80,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#혼주메이크업 #가족행사 #우아한메이크업",
+            "additional_charge": "얼리타임 예약 시 추가금 발생",
+            "regular_discount_price": 91000,
+            "original_workbook_regular_price": 130000
+          },
+          "deal": {
+            "start_time": "10:30",
+            "end_time": "11:50",
+            "original_price": 130000,
+            "deal_price": 91000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "80분"
+          }
+        },
+        {
+          "source_key": "provided:nouvelic:service:3",
+          "name": "돌잔치 메이크업",
+          "description": "돌잔치와 가족사진을 위한 화사한 메이크업",
+          "price": 110000,
+          "display_duration_minutes": 75,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#돌잔치메이크업 #가족사진 #지속력메이크업",
+            "additional_charge": "속눈썹 포함",
+            "regular_discount_price": 77000,
+            "original_workbook_regular_price": 110000
+          },
+          "deal": {
+            "start_time": "11:00",
+            "end_time": "12:15",
+            "original_price": 110000,
+            "deal_price": 77000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "75분"
+          }
+        },
+        {
+          "source_key": "provided:nouvelic:service:4",
+          "name": "웨딩 촬영 게스트 메이크업",
+          "description": "웨딩 촬영에 맞춘 자연스럽고 또렷한 메이크업",
+          "price": 120000,
+          "display_duration_minutes": 80,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#웨딩촬영 #게스트메이크업 #사진메이크업",
+            "additional_charge": "야외 촬영용 픽서 포함",
+            "regular_discount_price": 84000,
+            "original_workbook_regular_price": 120000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "14:20",
+            "original_price": 120000,
+            "deal_price": 84000,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "80분"
+          }
+        },
+        {
+          "source_key": "provided:nouvelic:service:5",
+          "name": "졸업식 메이크업",
+          "description": "졸업식과 기념 촬영을 위한 화사한 메이크업",
+          "price": 90000,
+          "display_duration_minutes": 65,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#졸업식메이크업 #기념촬영 #화사한메이크업",
+            "additional_charge": "속눈썹 포함",
+            "regular_discount_price": 63000,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "16:00",
+            "end_time": "17:05",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:arvien",
+      "name": "아르비엔 스튜디오",
+      "category": "makeup",
+      "address": "서울특별시 송파구 잠실동 (예시 지역)",
+      "latitude": 37.511,
+      "longitude": 127.098,
+      "number": "02-0000-2104",
+      "description": "✨ 오늘 조금 더 예쁘고 싶은 날 소개팅, 데이트, 친구들과의 약속, 여행 전날까지. 평소 메이크업보다 조금 더 완성도 있게, 하지만 부담스럽지 않게 연출해드립니다. 꾸민 듯 안 꾸민 듯 자연스러운 무드를 좋아하시는 분들께 추천드릴게요.",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "11:00~21:00",
+        "closed_days": "매주 수요일",
+        "hashtags": "#데일리메이크업 #꾸안꾸 #데이트메이크업",
+        "amenities": "예약제 / 스타일 상담 / 파우더존",
+        "parking": "주차 불가",
+        "average_rating": 4.7,
+        "review_count": 96,
+        "favorite_count": 683,
+        "deposit": "10,000원",
+        "cancellation_policy": "예약 3시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/arvien/review-01.png",
+          "/images/provided/arvien/review-02.png",
+          "/images/provided/arvien/review-03.png",
+          "/images/provided/arvien/review-04.png"
+        ],
+        "review_samples": [
+          {
+            "id": "arvien-review-1",
+            "service_name": "데일리 메이크업",
+            "rating": 5,
+            "content": "소개팅이 있어서 자연스럽고 청순한 느낌으로 부탁드렸는데 평소보다 화사하면서도 과하게 꾸민 느낌이 없어 좋았어요. 피부 표현도 깨끗하고 하루 종일 유지돼서 중요한 약속 때 다시 받고 싶습니다."
+          },
+          {
+            "id": "arvien-review-2",
+            "service_name": "소개팅 메이크업",
+            "rating": 5,
+            "content": "첫 소개팅이라 너무 꾸민 티는 싫다고 말씀드렸는데 제 얼굴에 어울리는 블러셔와 립으로 자연스럽게 생기를 살려주셨어요. 사진도 잘 나오고 실제로 봐도 부담스럽지 않아 마음에 들었습니다."
+          },
+          {
+            "id": "arvien-review-3",
+            "service_name": "데이트 포인트 메이크업",
+            "rating": 5,
+            "content": "기념일 데이트라 평소보다 조금 특별하게 하고 싶었는데 눈매와 립에만 포인트를 줘서 부담스럽지 않았어요. 사진에서 색감도 예쁘게 나오고 저녁까지 무너짐이 적어서 만족했습니다."
+          },
+          {
+            "id": "arvien-review-4",
+            "service_name": "여행 스냅 메이크업",
+            "rating": 5,
+            "content": "여행 가서 스냅 촬영 일정이 있어 받았어요. 야외에서 오래 돌아다녀도 베이스가 크게 무너지지 않았고 햇빛 아래 사진에서도 피부가 자연스럽게 보여서 결과물이 정말 마음에 들었습니다."
+          },
+          {
+            "id": "arvien-review-5",
+            "service_name": "파티 메이크업",
+            "rating": 5,
+            "content": "친구 생일 파티가 있어서 평소보다 포인트 있는 메이크업으로 받았어요. 눈매와 립 컬러가 사진에서 예쁘게 나오면서도 전체적으로 과하지 않게 균형을 맞춰주셔서 정말 마음에 들었습니다."
+          }
+        ],
+        "search_filters": {
+          "구분": "메이크업샵",
+          "샵명": "아르비엔 스튜디오",
+          "샵 해시태그": "#데일리메이크업 #꾸안꾸 #데이트메이크업",
+          "주요 서비스": "데일리 메이크업, 소개팅 메이크업, 여행 스냅 메이크업",
+          "가격대": "5만~9만원대",
+          "평균 별점": 4.7,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 불가"
+        },
+        "deal_templates": [
+          {
+            "service_name": "데일리 메이크업",
+            "start_time": "12:30",
+            "end_time": "13:20",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "50분"
+          },
+          {
+            "service_name": "소개팅 메이크업",
+            "start_time": "14:00",
+            "end_time": "14:55",
+            "original_price": 75000,
+            "deal_price": 52500,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "55분"
+          },
+          {
+            "service_name": "데이트 포인트 메이크업",
+            "start_time": "16:00",
+            "end_time": "17:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          },
+          {
+            "service_name": "여행 스냅 메이크업",
+            "start_time": "19:00",
+            "end_time": "20:00",
+            "original_price": 85000,
+            "deal_price": 59500,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          },
+          {
+            "service_name": "파티 메이크업",
+            "start_time": "20:00",
+            "end_time": "21:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/arvien/representative-01.png",
+        "/images/provided/arvien/representative-02.png",
+        "/images/provided/arvien/representative-03.png",
+        "/images/provided/arvien/representative-04.png",
+        "/images/provided/arvien/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:arvien:service:1",
+          "name": "데일리 메이크업",
+          "description": "데이트·약속에 어울리는 자연스러운 데일리 메이크업",
+          "price": 70000,
+          "display_duration_minutes": 50,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#데일리메이크업 #꾸안꾸 #데이트메이크업",
+            "additional_charge": "속눈썹 추가 시 5,000원",
+            "regular_discount_price": 49000,
+            "original_workbook_regular_price": 70000
+          },
+          "deal": {
+            "start_time": "12:30",
+            "end_time": "13:20",
+            "original_price": 70000,
+            "deal_price": 49000,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "50분"
+          }
+        },
+        {
+          "source_key": "provided:arvien:service:2",
+          "name": "소개팅 메이크업",
+          "description": "첫 만남에 어울리는 생기 있고 부드러운 메이크업",
+          "price": 75000,
+          "display_duration_minutes": 55,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#소개팅메이크업 #첫인상 #청순메이크업",
+            "additional_charge": "속눈썹 추가 시 5,000원",
+            "regular_discount_price": 52500,
+            "original_workbook_regular_price": 75000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "14:55",
+            "original_price": 75000,
+            "deal_price": 52500,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "55분"
+          }
+        },
+        {
+          "source_key": "provided:arvien:service:3",
+          "name": "데이트 포인트 메이크업",
+          "description": "기념일 데이트를 위한 자연스러운 포인트 메이크업",
+          "price": 80000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#데이트메이크업 #기념일 #포인트메이크업",
+            "additional_charge": "글리터·특수 속눈썹 선택 시 추가금",
+            "regular_discount_price": 56000,
+            "original_workbook_regular_price": 80000
+          },
+          "deal": {
+            "start_time": "16:00",
+            "end_time": "17:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          }
+        },
+        {
+          "source_key": "provided:arvien:service:4",
+          "name": "여행 스냅 메이크업",
+          "description": "여행 스냅 촬영을 위한 자연스럽고 오래가는 메이크업",
+          "price": 85000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#여행메이크업 #스냅촬영 #지속력메이크업",
+            "additional_charge": "야외용 픽서 포함",
+            "regular_discount_price": 59500,
+            "original_workbook_regular_price": 85000
+          },
+          "deal": {
+            "start_time": "19:00",
+            "end_time": "20:00",
+            "original_price": 85000,
+            "deal_price": 59500,
+            "discount_rate": 30,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          }
+        },
+        {
+          "source_key": "provided:arvien:service:5",
+          "name": "파티 메이크업",
+          "description": "생일·모임·파티를 위한 세련된 포인트 메이크업",
+          "price": 80000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#파티메이크업 #모임메이크업 #포인트메이크업",
+            "additional_charge": "속눈썹 포함",
+            "regular_discount_price": 56000,
+            "original_workbook_regular_price": 80000
+          },
+          "deal": {
+            "start_time": "20:00",
+            "end_time": "21:00",
+            "original_price": 80000,
+            "deal_price": 56000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:riobella",
+      "name": "리오벨라 메이크업",
+      "category": "makeup",
+      "address": "서울특별시 서초구 서초동 (예시 지역)",
+      "latitude": 37.5027,
+      "longitude": 127.0247,
+      "number": "02-0000-2105",
+      "description": "얼굴형과 피부톤, 원하는 분위기를 세심하게 반영해 데일리부터 특별한 날까지 개인에게 어울리는 메이크업을 제안하는 1:1 맞춤 메이크업샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:00~20:30",
+        "closed_days": "매주 일요일",
+        "hashtags": "#퍼스널메이크업 #맞춤메이크업 #데일리메이크업 #포인트메이크업",
+        "amenities": "1:1 예약제 / 파우더존 / 스타일 상담",
+        "parking": "주차 가능",
+        "average_rating": 5,
+        "review_count": 74,
+        "favorite_count": 512,
+        "deposit": "20,000원",
+        "cancellation_policy": "예약 6시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/riobella/review-01.png",
+          "/images/provided/riobella/review-02.png",
+          "/images/provided/riobella/review-03.png",
+          "/images/provided/riobella/review-04.png"
+        ],
+        "review_samples": [
+          {
+            "id": "riobella-review-1",
+            "service_name": "퍼스널 맞춤 메이크업",
+            "rating": 5,
+            "content": "평소 어떤 메이크업이 어울리는지 몰라서 예약했는데 피부톤과 얼굴형을 먼저 보고 색조와 눈썹 모양을 맞춰주셨어요. 유행하는 스타일을 그대로 하는 게 아니라 제 얼굴에 자연스럽게 어울리도록 완성해줘서 만족했습니다."
+          },
+          {
+            "id": "riobella-review-2",
+            "service_name": "청순 내추럴 메이크업",
+            "rating": 5,
+            "content": "진한 화장은 안 어울리는 편이라 청순하고 자연스럽게 부탁드렸어요. 피부는 맑게 표현되고 눈매도 부드럽게 정리돼서 평소보다 예뻐 보이면서도 제 얼굴 같은 느낌이 남아 있어 좋았습니다."
+          },
+          {
+            "id": "riobella-review-3",
+            "service_name": "오피스 메이크업",
+            "rating": 5,
+            "content": "회사 행사와 프로필 촬영이 같이 있어서 받았는데 너무 화려하지 않으면서도 평소 출근 메이크업보다 훨씬 정돈된 느낌이었어요. 정장과도 잘 어울리고 사진에서도 인상이 깔끔하게 나왔습니다."
+          },
+          {
+            "id": "riobella-review-4",
+            "service_name": "글램 포인트 메이크업",
+            "rating": 5,
+            "content": "저녁 행사라 평소보다 또렷한 메이크업을 원했는데 눈매와 윤곽을 세련되게 살려주셨어요. 글램한 느낌은 있지만 과하게 무겁지 않았고 조명 아래에서 사진이 정말 잘 나와 만족했습니다."
+          },
+          {
+            "id": "riobella-review-5",
+            "service_name": "데이트 맞춤 메이크업",
+            "rating": 5,
+            "content": "기념일 데이트 전에 받았는데 입고 간 옷 색상과 평소 좋아하는 분위기를 보고 메이크업을 맞춰주셨어요. 피부 표현도 예쁘고 블러셔와 립 색이 잘 어울려서 사진도 만족스럽게 나왔습니다."
+          }
+        ],
+        "search_filters": {
+          "구분": "메이크업샵",
+          "샵명": "리오벨라 메이크업",
+          "샵 해시태그": "#퍼스널메이크업 #맞춤메이크업 #데일리메이크업 #포인트메이크업",
+          "주요 서비스": "퍼스널 맞춤 메이크업, 청순 내추럴 메이크업, 글램 포인트 메이크업",
+          "가격대": "8만~10만원대",
+          "평균 별점": 5,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 가능"
+        },
+        "deal_templates": [
+          {
+            "service_name": "퍼스널 맞춤 메이크업",
+            "start_time": "11:00",
+            "end_time": "12:15",
+            "original_price": 100000,
+            "deal_price": 70000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "75분"
+          },
+          {
+            "service_name": "청순 내추럴 메이크업",
+            "start_time": "13:00",
+            "end_time": "14:05",
+            "original_price": 85000,
+            "deal_price": 59500,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          },
+          {
+            "service_name": "오피스 메이크업",
+            "start_time": "14:30",
+            "end_time": "15:30",
+            "original_price": 80000,
+            "deal_price": 60000,
+            "discount_rate": 25,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          },
+          {
+            "service_name": "글램 포인트 메이크업",
+            "start_time": "18:30",
+            "end_time": "19:45",
+            "original_price": 100000,
+            "deal_price": 70000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "75분"
+          },
+          {
+            "service_name": "데이트 맞춤 메이크업",
+            "start_time": "19:30",
+            "end_time": "20:35",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/riobella/representative-01.png",
+        "/images/provided/riobella/representative-02.png",
+        "/images/provided/riobella/representative-03.png",
+        "/images/provided/riobella/representative-04.png",
+        "/images/provided/riobella/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:riobella:service:1",
+          "name": "퍼스널 맞춤 메이크업",
+          "description": "얼굴형과 피부톤에 맞춘 1:1 퍼스널 메이크업",
+          "price": 100000,
+          "display_duration_minutes": 75,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#퍼스널메이크업 #맞춤메이크업 #1대1메이크업",
+            "additional_charge": "속눈썹 포함",
+            "regular_discount_price": 70000,
+            "original_workbook_regular_price": 100000
+          },
+          "deal": {
+            "start_time": "11:00",
+            "end_time": "12:15",
+            "original_price": 100000,
+            "deal_price": 70000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "75분"
+          }
+        },
+        {
+          "source_key": "provided:riobella:service:2",
+          "name": "청순 내추럴 메이크업",
+          "description": "맑은 피부 표현 중심의 청순 내추럴 메이크업",
+          "price": 85000,
+          "display_duration_minutes": 65,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#청순메이크업 #내추럴메이크업 #맑은피부",
+            "additional_charge": "속눈썹 포함",
+            "regular_discount_price": 59500,
+            "original_workbook_regular_price": 85000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "14:05",
+            "original_price": 85000,
+            "deal_price": 59500,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          }
+        },
+        {
+          "source_key": "provided:riobella:service:3",
+          "name": "오피스 메이크업",
+          "description": "출근·비즈니스 일정에 어울리는 깔끔한 메이크업",
+          "price": 80000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#오피스메이크업 #직장인메이크업 #비즈니스메이크업",
+            "additional_charge": "속눈썹 선택 가능",
+            "regular_discount_price": 60000,
+            "original_workbook_regular_price": 80000
+          },
+          "deal": {
+            "start_time": "14:30",
+            "end_time": "15:30",
+            "original_price": 80000,
+            "deal_price": 60000,
+            "discount_rate": 25,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "60분"
+          }
+        },
+        {
+          "source_key": "provided:riobella:service:4",
+          "name": "글램 포인트 메이크업",
+          "description": "또렷한 눈매와 윤곽을 살린 글램 포인트 메이크업",
+          "price": 100000,
+          "display_duration_minutes": 75,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#글램메이크업 #포인트메이크업 #입체메이크업",
+            "additional_charge": "특수 속눈썹 선택 시 5,000원 추가",
+            "regular_discount_price": 70000,
+            "original_workbook_regular_price": 100000
+          },
+          "deal": {
+            "start_time": "18:30",
+            "end_time": "19:45",
+            "original_price": 100000,
+            "deal_price": 70000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "75분"
+          }
+        },
+        {
+          "source_key": "provided:riobella:service:5",
+          "name": "데이트 맞춤 메이크업",
+          "description": "데이트와 기념일 분위기에 맞춘 사랑스러운 메이크업",
+          "price": 90000,
+          "display_duration_minutes": 65,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#데이트메이크업 #기념일메이크업 #맞춤메이크업",
+            "additional_charge": "속눈썹 포함",
+            "regular_discount_price": 63000,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "19:30",
+            "end_time": "20:35",
+            "original_price": 90000,
+            "deal_price": 63000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "65분"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:roere",
+      "name": "로에르",
+      "category": "hair",
+      "address": "서울특별시 강남구 신사동 (예시 지역)",
+      "latitude": 37.5219,
+      "longitude": 127.0228,
+      "number": "02-0000-3106",
+      "description": "애쉬톤과 톤다운 컬러링을 중심으로 자연스러운 그러데이션을 살리는 염색 전문 헤어샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:00~20:00",
+        "closed_days": "매주 목요일",
+        "hashtags": "#애쉬톤염색 #톤온톤 #그러데이션염색 #컬러전문",
+        "amenities": "예약제 / 프라이빗 상담존 / 음료 제공",
+        "parking": "주차 가능",
+        "average_rating": 4.9,
+        "review_count": 567,
+        "favorite_count": 589,
+        "deposit": "20,000원",
+        "cancellation_policy": "예약 4시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/roere/review-01.png",
+          "/images/provided/roere/review-02.png",
+          "/images/provided/roere/review-03.png",
+          "/images/provided/roere/review-04.png",
+          "/images/provided/roere/review-05.png",
+          "/images/provided/roere/review-06.png"
+        ],
+        "review_samples": [
+          {
+            "id": "roere-review-1",
+            "service_name": "애쉬 톤다운 염색",
+            "rating": 5,
+            "content": "원래 밝은 갈색이었는데 너무 노랗게 빠져서 톤을 낮추고 싶어 찾아갔어요. 상담할 때 무조건 어두운 색 추천하는 게 아니라 제 피부톤이랑 눈동자 색까지 보시더니 어울릴 만한 애쉬 계열을 세 가지 정도 컬러북으로 보여주면서 각각 어떤 느낌으로 나오는지 설명해주셨어요. 저는 그중에 제일 중간 톤으로 골랐는데 시술하는 동안에도 중간에 색 확인하면서 시간 조절해주시더라고요. 뿌리부터 끝까지 경계 없이 자연스럽게 이어져서 염색한 티가 과하지 않고 딱 원하던 느낌으로 나왔어요. 타임딜로 예약해서 반값 가까이 받았는데 이 퀄리티면 정가 주고도 아깝지 않을 것 같아요. 다음 리터치도 여기서 할게요!"
+          },
+          {
+            "id": "roere-review-2",
+            "service_name": "그러데이션 뿌리염색",
+            "rating": 5,
+            "content": "뿌리 자란 게 너무 티나서 급하게 찾았는데 자리가 있어서 다행이었어요~ 경계 안 보이게 자연스럽게 이어주셔서 만족해요! 다음에 또 올게용 :)"
+          },
+          {
+            "id": "roere-review-3",
+            "service_name": "헤어 컨설팅 커트",
+            "rating": 4,
+            "content": "바로 자르기보다 앞으로 할 염색 계획과 평소 손질 방법까지 먼저 물어보시고 길이와 층을 잡아주셔서 좋았어요. 컬러 시술과도 잘 어울리게 정리해주셔서 만족합니다."
+          },
+          {
+            "id": "roere-review-4",
+            "service_name": "컬러 클리닉",
+            "rating": 5,
+            "content": "염색을 진짜 자주 하는 편이라 모발 끝이 다 갈라져 있었는데요, 클리닉 받기 전에 손상도를 먼저 체크하시고 어느 구간이 특히 상했는지 보여주시면서 설명해주셨어요. 그 부분 위주로 단계별로 제품을 다르게 써주셨는데 끝나고 나서 만져봤을 때 손끝에 걸리는 느낌이 확실히 줄었어요. 집에서 관리할 때 쓰면 좋은 제품이나 드라이 온도까지 알려주셔서 도움이 많이 됐습니다. 염색 전에 미리 받아두는 것도 추천해주셔서 다음엔 그렇게 해보려구요!"
+          },
+          {
+            "id": "roere-review-5",
+            "service_name": "프리미엄 컬러 트리트먼트",
+            "rating": 5,
+            "content": "염색하고 바로 받았는데 색이 훨씬 선명해 보여요!! 머릿결도 부들부들해져서 기분 좋았어용~~ 재방문 의사 100%입니다!"
+          }
+        ],
+        "search_filters": {
+          "구분": "헤어샵",
+          "샵명": "로에르",
+          "샵 해시태그": "#애쉬톤염색 #톤온톤 #그러데이션염색 #컬러전문",
+          "주요 서비스": "애쉬 톤다운 염색, 그러데이션 뿌리염색, 컬러 클리닉",
+          "가격대": "4만~15만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 가능"
+        },
+        "deal_templates": [
+          {
+            "service_name": "애쉬 톤다운 염색",
+            "start_time": "11:00",
+            "end_time": "14:00",
+            "original_price": 150000,
+            "deal_price": 67500,
+            "discount_rate": 55,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "그러데이션 뿌리염색",
+            "start_time": "14:00",
+            "end_time": "16:30",
+            "original_price": 90000,
+            "deal_price": 49500,
+            "discount_rate": 45,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간 30분"
+          },
+          {
+            "service_name": "헤어 컨설팅 커트",
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 40000,
+            "deal_price": 26000,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "컬러 클리닉",
+            "start_time": "16:00",
+            "end_time": "18:00",
+            "original_price": 100000,
+            "deal_price": 50000,
+            "discount_rate": 50,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "프리미엄 컬러 트리트먼트",
+            "start_time": "18:00",
+            "end_time": "19:30",
+            "original_price": 70000,
+            "deal_price": 42000,
+            "discount_rate": 40,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "1시간 30분"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/roere/representative-01.png",
+        "/images/provided/roere/representative-02.png",
+        "/images/provided/roere/representative-03.png",
+        "/images/provided/roere/representative-04.png",
+        "/images/provided/roere/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:roere:service:1",
+          "name": "애쉬 톤다운 염색",
+          "description": "톤을 낮추면서 애쉬빛을 살리는 그러데이션 염색",
+          "price": 150000,
+          "display_duration_minutes": 90,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#애쉬톤염색 #톤다운",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 105000,
+            "original_workbook_regular_price": 150000
+          },
+          "deal": {
+            "start_time": "11:00",
+            "end_time": "14:00",
+            "original_price": 150000,
+            "deal_price": 67500,
+            "discount_rate": 55,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:roere:service:2",
+          "name": "그러데이션 뿌리염색",
+          "description": "새로 자란 뿌리와 기존 컬러 경계를 자연스럽게 잇는 뿌리 염색",
+          "price": 90000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#뿌리염색 #그러데이션",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 63000,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "16:30",
+            "original_price": 90000,
+            "deal_price": 49500,
+            "discount_rate": 45,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간 30분"
+          }
+        },
+        {
+          "source_key": "provided:roere:service:3",
+          "name": "헤어 컨설팅 커트",
+          "description": "염색 전후 스타일에 맞춘 맞춤 상담 커트",
+          "price": 40000,
+          "display_duration_minutes": 50,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#컨설팅커트 #맞춤커트",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 30000,
+            "original_workbook_regular_price": 40000
+          },
+          "deal": {
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 40000,
+            "deal_price": 26000,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:roere:service:4",
+          "name": "컬러 클리닉",
+          "description": "염색 모발의 손상을 집중적으로 케어하는 클리닉",
+          "price": 100000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#컬러클리닉 #손상모케어",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 70000,
+            "original_workbook_regular_price": 100000
+          },
+          "deal": {
+            "start_time": "16:00",
+            "end_time": "18:00",
+            "original_price": 100000,
+            "deal_price": 50000,
+            "discount_rate": 50,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:roere:service:5",
+          "name": "프리미엄 컬러 트리트먼트",
+          "description": "염색 직후 컬러 지속력을 높여주는 마무리 관리",
+          "price": 70000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#컬러트리트먼트 #지속력케어",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 49000,
+            "original_workbook_regular_price": 70000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "19:30",
+            "original_price": 70000,
+            "deal_price": 42000,
+            "discount_rate": 40,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "1시간 30분"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:moneve",
+      "name": "모네브",
+      "category": "hair",
+      "address": "서울특별시 성동구 성수동 (예시 지역)",
+      "latitude": 37.5446,
+      "longitude": 127.0559,
+      "number": "02-0000-3107",
+      "description": "반곱슬과 부스스한 모발을 매끈하게 정리하는 매직·스트레이트펌 전문 헤어샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:00~21:00",
+        "closed_days": "매주 월요일",
+        "hashtags": "#매직스트레이트 #클리닉매직 #앞머리매직 #손상케어",
+        "amenities": "예약제 / 두피진단 / 음료 제공",
+        "parking": "1시간 무료",
+        "average_rating": 4.8,
+        "review_count": 298,
+        "favorite_count": 612,
+        "deposit": "20,000원",
+        "cancellation_policy": "예약 4시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/moneve/review-01.png",
+          "/images/provided/moneve/review-02.png",
+          "/images/provided/moneve/review-03.png",
+          "/images/provided/moneve/review-04.png",
+          "/images/provided/moneve/review-05.png",
+          "/images/provided/moneve/review-06.png",
+          "/images/provided/moneve/review-07.png"
+        ],
+        "review_samples": [
+          {
+            "id": "moneve-review-1",
+            "service_name": "클리닉 매직스트레이트",
+            "rating": 5,
+            "content": "곱슬이 심한 편이라 매직을 매년 하는데 할 때마다 머리가 상해서 고민이 많았어요. 여기는 시작하기 전에 모발 손상도를 진단기로 확인하고 약을 다르게 쓰신다고 하셔서 기대하고 갔는데 확실히 차이가 있었어요. 제 모발이 이미 약해진 상태라 시간을 짧게 가져가는 대신 중간에 케어를 한 번 더 넣는 방식으로 진행해주셨고, 결과도 부자연스럽게 쫙 펴진 느낌이 아니라 적당히 자연스럽게 나왔습니다. 네 시간 가까이 걸렸는데 중간에 음료도 챙겨주시고 진행 상황도 계속 설명해주셔서 지루하지 않았어요. 타임딜로 받아서 가격도 훨씬 부담이 적었고, 할인 예약이라고 대충 하는 느낌은 전혀 없었습니다. 내년에도 여기로 올 것 같아요."
+          },
+          {
+            "id": "moneve-review-2",
+            "service_name": "앞머리 매직",
+            "rating": 5,
+            "content": "앞머리가 자꾸 뜨고 휘는 게 스트레스였는데 자연스럽게 정리돼서 만족해요ㅎㅎ 과하게 눌린 느낌 없이 손질이 편해졌고 가격도 부담 없어서 좋았습니다."
+          },
+          {
+            "id": "moneve-review-3",
+            "service_name": "볼륨 다운펌",
+            "rating": 4,
+            "content": "윗머리 붕 뜨는 거 많이 잡혔어요. 생각보다 약하게 나와서 다음엔 조금 더 강하게 부탁드리려구요."
+          },
+          {
+            "id": "moneve-review-4",
+            "service_name": "남성 클리닉 커트",
+            "rating": 5,
+            "content": "남자 커트인데도 대충 안 하시고 두피 상태까지 봐주셔서 좋았습니다. 스타일링 방법도 알려주셔서 유용했어요."
+          },
+          {
+            "id": "moneve-review-5",
+            "service_name": "손상모 집중 클리닉",
+            "rating": 5,
+            "content": "매직하고 나서 끝이 푸석했는데 클리닉 한 번 받고 확실히 부드러워졌어요! 친절하시고 설명도 잘해주셔서 좋았습니다 :) 또 올게요!!"
+          }
+        ],
+        "search_filters": {
+          "구분": "헤어샵",
+          "샵명": "모네브",
+          "샵 해시태그": "#매직스트레이트 #클리닉매직 #앞머리매직 #손상케어",
+          "주요 서비스": "클리닉 매직스트레이트, 볼륨 다운펌, 남성 클리닉 커트",
+          "가격대": "3만~20만원대",
+          "평균 별점": 4.8,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "1시간 무료"
+        },
+        "deal_templates": [
+          {
+            "service_name": "클리닉 매직스트레이트",
+            "start_time": "11:00",
+            "end_time": "15:00",
+            "original_price": 200000,
+            "deal_price": 80000,
+            "discount_rate": 60,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "앞머리 매직",
+            "start_time": "15:00",
+            "end_time": "17:00",
+            "original_price": 40000,
+            "deal_price": 28000,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "볼륨 다운펌",
+            "start_time": "13:00",
+            "end_time": "16:00",
+            "original_price": 130000,
+            "deal_price": 65000,
+            "discount_rate": 50,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "남성 클리닉 커트",
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 30000,
+            "deal_price": 19500,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "손상모 집중 클리닉",
+            "start_time": "17:00",
+            "end_time": "19:00",
+            "original_price": 90000,
+            "deal_price": 49500,
+            "discount_rate": 45,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/moneve/representative-01.png",
+        "/images/provided/moneve/representative-02.png",
+        "/images/provided/moneve/representative-03.png",
+        "/images/provided/moneve/representative-04.png",
+        "/images/provided/moneve/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:moneve:service:1",
+          "name": "클리닉 매직스트레이트",
+          "description": "손상도 진단 후 진행하는 전체 매직 스트레이트",
+          "price": 200000,
+          "display_duration_minutes": 180,
+          "duration_minutes": 180,
+          "source_details": {
+            "hashtags": "#매직스트레이트 #클리닉매직",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 130000,
+            "original_workbook_regular_price": 200000
+          },
+          "deal": {
+            "start_time": "11:00",
+            "end_time": "15:00",
+            "original_price": 200000,
+            "deal_price": 80000,
+            "discount_rate": 60,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:moneve:service:2",
+          "name": "앞머리 매직",
+          "description": "앞머리만 부분적으로 정리하는 매직",
+          "price": 40000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#앞머리매직 #부분매직",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 28000,
+            "original_workbook_regular_price": 40000
+          },
+          "deal": {
+            "start_time": "15:00",
+            "end_time": "17:00",
+            "original_price": 40000,
+            "deal_price": 28000,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:moneve:service:3",
+          "name": "볼륨 다운펌",
+          "description": "붕 뜨는 윗머리 볼륨을 정리하는 다운펌",
+          "price": 130000,
+          "display_duration_minutes": 120,
+          "duration_minutes": 120,
+          "source_details": {
+            "hashtags": "#다운펌 #볼륨정리",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 91000,
+            "original_workbook_regular_price": 130000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "16:00",
+            "original_price": 130000,
+            "deal_price": 65000,
+            "discount_rate": 50,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:moneve:service:4",
+          "name": "남성 클리닉 커트",
+          "description": "두피와 모발 상태를 함께 체크하는 남성 커트",
+          "price": 30000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#남성커트 #두피체크",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 24000,
+            "original_workbook_regular_price": 30000
+          },
+          "deal": {
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 30000,
+            "deal_price": 19500,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:moneve:service:5",
+          "name": "손상모 집중 클리닉",
+          "description": "매직 시술 후 손상 회복을 위한 집중 케어",
+          "price": 90000,
+          "display_duration_minutes": 50,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#손상모케어 #클리닉",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 63000,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "17:00",
+            "end_time": "19:00",
+            "original_price": 90000,
+            "deal_price": 49500,
+            "discount_rate": 45,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:nuagen",
+      "name": "NUAGEN",
+      "category": "hair",
+      "address": "서울특별시 마포구 연남동 (예시 지역)",
+      "latitude": 37.5627,
+      "longitude": 126.9252,
+      "number": "02-0000-3108",
+      "description": "두피 스케일링과 모발 클리닉을 결합해 두피 건강과 스타일을 함께 관리하는 헤어샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "09:30~20:00",
+        "closed_days": "연중무휴",
+        "hashtags": "#두피스케일링 #두피클리닉 #탈모케어 #모발클리닉",
+        "amenities": "예약제 / 두피진단기 보유/ 와이파이",
+        "parking": "주차 가능",
+        "average_rating": 4.9,
+        "review_count": 514,
+        "favorite_count": 455,
+        "deposit": "없음",
+        "cancellation_policy": "예약 2시간 전까지 무료 취소, 이후 당일 취소 처리",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/nuagen/review-01.png",
+          "/images/provided/nuagen/review-02.png",
+          "/images/provided/nuagen/review-03.png",
+          "/images/provided/nuagen/review-04.png",
+          "/images/provided/nuagen/review-05.png",
+          "/images/provided/nuagen/review-06.png",
+          "/images/provided/nuagen/review-07.png",
+          "/images/provided/nuagen/review-08.png",
+          "/images/provided/nuagen/review-09.png"
+        ],
+        "review_samples": [
+          {
+            "id": "nuagen-review-1",
+            "service_name": "두피 스케일링",
+            "rating": 5,
+            "content": "두피가 항상 답답하고 저녁만 되면 냄새가 나는 것 같아서 신경이 쓰였는데요, 여기는 시작 전에 두피 진단기로 확대해서 상태를 직접 보여주시더라고요. 제가 생각했던 것보다 각질이 많이 쌓여 있어서 놀랐어요. 스케일링 자체는 자극적이지 않고 시원한 느낌이었고, 중간에 아픈 곳 없는지 계속 확인해주셔서 편하게 받았습니다. 끝나고 다시 진단기로 보여주시는데 차이가 눈에 보여서 만족스러웠어요. 주기적으로 받는 걸 추천해주셨는데 타임딜 가격이면 한 달에 한 번씩 와도 괜찮을 것 같아요."
+          },
+          {
+            "id": "nuagen-review-2",
+            "service_name": "탈모완화 헤드스파",
+            "rating": 5,
+            "content": "요즘 머리 빠지는 게 신경 쓰여서 받아봤는데 마사지가 진짜 시원했어요~~ 두피 상태도 자세히 알려주셔서 도움 됐습니다! 재방문할게요!!"
+          },
+          {
+            "id": "nuagen-review-3",
+            "service_name": "데일리 커트",
+            "rating": 4,
+            "content": "기본 커트인데 두피 먼저 체크해주고 시작해서 좋았어요. 가격도 괜찮습니다."
+          },
+          {
+            "id": "nuagen-review-4",
+            "service_name": "모발 재생 클리닉",
+            "rating": 5,
+            "content": "탈색을 여러 번 해서 모발이 거의 지푸라기 수준이었는데 솔직하게 한 번에 드라마틱하게 좋아지진 않는다고 말씀해주셔서 오히려 신뢰가 갔어요. 대신 지금 상태에서 할 수 있는 최선으로 손상이 심한 중간 구간 위주로 집중 케어를 해주셨고, 앞으로 몇 회 정도 더 받으면 좋을지 계획도 잡아주셨습니다. 끝나고 나서 빗질할 때 걸리는 게 확실히 줄었어요. 타임딜로 받으면 부담이 적어서 계획대로 회차 채워볼 생각이에요."
+          },
+          {
+            "id": "nuagen-review-5",
+            "service_name": "두피 진정 케어",
+            "rating": 5,
+            "content": "두피가 예민해서 어디 가면 늘 따가웠는데 여기는 하나도 안 따가웠어요! 조심스럽게 해주셔서 감사했습니당~"
+          }
+        ],
+        "search_filters": {
+          "구분": "헤어샵",
+          "샵명": "NUAGEN",
+          "샵 해시태그": "#두피스케일링 #두피클리닉 #탈모케어 #모발클리닉",
+          "주요 서비스": "두피 스케일링, 탈모완화 헤드스파, 모발 재생 클리닉",
+          "가격대": "3만~11만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 가능"
+        },
+        "deal_templates": [
+          {
+            "service_name": "두피 스케일링",
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 70000,
+            "deal_price": 38500,
+            "discount_rate": 45,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "탈모완화 헤드스파",
+            "start_time": "12:00",
+            "end_time": "14:30",
+            "original_price": 90000,
+            "deal_price": 40500,
+            "discount_rate": 55,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간 30분"
+          },
+          {
+            "service_name": "데일리 커트",
+            "start_time": "09:30",
+            "end_time": "11:00",
+            "original_price": 35000,
+            "deal_price": 24500,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "1시간 30분"
+          },
+          {
+            "service_name": "모발 재생 클리닉",
+            "start_time": "15:00",
+            "end_time": "18:00",
+            "original_price": 110000,
+            "deal_price": 55000,
+            "discount_rate": 50,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "두피 진정 케어",
+            "start_time": "18:00",
+            "end_time": "20:00",
+            "original_price": 60000,
+            "deal_price": 36000,
+            "discount_rate": 40,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/nuagen/representative-01.png",
+        "/images/provided/nuagen/representative-02.png",
+        "/images/provided/nuagen/representative-03.png",
+        "/images/provided/nuagen/representative-04.png",
+        "/images/provided/nuagen/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:nuagen:service:1",
+          "name": "두피 스케일링",
+          "description": "두피 각질과 노폐물을 제거하는 딥 클렌징",
+          "price": 70000,
+          "display_duration_minutes": 50,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#두피스케일링 #딥클렌징",
+            "additional_charge": "두피 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 49000,
+            "original_workbook_regular_price": 70000
+          },
+          "deal": {
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 70000,
+            "deal_price": 38500,
+            "discount_rate": 45,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:nuagen:service:2",
+          "name": "탈모완화 헤드스파",
+          "description": "두피 마사지와 전용 앰플로 진행하는 헤드스파",
+          "price": 90000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#헤드스파 #탈모케어",
+            "additional_charge": "두피 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 58500,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "12:00",
+            "end_time": "14:30",
+            "original_price": 90000,
+            "deal_price": 40500,
+            "discount_rate": 55,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간 30분"
+          }
+        },
+        {
+          "source_key": "provided:nuagen:service:3",
+          "name": "데일리 커트",
+          "description": "손질하기 편한 기본 커트",
+          "price": 35000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#데일리커트 #기본커트",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 28000,
+            "original_workbook_regular_price": 35000
+          },
+          "deal": {
+            "start_time": "09:30",
+            "end_time": "11:00",
+            "original_price": 35000,
+            "deal_price": 24500,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "1시간 30분"
+          }
+        },
+        {
+          "source_key": "provided:nuagen:service:4",
+          "name": "모발 재생 클리닉",
+          "description": "손상 모발을 회복시키는 집중 클리닉",
+          "price": 110000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#모발클리닉 #손상모회복",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 77000,
+            "original_workbook_regular_price": 110000
+          },
+          "deal": {
+            "start_time": "15:00",
+            "end_time": "18:00",
+            "original_price": 110000,
+            "deal_price": 55000,
+            "discount_rate": 50,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:nuagen:service:5",
+          "name": "두피 진정 케어",
+          "description": "예민한 두피를 위한 진정 관리",
+          "price": 60000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#두피진정 #예민두피케어",
+            "additional_charge": "두피 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 45000,
+            "original_workbook_regular_price": 60000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "20:00",
+            "original_price": 60000,
+            "deal_price": 36000,
+            "discount_rate": 40,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:ardien",
+      "name": "Ardien",
+      "category": "hair",
+      "address": "서울특별시 송파구 잠실동 (예시 지역)",
+      "latitude": 37.511,
+      "longitude": 127.098,
+      "number": "02-0000-3109",
+      "description": "남녀 펌과 커트를 함께 운영하며 손질하기 쉬운 데일리 스타일을 제안하는 헤어샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:30~21:00",
+        "closed_days": "매주 목요일",
+        "hashtags": "#히피펌 #남성펌 #여성펌 #스타일링",
+        "amenities": "예약제 / 와이파이 / 음료 제공",
+        "parking": "인근 유료주차장 이용",
+        "average_rating": 4.9,
+        "review_count": 376,
+        "favorite_count": 402,
+        "deposit": "10,000원",
+        "cancellation_policy": "예약 3시간 전까지 무료 취소, 이후 예약금 환불 불가",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/ardien/review-01.png",
+          "/images/provided/ardien/review-02.png",
+          "/images/provided/ardien/review-03.png",
+          "/images/provided/ardien/review-04.png",
+          "/images/provided/ardien/review-05.png",
+          "/images/provided/ardien/review-06.png",
+          "/images/provided/ardien/review-07.png"
+        ],
+        "review_samples": [
+          {
+            "id": "ardien-review-1",
+            "service_name": "히피펌",
+            "rating": 5,
+            "content": "펌을 처음 해봐서 어떤 컬이 어울릴지 감이 전혀 없었는데 제 모발이 굵고 숱이 많은 편이라 컬을 크게 가면 금방 풀릴 수 있다고 하시면서 중간 사이즈로 제안해주셨어요. 사진 몇 장 보여드렸더니 이건 모발 길이가 더 길어야 나오는 느낌이라고 솔직하게 말씀해주신 것도 좋았습니다. 완성된 스타일은 과하게 뽀글하지 않고 자연스럽게 웨이브가 살아서 딱 원하던 느낌이었어요. 마지막에 드라이 없이 손질하는 방법이랑 에센스 바르는 타이밍까지 알려주셔서 집에서도 비슷하게 유지되고 있어요. 네 시간 예약인데 타임딜이라 절반 가격에 받았어요. 진짜 만족합니다!"
+          },
+          {
+            "id": "ardien-review-2",
+            "service_name": "남성 다운펌",
+            "rating": 5,
+            "content": "옆머리 뜨는 게 진짜 고민이었는데 한 시간 만에 해결됐어요ㅋㅋ 아침에 손질 시간 확 줄었습니다. 또 올게요~"
+          },
+          {
+            "id": "ardien-review-3",
+            "service_name": "여성 디자인컷",
+            "rating": 4,
+            "content": "평소 손질 습관 먼저 물어봐주셔서 좋았어요. 길이도 원하는 만큼 맞춰주셨습니다!"
+          },
+          {
+            "id": "ardien-review-4",
+            "service_name": "셋팅 볼륨펌",
+            "rating": 5,
+            "content": "타임딜 뜬 거 보고 바로 예약했는데 정말 잘한 선택이었어요~~ 할인 예약이라고 대충 하실까 봐 살짝 걱정했는데 전혀요!! 컬 유지력도 좋아서 몇 주 지났는데 아직도 살아있어요. 너무 좋아용 다음에도 타임딜 뜨면 무조건 갑니다!!"
+          },
+          {
+            "id": "ardien-review-5",
+            "service_name": "스타일링 케어",
+            "rating": 5,
+            "content": "펌 하고 같이 받았는데 결이 정돈되니까 훨씬 깔끔해 보여요. 시간도 짧아서 부담 없었습니다."
+          }
+        ],
+        "search_filters": {
+          "구분": "헤어샵",
+          "샵명": "Ardien",
+          "샵 해시태그": "#히피펌 #남성펌 #여성펌 #스타일링",
+          "주요 서비스": "히피펌, 셋팅 볼륨펌, 여성 디자인컷",
+          "가격대": "4만~19만원대",
+          "평균 별점": 4.9,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "인근 유료주차장 이용"
+        },
+        "deal_templates": [
+          {
+            "service_name": "히피펌",
+            "start_time": "11:00",
+            "end_time": "15:00",
+            "original_price": 170000,
+            "deal_price": 76500,
+            "discount_rate": 55,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "남성 다운펌",
+            "start_time": "10:30",
+            "end_time": "12:30",
+            "original_price": 60000,
+            "deal_price": 36000,
+            "discount_rate": 40,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "여성 디자인컷",
+            "start_time": "13:00",
+            "end_time": "15:00",
+            "original_price": 45000,
+            "deal_price": 29000,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "셋팅 볼륨펌",
+            "start_time": "14:00",
+            "end_time": "18:00",
+            "original_price": 190000,
+            "deal_price": 76000,
+            "discount_rate": 60,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "스타일링 케어",
+            "start_time": "18:00",
+            "end_time": "20:00",
+            "original_price": 50000,
+            "deal_price": 35000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/ardien/representative-01.png",
+        "/images/provided/ardien/representative-02.png",
+        "/images/provided/ardien/representative-03.png",
+        "/images/provided/ardien/representative-04.png",
+        "/images/provided/ardien/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:ardien:service:1",
+          "name": "히피펌",
+          "description": "자연스러운 웨이브로 볼륨을 살리는 여성 펌",
+          "price": 170000,
+          "display_duration_minutes": 150,
+          "duration_minutes": 150,
+          "source_details": {
+            "hashtags": "#히피펌 #여성펌",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 105000,
+            "original_workbook_regular_price": 150000
+          },
+          "deal": {
+            "start_time": "11:00",
+            "end_time": "15:00",
+            "original_price": 170000,
+            "deal_price": 76500,
+            "discount_rate": 55,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:ardien:service:2",
+          "name": "남성 다운펌",
+          "description": "붕 뜨는 옆머리와 윗머리를 정리하는 남성 펌",
+          "price": 60000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#남성펌 #다운펌",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 67500,
+            "original_workbook_regular_price": 90000
+          },
+          "deal": {
+            "start_time": "10:30",
+            "end_time": "12:30",
+            "original_price": 60000,
+            "deal_price": 36000,
+            "discount_rate": 40,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:ardien:service:3",
+          "name": "여성 디자인컷",
+          "description": "얼굴형과 손질 습관을 고려한 여성 커트",
+          "price": 45000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#여성커트 #디자인컷",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 91000,
+            "original_workbook_regular_price": 130000
+          },
+          "deal": {
+            "start_time": "13:00",
+            "end_time": "15:00",
+            "original_price": 45000,
+            "deal_price": 29000,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:ardien:service:4",
+          "name": "셋팅 볼륨펌",
+          "description": "컬 유지력이 좋은 셋팅 방식의 볼륨펌",
+          "price": 190000,
+          "display_duration_minutes": 180,
+          "duration_minutes": 180,
+          "source_details": {
+            "hashtags": "#셋팅펌 #볼륨펌",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 48000,
+            "original_workbook_regular_price": 60000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "18:00",
+            "original_price": 190000,
+            "deal_price": 76000,
+            "discount_rate": 60,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:ardien:service:5",
+          "name": "스타일링 케어",
+          "description": "펌 이후 형태를 잡아주는 스타일링 마무리 관리",
+          "price": 50000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#스타일링 #데일리케어",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 40000,
+            "original_workbook_regular_price": 50000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "20:00",
+            "original_price": 50000,
+            "deal_price": 35000,
+            "discount_rate": 30,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        }
+      ]
+    },
+    {
+      "source_key": "provided:rivelloa",
+      "name": "리벨로아",
+      "category": "hair",
+      "address": "서울특별시 서초구 서초동 (예시 지역)",
+      "latitude": 37.5027,
+      "longitude": 127.0247,
+      "number": "02-0000-3110",
+      "description": "부담없는 가격으로 커트부터 염색까지 데일리 관리를 받을 수 있는 동네 헤어샵",
+      "source_details": {
+        "source": "provided-workbook",
+        "is_sample": true,
+        "opening_hours": "10:00~20:00",
+        "closed_days": "매주 월요일",
+        "hashtags": "#데일리커트 #새치커버 #홈케어염색 #가족헤어샵",
+        "amenities": "예약제 / 와이파이 / 음료 제공",
+        "parking": "주차 불가",
+        "average_rating": 4.7,
+        "review_count": 245,
+        "favorite_count": 388,
+        "deposit": "없음",
+        "cancellation_policy": "예약 3시간 전까지 무료 취소",
+        "location_is_approximate": true,
+        "review_images": [
+          "/images/provided/rivelloa/review-01.png",
+          "/images/provided/rivelloa/review-02.png",
+          "/images/provided/rivelloa/review-03.png",
+          "/images/provided/rivelloa/review-04.png",
+          "/images/provided/rivelloa/review-05.png"
+        ],
+        "review_samples": [
+          {
+            "id": "rivelloa-review-1",
+            "service_name": "데일리 커트",
+            "rating": 5,
+            "content": "동네에 이런 곳 있어서 너무 좋아요~~ 가격도 착하고 원장님도 친절하시고! 생각보다 타임딜 예약 좋네용ㅎㅎ"
+          },
+          {
+            "id": "rivelloa-review-2",
+            "service_name": "새치커버 염색",
+            "rating": 5,
+            "content": "새치가 나기 시작한 지 얼마 안 돼서 염색을 해야 하나 말아야 하나 계속 고민했는데요, 여기서 상담받으면서 전체를 다 물들이는 것보다 뿌리 쪽만 자연스럽게 커버하는 게 낫겠다고 하셔서 그렇게 진행했어요. 결과적으로 머리색이 갑자기 어두워지는 느낌 없이 새치만 티 안 나게 정리돼서 주변에서도 염색한 줄 모르더라고요. 다음에 언제쯤 다시 오면 좋을지도 알려주셔서 계획 세우기 편했습니다. 가격도 부담 없어서 꾸준히 다닐 생각이에요."
+          },
+          {
+            "id": "rivelloa-review-3",
+            "service_name": "기본 매직",
+            "rating": 4,
+            "content": "기본 매직인데 손질하기 편하게 잘 나왔어요. 타임딜 가격이 저렴해서 만족합니다!"
+          },
+          {
+            "id": "rivelloa-review-4",
+            "service_name": "가족 커트 패키지",
+            "rating": 5,
+            "content": "아이랑 같이 갔는데 애가 가만히 안 있는데도 웃으면서 잘 봐주셔서 감사했어요ㅠㅠ 패키지라 가격도 저렴하고! 다음에 또 같이 올게요~~"
+          },
+          {
+            "id": "rivelloa-review-5",
+            "service_name": "홈케어 트리트먼트",
+            "rating": 5,
+            "content": "가격 대비 만족스러웠어요. 집에서도 부드러움이 며칠 유지되더라구요!"
+          }
+        ],
+        "search_filters": {
+          "구분": "헤어샵",
+          "샵명": "리벨로아",
+          "샵 해시태그": "#데일리커트 #새치커버 #홈케어염색 #가족헤어샵",
+          "주요 서비스": "데일리 커트, 새치커버 염색, 기본 매직",
+          "가격대": "2만~12만원대",
+          "평균 별점": 4.7,
+          "예약 가능 여부": "가능",
+          "타임딜 여부": "진행중",
+          "주차": "주차 불가"
+        },
+        "deal_templates": [
+          {
+            "service_name": "데일리 커트",
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 25000,
+            "deal_price": 17500,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "새치커버 염색",
+            "start_time": "12:00",
+            "end_time": "15:00",
+            "original_price": 60000,
+            "deal_price": 33000,
+            "discount_rate": 45,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          },
+          {
+            "service_name": "기본 매직",
+            "start_time": "14:00",
+            "end_time": "18:00",
+            "original_price": 120000,
+            "deal_price": 54000,
+            "discount_rate": 55,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          },
+          {
+            "service_name": "가족 커트 패키지",
+            "start_time": "15:00",
+            "end_time": "17:00",
+            "original_price": 55000,
+            "deal_price": 33000,
+            "discount_rate": 40,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          },
+          {
+            "service_name": "홈케어 트리트먼트",
+            "start_time": "18:00",
+            "end_time": "19:30",
+            "original_price": 40000,
+            "deal_price": 26000,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "1시간 30분"
+          }
+        ]
+      },
+      "images": [
+        "/images/provided/rivelloa/representative-01.png",
+        "/images/provided/rivelloa/representative-02.png",
+        "/images/provided/rivelloa/representative-03.png",
+        "/images/provided/rivelloa/representative-04.png",
+        "/images/provided/rivelloa/representative-05.png"
+      ],
+      "services": [
+        {
+          "source_key": "provided:rivelloa:service:1",
+          "name": "데일리 커트",
+          "description": "남녀 구분없이 편하게 손질하는 기본 커트",
+          "price": 25000,
+          "display_duration_minutes": 40,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#데일리커트 #기본커트",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 20000,
+            "original_workbook_regular_price": 25000
+          },
+          "deal": {
+            "start_time": "10:00",
+            "end_time": "12:00",
+            "original_price": 25000,
+            "deal_price": 17500,
+            "discount_rate": 30,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:rivelloa:service:2",
+          "name": "새치커버 염색",
+          "description": "자연스러운 새치 커버를 위한 뿌리 염색",
+          "price": 60000,
+          "display_duration_minutes": 60,
+          "duration_minutes": 60,
+          "source_details": {
+            "hashtags": "#새치커버 #뿌리염색",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 42000,
+            "original_workbook_regular_price": 60000
+          },
+          "deal": {
+            "start_time": "12:00",
+            "end_time": "15:00",
+            "original_price": 60000,
+            "deal_price": 33000,
+            "discount_rate": 45,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "3시간"
+          }
+        },
+        {
+          "source_key": "provided:rivelloa:service:3",
+          "name": "기본 매직",
+          "description": "스타일 유지가 편한 기본 매직",
+          "price": 120000,
+          "display_duration_minutes": 120,
+          "duration_minutes": 120,
+          "source_details": {
+            "hashtags": "#기본매직 #매직스트레이트",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 84000,
+            "original_workbook_regular_price": 120000
+          },
+          "deal": {
+            "start_time": "14:00",
+            "end_time": "18:00",
+            "original_price": 120000,
+            "deal_price": 54000,
+            "discount_rate": 55,
+            "capacity": 1,
+            "status": "예약가능",
+            "remaining_label": "4시간"
+          }
+        },
+        {
+          "source_key": "provided:rivelloa:service:4",
+          "name": "가족 커트 패키지",
+          "description": "부모와 자녀가 함께 받는 커트 패키지",
+          "price": 55000,
+          "display_duration_minutes": 70,
+          "duration_minutes": 90,
+          "source_details": {
+            "hashtags": "#가족커트 #패키지커트",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 41250,
+            "original_workbook_regular_price": 55000
+          },
+          "deal": {
+            "start_time": "15:00",
+            "end_time": "17:00",
+            "original_price": 55000,
+            "deal_price": 33000,
+            "discount_rate": 40,
+            "capacity": 2,
+            "status": "예약가능",
+            "remaining_label": "2시간"
+          }
+        },
+        {
+          "source_key": "provided:rivelloa:service:5",
+          "name": "홈케어 트리트먼트",
+          "description": "집에서도 유지되는 순한 트리트먼트",
+          "price": 40000,
+          "display_duration_minutes": 30,
+          "duration_minutes": 30,
+          "source_details": {
+            "hashtags": "#홈케어트리트먼트 #데일리케어",
+            "additional_charge": "기장·모발 상태·옵션에 따라 추가금이 발생할 수 있음",
+            "regular_discount_price": 30000,
+            "original_workbook_regular_price": 40000
+          },
+          "deal": {
+            "start_time": "18:00",
+            "end_time": "19:30",
+            "original_price": 40000,
+            "deal_price": 26000,
+            "discount_rate": 35,
+            "capacity": 3,
+            "status": "예약가능",
+            "remaining_label": "1시간 30분"
+          }
+        }
+      ]
+    }
+  ]
+}

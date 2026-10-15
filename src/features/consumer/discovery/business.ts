@@ -1,25 +1,46 @@
 import { getSupabaseClient } from "@/api/supabase";
 import type { ServiceCategory } from "@/type/package";
 import { serviceMinutes } from "@/features/consumer/booking/serviceSelection";
+import { resolveBusinessImage } from "../businessImages";
 
-export type BusinessSummary = Pick<ConsumerBusiness, "id" | "name" | "address" | "description">;
+export type BusinessSummary = Pick<ConsumerBusiness, "id" | "name" | "address" | "description"> & { business_images?: { img_url: string }[] };
 
-export async function readCategoryBusinesses(category: ServiceCategory): Promise<BusinessSummary[]> {
+export async function readCategoryBusinesses(category?: ServiceCategory): Promise<BusinessSummary[]> {
   const client = getSupabaseClient();
   const businesses: BusinessSummary[] = [];
   const pageSize = 1000;
 
   for (let page = 0; ; page += 1) {
-    const { data, error } = await client.from("businesses")
-      .select("id, name, address, description, business_category!inner(category)")
-      .eq("business_category.category", category)
+    let query = client.from("businesses")
+      .select("id, name, address, description, business_images(img_url), business_category!inner(category)")
+      .like("source_key", "provided:%")
       .order("id", { ascending: true })
       .range(page * pageSize, (page + 1) * pageSize - 1);
+    if (category) query = query.eq("business_category.category", category);
+    const { data, error } = await query;
     if (error) throw new Error(error.message);
     const rows = data ?? [];
     businesses.push(...rows);
     if (rows.length < pageSize) return businesses;
   }
+}
+
+export interface SuppliedBusinessDetails {
+  is_sample: boolean;
+  opening_hours: string;
+  closed_days: string;
+  hashtags: string;
+  amenities: string;
+  parking: string;
+  average_rating: number;
+  review_count: number;
+  favorite_count: number;
+  deposit: string;
+  cancellation_policy: string;
+  location_is_approximate: boolean;
+  review_images: string[];
+  review_samples: { id: string; service_name: string; rating: number; content: string }[];
+  deal_templates?: { service_name: string; start_time: string; end_time: string; original_price: number; deal_price: number; discount_rate: number; capacity: number; status: string }[];
 }
 
 export interface ConsumerBusiness {
@@ -28,29 +49,30 @@ export interface ConsumerBusiness {
   address: string;
   number: string;
   description: string | null;
-  services: { id: number; name: string; price: number; duration_minutes: number | null; description: string | null; exclusive_group?: string | null; menu_category_id?: number | null }[];
+  services: { id: number; name: string; price: number; duration_minutes: number | null; description: string | null; exclusive_group?: string | null; menu_category_id?: number | null; display_duration_minutes?: number | null; source_details?: { hashtags?: string; additional_charge?: string; regular_discount_price?: number } | null }[];
   staff: { id: number; name: string; position: string }[];
   categories?: ServiceCategory[];
   images?: string[];
+  source_details?: SuppliedBusinessDetails | null;
 }
 
 export async function readConsumerBusiness(id: number): Promise<ConsumerBusiness | null> {
   const { data, error } = await getSupabaseClient().from("businesses")
-    .select("id, name, address, number, description, services(*), staff(id, name, position), business_category(category), business_images(img_url)")
+    .select("*, services(*), staff(id, name, position), business_category(category), business_images(img_url)")
     .eq("id", id).maybeSingle();
   if (error) throw new Error(error.message);
   if (!data) return null;
-  const client = getSupabaseClient();
+  const row = data as unknown as ConsumerBusiness & {
+    business_category: { category: ServiceCategory }[] | null;
+    business_images: { img_url: string | null }[] | null;
+  };
   return {
-    ...data,
-    services: (data.services ?? []).map((service) => ({ ...service, duration_minutes: serviceMinutes(service as ConsumerBusiness["services"][number]) })),
-    categories: (data.business_category ?? []).map((item) => item.category as ServiceCategory),
-    images: (data.business_images ?? []).flatMap((item) => {
-      const path = item.img_url?.trim();
-      if (!path) return [];
-      return /^https?:\/\//i.test(path) ? [path] : [client.storage
-        .from(import.meta.env.VITE_SUPABASE_BUSINESS_IMAGES_BUCKET ?? "businesses")
-        .getPublicUrl(path).data.publicUrl];
+    ...row,
+    services: (row.services ?? []).map((service) => ({ ...service, duration_minutes: service.display_duration_minutes ?? serviceMinutes(service) })),
+    categories: (row.business_category ?? []).map((item) => item.category),
+    images: (row.business_images ?? []).flatMap((item) => {
+      const url = resolveBusinessImage(item.img_url);
+      return url ? [url] : [];
     }),
   } as ConsumerBusiness;
 }

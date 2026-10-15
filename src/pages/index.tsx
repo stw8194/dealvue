@@ -14,14 +14,13 @@ import Search from "./Search";
 import Nearby from "./Nearby";
 import Auth from "./Auth";
 import BottomNav from "@/components/layout/BottomNav";
-import { PreviewBar, usePreviewStore } from "@/features/consumer/preview";
 import { NotFoundPage } from "@/features/consumer/ui";
 import { DealDetailPage } from "@/features/consumer/discovery/DealDetailPage";
 import { BusinessDetailPage } from "@/features/consumer/discovery/BusinessDetailPage";
 import DealKitManager from "@/features/consumer/discovery/DealKitManager";
 import BusinessMenuManager from "@/features/consumer/discovery/BusinessMenuManager";
 import { BusinessListPage } from "@/features/consumer/discovery/BusinessListPage";
-import NearbyPreview from "@/features/consumer/discovery/NearbyPreview";
+import ProvidedCatalogRedirect from "@/features/consumer/discovery/ProvidedCatalogPage";
 import LocationPage from "@/features/consumer/LocationPage";
 import OnboardingPage from "@/features/consumer/OnboardingPage";
 import CheckoutPage from "@/features/consumer/booking/CheckoutPage";
@@ -31,10 +30,8 @@ import { RewardsPage, FortunePage } from "@/features/consumer/engagement/Rewards
 import { NotificationsPage, SettingsPage, ShortsPage } from "@/features/consumer/engagement/UtilityPages";
 
 export default function Router() {
-  const preview = usePreviewStore((state) => state.enabled);
   return (
     <BrowserRouter>
-      <PreviewBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth/*" element={<Auth />} />
@@ -48,6 +45,8 @@ export default function Router() {
         <Route path="/business/:businessId/manage-menu" element={<BusinessMenuManager />} />
         <Route path="/business/:businessId/manage-deal-kits" element={<DealKitManager />} />
         <Route path="/businesses" element={<BusinessListPage />} />
+        <Route path="/provided" element={<ProvidedCatalogRedirect />} />
+        <Route path="/provided/:slug" element={<ProvidedCatalogRedirect />} />
         <Route path="/checkout/:dealId" element={<CheckoutPage />} />
         <Route path="/booking/complete/:reservationId" element={<BookingCompletePage />} />
         <Route path="/package" element={<PackageHome />} />
@@ -57,7 +56,7 @@ export default function Router() {
         <Route path="/package/detail/:packageId" element={<PackageDetail />} />
         <Route path="/package/template/:templateId" element={<PackageDetail />} />
         <Route path="/search" element={<Search />} />
-        <Route path="/nearby" element={preview ? <NearbyPreview /> : <Nearby />} />
+        <Route path="/nearby" element={<Nearby />} />
         <Route path="/location" element={<LocationPage />} />
         <Route path="/onboarding" element={<OnboardingPage />} />
         <Route path="/community" element={<CommunityPage />} />

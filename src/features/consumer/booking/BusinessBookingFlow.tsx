@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Check, Phone, Smartphone, X } from "lucide-react";
+import type { ConsumerDeal } from "../types";
 import type { ConsumerBusiness } from "../discovery/business";
 import { bookingTotals, groupBookingServices, selectBookingService, serviceExclusiveKeys, serviceMinutes, type ServiceMenuCategory } from "./serviceSelection";
 import { createSalonBooking, getBookingMode, getBookingSlots, getServiceMenuCategories, type BookingMode, type BookingSlot } from "@/api/salonBooking";
+import { isOpenDeal, useDealTime } from "../dealTiming";
 
 const timeLabel = (date: string) => new Date(date).toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hour12: false });
 const button = "w-full rounded-xl bg-accent p-3.5 text-sm font-bold text-white disabled:opacity-40";
-export default function BusinessBookingFlow({ business, preview, onClose }: { business: ConsumerBusiness; preview: boolean; onClose: () => void }) {
+export default function BusinessBookingFlow({ business, onClose, offers = [] }: { business: ConsumerBusiness; preview: boolean; offers?: ConsumerDeal[]; onClose: () => void }) {
+  const supplied = Boolean(business.source_details);
+  const now = useDealTime();
+  const activeOffers = offers.filter(offer => isOpenDeal(offer, now));
   const dialog = useRef<HTMLDialogElement>(null);
   const submittingRef = useRef(false);
   const [mode, setMode] = useState<BookingMode | null>(null);
@@ -35,20 +40,20 @@ export default function BusinessBookingFlow({ business, preview, onClose }: { bu
   const currentSlot = currentSlots?.rows.find((slot) => slot.start_at === start && slot.available);
   useEffect(() => { dialog.current?.showModal(); }, []);
   useEffect(() => {
-    if (preview) return;
+    if (supplied) return;
     let current = true;
     Promise.all([getBookingMode(business.id), getServiceMenuCategories(business.id)]).then(([value, menuCategories]) => { if (current) { setMode(value); setCategories(menuCategories); setModeError(""); } })
       .catch((caught: unknown) => { if (current) setModeError(caught instanceof Error ? caught.message : "예약 설정을 불러오지 못했습니다."); });
     return () => { current = false; };
-  }, [business.id, preview, refresh]);
+  }, [business.id, supplied, refresh]);
   useEffect(() => {
-    if (step < 3 || step > 4 || !staffId || !servicesKey || !date || preview) return;
+    if (step < 3 || step > 4 || !staffId || !servicesKey || !date || supplied) return;
     let current = true;
     getBookingSlots(business.id, Number(staffId), servicesKey.split(",").map(Number), date)
       .then((rows) => { if (current) setSlots({ key, rows, error: "" }); })
       .catch((caught: unknown) => { if (current) setSlots({ key, rows: [], error: caught instanceof Error ? caught.message : "예약 시간을 불러오지 못했습니다." }); });
     return () => { current = false; };
-  }, [business.id, staffId, servicesKey, date, preview, key, step]);
+  }, [business.id, staffId, servicesKey, date, supplied, key, step]);
   const submit = async () => {
     if (submittingRef.current || !currentSlot || !selected.length || !staffId) return;
     submittingRef.current = true; setSubmitting(true); setError("");
@@ -65,7 +70,7 @@ export default function BusinessBookingFlow({ business, preview, onClose }: { bu
   return <dialog ref={dialog} aria-label="매장 예약" onCancel={(event) => { event.preventDefault(); if (!submitting) onClose(); }} className="fixed inset-0 m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-3xl border-0 bg-white p-5 text-page-heading backdrop:bg-black/40">
     <header className="mb-5 flex items-center justify-between"><div className="flex items-center gap-2">{step > 0 && step < 5 && <button type="button" disabled={submitting} aria-label="이전 단계" onClick={() => setStep(step - 1)} className="p-1"><ArrowLeft size={18} /></button>}<h2 className="font-bold">{["예약하기", "시술자 선택", "메뉴 선택", "날짜 · 시간 선택", "예약 내용 확인", "예약 접수 완료"][step]}</h2></div><button type="button" disabled={submitting} aria-label="예약 창 닫기" onClick={onClose} className="rounded-full bg-gray-100 p-2"><X size={18} /></button></header>
     <p className="mb-4 text-sm text-page-text">{business.name}</p>
-    {step === 0 && <div className="space-y-3">{preview ? <p className="rounded-xl bg-[#fff3f7] p-4 text-sm">이 화면은 실제 매장 예약 기능입니다. 실제 데이터 보기로 전환한 뒤 이용해 주세요.</p> : modeError ? <div role="alert"><p className="text-sm">{modeError}</p><button type="button" onClick={() => { setModeError(""); setRefresh((value) => value + 1); }} className="mt-3 text-sm text-accent">다시 확인</button></div> : !mode ? <p role="status">예약 방법을 확인하고 있어요.</p> : <>
+    {step === 0 && <div className="space-y-3">{supplied ? <div className="space-y-3"><p className="text-sm text-page-text">원하는 시술을 선택한 뒤 방문 일정을 정해 주세요.</p>{activeOffers.map(offer => <Link key={offer.id} to={`/checkout/${offer.id}`} onClick={onClose} className="block rounded-2xl border border-page-border p-4 hover:border-accent"><strong className="block text-sm">{offer.serviceName}</strong><span className="mt-2 block text-xs text-page-text">{offer.timeWindow} · {offer.durationMinutes}분</span><span className="mt-2 block font-bold text-accent">{offer.price.toLocaleString()}원 · 일정 선택 →</span></Link>)}{!activeOffers.length && <p role="status">현재 진행 중인 타임딜이 없습니다.</p>}</div> : modeError ? <div role="alert"><p className="text-sm">{modeError}</p><button type="button" onClick={() => { setModeError(""); setRefresh((value) => value + 1); }} className="mt-3 text-sm text-accent">다시 확인</button></div> : !mode ? <p role="status">예약 방법을 확인하고 있어요.</p> : <>
       {(mode === "phone" || mode === "both") && (phone ? <a href={`tel:${phone}`} className="flex items-center gap-3 rounded-2xl border border-page-border p-5"><Phone className="text-accent" /><span><strong className="block">전화로 예약하기</strong><span className="text-xs text-page-text">{business.number}</span></span></a> : <p className="rounded-xl border border-page-border p-4 text-sm">전화번호가 아직 등록되지 않았어요.</p>)}
       {(mode === "app" || mode === "both") && <button type="button" onClick={() => setStep(1)} className="flex w-full items-center gap-3 rounded-2xl border border-accent bg-[#fff3f7] p-5 text-left"><Smartphone className="text-accent" /><span><strong className="block">앱에서 예약하기</strong><span className="text-xs text-page-text">시술자 → 메뉴 → 시간 순서로 선택해 주세요.</span></span></button>}
     </>}</div>}

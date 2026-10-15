@@ -4,6 +4,7 @@ export type ReservationStatus = "waiting" | "confirmed" | "cancelled" | "done" |
 export type ReservationPaymentStatus = "test" | "test_cancelled" | "unavailable";
 
 export interface Reservation {
+  rotationKey?: string;
   id: string;
   dealId: number | null;
   businessId: number;
