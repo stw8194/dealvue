@@ -10,6 +10,7 @@ import PointList from "./PointList";
 import RecentViewed from "./RecentViewed";
 import Playground from "./Playground";
 import Inquiry from "./Inquiry";
+import Stats from "./Stats";
 
 export default function MyPage() {
   const { pathname } = useLocation();
@@ -56,6 +57,7 @@ export default function MyPage() {
         <Route path="inquiry" element={<Inquiry />} />
         <Route path="coupon" element={<CouponList />} />
         <Route path="point" element={<PointList />} />
+        <Route path="stats" element={<Stats />} />
         <Route path="recent" element={<RecentViewed />} />
         <Route path="playground" element={<Playground />} />
         <Route path="*" element={<NotFoundPage />} />

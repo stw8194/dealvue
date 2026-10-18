@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_APPEARANCE, normalizeAppearance, type AvatarAppearance } from "./playground/appearance";
 import { ACCESSORIES, BACKDROPS, DEFAULT_ACCESSORIES, LOOKS, ROULETTE_REWARDS, type Accessories, type AccessoryId, type BackdropId, type Outfit, type RoulettePlay, type SavedLook } from "./playground/data";
+import { applyOptimistic, registerLedgerCache, resetLedger, syncFromLedger, type LedgerState, type PointEntry } from "../ledger";
 
 export const PREVIEW_AUTHOR = "preview-consumer";
 export const REGIONS = ["전체", "강남구", "마포구", "성동구", "기타 지역"] as const;
@@ -22,7 +23,7 @@ export type CommunityPost = {
   comments: { id: string; authorId: string; authorName: string; body: string; createdAt: string }[];
 };
 type PostInput = Pick<CommunityPost, "board" | "region" | "title" | "body" | "tags">;
-export type PointEntry = { id: string; reason: string; amount: number; createdAt: string };
+export type { PointEntry };
 type Notification = { id: string; title: string; body: string; link: string; createdAt: string; read: boolean; kind: "activity" | "benefits" };
 type Short = { id: string; title: string; url: string; tag: string; createdAt: string };
 export type Mission = "fortune" | "community";
@@ -85,6 +86,9 @@ type EngagementStore = ReturnType<typeof initialData> & {
   deleteShort: (id: string) => void;
   readNotification: (id?: string) => void;
   setNotificationSetting: (key: "activity" | "benefits", enabled: boolean) => void;
+  /** Adds (positive) or spends (negative) points; spending fails when the balance is short. */
+  adjustPoints: (reason: string, amount: number) => boolean;
+  notify: (title: string, body: string, link: string, kind?: Notification["kind"]) => void;
   reset: () => void;
 };
 
@@ -95,6 +99,15 @@ function notice(title: string, body: string, link: string, kind: Notification["k
   return { id: identifier(), title, body, link, kind, createdAt: new Date().toISOString(), read: false };
 }
 export function pointBalance(history: PointEntry[]) { return history.reduce((sum, entry) => sum + entry.amount, 0); }
+
+type OwnedKey = "ownedOutfits" | "ownedAccessories" | "ownedBackdrops";
+/** Owning an item already is free; otherwise its price is spent from the ledger balance. */
+function purchase(state: LedgerState, key: OwnedKey, id: string, price: number, entry: PointEntry): LedgerState | null {
+  const owned = state[key] as string[];
+  if (owned.includes(id)) return state;
+  if (pointBalance(state.pointHistory) < price) return null;
+  return { ...state, [key]: [...owned, id], pointHistory: price ? [entry, ...state.pointHistory] : state.pointHistory };
+}
 
 export const useEngagementStore = create<EngagementStore>()(persist((set, get) => ({
   ...initialData(),
@@ -138,37 +151,35 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
     set(state => ({ posts: state.posts.map(post => post.id === postId ? { ...post, comments: post.comments.map(comment => comment.id === commentId ? { ...comment, body: body.trim().slice(0, 500) } : comment) } : post) }));
     return true;
   },
+  // Points, attendance, rewards and purchases go through the device ledger so two tabs cannot
+  // spend the same points or claim the same daily reward twice.
   checkIn: () => {
-    const today = localDay();
-    if (!canChange() || get().attendance.includes(today)) return false;
-    const totalDays = get().attendance.length + 1;
-    const bonus = [7, 14, 21, 30].includes(totalDays) ? 50 : 0;
-    set(state => ({
-      attendance: [...state.attendance, today],
-      pointHistory: [newPoint(`출석체크${bonus ? ` · 누적 ${totalDays}일 보너스` : ""}`, 10 + bonus), ...state.pointHistory],
-      notifications: state.notificationSettings.benefits ? [notice("체험 출석 완료", `${10 + bonus} 체험 포인트를 받았어요.`, "/rewards"), ...state.notifications] : state.notifications,
-    }));
-    return true;
+    const today = localDay(), entry = newPoint("", 0);
+    let amount = 0;
+    const ok = applyOptimistic(state => {
+      if (state.attendance.includes(today)) return null;
+      const totalDays = state.attendance.length + 1, bonus = [7, 14, 21, 30].includes(totalDays) ? 50 : 0;
+      amount = 10 + bonus;
+      return { ...state, attendance: [...state.attendance, today], pointHistory: [{ ...entry, reason: `출석체크${bonus ? ` · 누적 ${totalDays}일 보너스` : ""}`, amount }, ...state.pointHistory] };
+    });
+    if (ok) get().notify("출석 완료", `${amount} 포인트를 받았어요.`, "/rewards", "benefits");
+    return ok;
   },
   claimMission: mission => {
     const key = `${localDay()}:${mission}`;
-    if (!canChange() || get().missionClaims.includes(key)) return false;
     if (mission === "community" && !get().posts.some(post => post.authorId === PREVIEW_AUTHOR && localDay(new Date(post.createdAt)) === localDay())) return false;
-    set(state => ({
-      missionClaims: [...state.missionClaims, key],
-      pointHistory: [newPoint(mission === "fortune" ? "오늘의 수정구슬 운세" : "오늘 커뮤니티 글쓰기 미션", 5), ...state.pointHistory],
-      notifications: mission === "fortune" && state.notificationSettings.benefits ? [notice("오늘의 운세 선물", "5 체험 포인트를 받았어요.", "/fortune"), ...state.notifications] : state.notifications,
-    }));
-    return true;
+    const entry = newPoint(mission === "fortune" ? "오늘의 수정구슬 운세" : "오늘 커뮤니티 글쓰기 미션", 5);
+    const ok = applyOptimistic(state => state.missionClaims.includes(key) ? null : { ...state, missionClaims: [...state.missionClaims, key], pointHistory: [entry, ...state.pointHistory] });
+    if (ok && mission === "fortune") get().notify("오늘의 운세 선물", "5 포인트를 받았어요.", "/fortune", "benefits");
+    return ok;
   },
   chooseOutfit: outfit => {
-    if (!canChange()) return false;
     const look = LOOKS.find(item => item.id === outfit);
     if (!look) return false;
-    if (get().ownedOutfits.includes(outfit)) { set({ outfit }); return true; }
-    if (pointBalance(get().pointHistory) < look.price) return false;
-    set(state => ({ outfit, ownedOutfits: [...state.ownedOutfits, outfit], pointHistory: [newPoint(`아바타 의상 · ${look.name}`, -look.price), ...state.pointHistory] }));
-    return true;
+    const entry = newPoint(`아바타 의상 · ${look.name}`, -look.price);
+    const ok = applyOptimistic(state => purchase(state, "ownedOutfits", outfit, look.price, entry));
+    if (ok) set({ outfit });
+    return ok;
   },
   chooseAppearance: appearance => {
     if (!canChange()) return false;
@@ -176,26 +187,20 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
     return true;
   },
   chooseAccessory: id => {
-    if (!canChange()) return false;
     const item = ACCESSORIES.find(item => item.id === id);
     if (!item) return false;
-    const owned = get().ownedAccessories.includes(id);
-    if (!owned && pointBalance(get().pointHistory) < item.price) return false;
-    set(state => ({
-      accessories: { ...state.accessories, [item.slot]: id },
-      ownedAccessories: owned ? state.ownedAccessories : [...state.ownedAccessories, id],
-      pointHistory: owned || item.price === 0 ? state.pointHistory : [newPoint(`아바타 장신구 · ${item.name}`, -item.price), ...state.pointHistory],
-    }));
-    return true;
+    const entry = newPoint(`아바타 장신구 · ${item.name}`, -item.price);
+    const ok = applyOptimistic(state => purchase(state, "ownedAccessories", id, item.price, entry));
+    if (ok) set(state => ({ accessories: { ...state.accessories, [item.slot]: id } }));
+    return ok;
   },
   chooseBackdrop: id => {
-    if (!canChange()) return false;
     const item = BACKDROPS.find(item => item.id === id);
     if (!item) return false;
-    const owned = get().ownedBackdrops.includes(id);
-    if (!owned && pointBalance(get().pointHistory) < item.price) return false;
-    set(state => ({ backdrop: id, ownedBackdrops: owned ? state.ownedBackdrops : [...state.ownedBackdrops, id], pointHistory: owned || item.price === 0 ? state.pointHistory : [newPoint(`아바타 배경 · ${item.name}`, -item.price), ...state.pointHistory] }));
-    return true;
+    const entry = newPoint(`아바타 배경 · ${item.name}`, -item.price);
+    const ok = applyOptimistic(state => purchase(state, "ownedBackdrops", id, item.price, entry));
+    if (ok) set({ backdrop: id });
+    return ok;
   },
   setLookGoal: outfit => { if (canChange() && LOOKS.some(look => look.id === outfit)) set(state => ({ lookGoal: state.lookGoal === outfit ? null : outfit })); },
   saveLook: (name, look) => {
@@ -213,27 +218,28 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
   },
   deleteSavedLook: id => { if (canChange()) set(state => ({ savedLooks: state.savedLooks.filter(item => item.id !== id) })); },
   beginRoulette: () => {
-    const state = get(), day = localDay();
-    if (!canChange() || state.roulettePlay?.day === day || state.missionClaims.includes(`${day}:roulette`) || (state.roulettePlay && !state.roulettePlay.settled)) return null;
-    // Persist the draw before animating: reloads cannot redraw a better prize.
+    const day = localDay();
+    // Draw before animating and store the draw: reloads cannot redraw a better prize.
     const values = new Uint32Array(1);
     crypto.getRandomValues(values);
     const index = values[0] % ROULETTE_REWARDS.length;
     const play: RoulettePlay = { id: identifier(), day, index, amount: ROULETTE_REWARDS[index], settled: false };
-    set({ roulettePlay: play });
-    return play;
+    const ok = applyOptimistic(state => state.roulettePlay?.day === day || state.missionClaims.includes(`${day}:roulette`) || (state.roulettePlay && !state.roulettePlay.settled) ? null : { ...state, roulettePlay: play });
+    return ok ? play : null;
   },
   settleRoulette: id => {
-    const state = get(), play = state.roulettePlay;
-    if (!canChange() || !play || play.id !== id || play.settled) return false;
-    const key = `${play.day}:roulette`;
-    if (state.missionClaims.includes(key)) { set({ roulettePlay: { ...play, settled: true } }); return false; }
-    set({
-      roulettePlay: { ...play, settled: true },
-      missionClaims: [...state.missionClaims, key],
-      pointHistory: [newPoint("오늘의 행운 룰렛", play.amount), ...state.pointHistory],
-      notifications: state.notificationSettings.benefits ? [notice("룰렛 선물 도착", `${play.amount} 체험 포인트를 받았어요.`, "/rewards?tab=roulette"), ...state.notifications] : state.notifications,
+    const play = get().roulettePlay;
+    if (!play || play.id !== id || play.settled) return false;
+    const key = `${play.day}:roulette`, entry = newPoint("오늘의 행운 룰렛", play.amount);
+    const rewarded = !get().missionClaims.includes(key);
+    const ok = applyOptimistic(state => {
+      const current = state.roulettePlay;
+      if (!current || current.id !== id || current.settled) return null;
+      if (state.missionClaims.includes(key)) return { ...state, roulettePlay: { ...current, settled: true } };
+      return { ...state, roulettePlay: { ...current, settled: true }, missionClaims: [...state.missionClaims, key], pointHistory: [{ ...entry, amount: current.amount }, ...state.pointHistory] };
     });
+    if (!ok || !rewarded) return false;
+    get().notify("룰렛 선물 도착", `${play.amount} 포인트를 받았어요.`, "/rewards?tab=roulette", "benefits");
     return true;
   },
   saveShort: (title, rawUrl, tag) => {
@@ -247,7 +253,16 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
   deleteShort: id => { if (canChange()) set(state => ({ shorts: state.shorts.filter(short => short.id !== id) })); },
   readNotification: id => { if (canChange()) set(state => ({ notifications: state.notifications.map(item => !id || item.id === id ? { ...item, read: true } : item) })); },
   setNotificationSetting: (key, enabled) => { if (canChange()) set(state => ({ notificationSettings: { ...state.notificationSettings, [key]: enabled } })); },
-  reset: () => { if (canChange()) set(initialData()); },
+  adjustPoints: (reason, amount) => {
+    if (!Number.isInteger(amount) || amount === 0) return false;
+    const entry = newPoint(reason, amount);
+    return applyOptimistic(state => amount < 0 && pointBalance(state.pointHistory) + amount < 0 ? null : { ...state, pointHistory: [entry, ...state.pointHistory] });
+  },
+  notify: (title, body, link, kind = "activity") => set(state => state.notificationSettings[kind] ? { notifications: [notice(title, body, link, kind), ...state.notifications] } : state),
+  reset: () => {
+    set(initialData());
+    void resetLedger();
+  },
 }), {
   name: "dealvue-consumer-engagement-preview-v1", version: 1,
   merge: (persisted, current) => {
@@ -259,8 +274,23 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
 // Keep daily locks and the wardrobe current in other tabs of this browser.
 if (typeof window !== "undefined") {
   const sync = (event: StorageEvent) => {
-    if (event.key === "dealvue-consumer-engagement-preview-v1") void useEngagementStore.persist.rehydrate();
+    // The stored copy may lag the ledger, so the ledger is re-applied after reloading it.
+    if (event.key === "dealvue-consumer-engagement-preview-v1") void Promise.resolve(useEngagementStore.persist.rehydrate()).then(syncFromLedger);
   };
   window.addEventListener("storage", sync);
   import.meta.hot?.dispose(() => window.removeEventListener("storage", sync));
 }
+
+const LEDGER_KEYS = ["pointHistory", "attendance", "missionClaims", "roulettePlay", "ownedOutfits", "ownedAccessories", "ownedBackdrops"] as const;
+registerLedgerCache({
+  read: () => {
+    const state = useEngagementStore.getState();
+    return Object.fromEntries(LEDGER_KEYS.map(key => [key, state[key]])) as Partial<LedgerState>;
+  },
+  write: slice => {
+    const next = Object.fromEntries(LEDGER_KEYS.filter(key => slice[key] !== undefined).map(key => [key, slice[key]])) as Partial<LedgerState>;
+    // Free default accessories are always owned, even after a reset.
+    if (next.ownedAccessories) next.ownedAccessories = [...new Set([...Object.values(DEFAULT_ACCESSORIES), ...next.ownedAccessories])];
+    useEngagementStore.setState(next);
+  },
+});

@@ -27,6 +27,8 @@ const DEFAULT_LOCATION = {
   longitude: 126.9786567,
 };
 
+const KOREA_BOUNDS: NearbySearchBounds = { south: 33, west: 124, north: 39, east: 132 };
+
 type TrackedPosition = {
   latitude: number;
   longitude: number;
@@ -305,14 +307,28 @@ export default function Nearby() {
     if (!maps || !map || searchInFlightRef.current) return;
 
     const bounds = getMapBounds(map);
-    const searchedSnapshot = getMapSnapshot(map);
+    let searchedSnapshot = getMapSnapshot(map);
     searchInFlightRef.current = true;
     setIsSearching(true);
     setBusinessError(null);
 
     try {
-      const nearbyBusinesses = await requestNearbyBusinesses(bounds);
+      let nearbyBusinesses = await requestNearbyBusinesses(bounds);
       if (!mountedRef.current) return;
+
+      // When the first view has no shops (e.g. far from the sample area), frame every shop instead of an empty map.
+      if (!nearbyBusinesses.length && !initialSearchCompletedRef.current) {
+        const allBusinesses = await requestNearbyBusinesses(KOREA_BOUNDS);
+        if (!mountedRef.current) return;
+        if (allBusinesses.length) {
+          const shopBounds = new maps.LatLngBounds();
+          allBusinesses.forEach((business) => shopBounds.extend(new maps.LatLng(business.latitude, business.longitude)));
+          map.setBounds(shopBounds);
+          nearbyBusinesses = await requestNearbyBusinesses(getMapBounds(map));
+          if (!mountedRef.current) return;
+          searchedSnapshot = getMapSnapshot(map);
+        }
+      }
 
       lastSearchSnapshotRef.current = searchedSnapshot;
       initialSearchCompletedRef.current = true;

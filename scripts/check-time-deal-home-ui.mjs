@@ -61,7 +61,7 @@ try {
   }
   await modal.screenshot({ path: `${folder}/modal-selected.png` });
   await modal.getByRole("link", { name: "일정 선택 · 예약하기", exact: true }).click();
-  await page.waitForURL("**/checkout/**"); await page.getByRole("button", { name: "예약 내용 저장하기", exact: true }).waitFor();
+  await page.waitForURL("**/checkout/**"); await page.getByRole("button", { name: /원 시연 결제하기 \(청구 없음\)$/ }).waitFor();
   await go("/"); await banner.waitFor();
   const firstIds = activeGroups.map(group => group.businessId);
   const endBeforeReload = activeGroups[0].endAt;

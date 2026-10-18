@@ -108,14 +108,17 @@ try {
   await booking.waitFor(); await booking.locator('a[href^="/checkout/"]').first().waitFor(); assert.equal(await booking.locator('a[href^="/checkout/"]').count(), 5);
   await booking.locator(`a[href="/checkout/${offer.id}"]`).click();
   await contains(page, offer.serviceName);
-  const save = page.getByRole("button", { name: "예약 내용 저장하기", exact: true });
+  // Checkout is a labelled demo: the button states that nothing is charged.
+  const save = page.getByRole("button", { name: /원 시연 결제하기 \(청구 없음\)$/ });
   assert.equal(await save.isDisabled(), true);
-  await page.getByLabel("방문 일시", { exact: true }).selectOption({ index: 1 });
+  await page.getByLabel("방문 날짜", { exact: true }).selectOption({ index: 1 });
+  await page.getByLabel("방문 시간", { exact: true }).selectOption({ index: 1 });
   await page.getByRole("checkbox").check(); await save.click();
-  await page.waitForURL("**/booking/complete/**"); await contains(page, "예약이 저장되었습니다");
-  await page.reload(); await contains(page, "예약이 저장되었습니다");
+  await page.waitForURL("**/booking/complete/**"); await contains(page, "시연 예약이 저장되었습니다");
+  await page.reload(); await contains(page, "시연 예약이 저장되었습니다");
   await page.getByRole("link", { name: "예약 상세 보기", exact: true }).click();
-  await page.getByLabel("변경할 일정", { exact: true }).selectOption({ index: 1 });
+  await page.getByLabel("변경할 날짜", { exact: true }).selectOption({ index: 1 });
+  await page.getByLabel("변경할 시간", { exact: true }).selectOption({ index: 1 });
   await page.getByRole("button", { name: "일정 변경", exact: true }).click(); await contains(page, "예약 일정을 변경했습니다");
   await page.getByRole("button", { name: "예약 취소", exact: true }).click(); await page.getByRole("button", { name: "취소 확정", exact: true }).click();
   await contains(page, "예약 취소");
@@ -123,7 +126,9 @@ try {
   await page.evaluate(async () => {
     const { useBookingStore } = await import("/src/features/consumer/booking/store.ts");
     const reservation = useBookingStore.getState().reservations[0];
-    useBookingStore.setState(state => ({ reservations: [...state.reservations, { ...reservation, id: "review-fixture", status: "done", requestKey: "review-fixture" }] }));
+    // Bookings live in the device ledger, so the fixture is written there (a finished visit).
+    const { commitLedger } = await import("/src/features/consumer/ledger.ts");
+    await commitLedger(state => ({ next: { ...state, reservations: [...state.reservations, { ...reservation, id: "review-fixture", status: "done", completedAt: new Date().toISOString(), requestKey: "review-fixture" }] }, result: null }));
   });
   await go(page, "/reservation/review-fixture/review");
   await page.getByLabel("이용 후기", { exact: true }).fill("실제 자료의 시술과 연결된 리뷰 저장 기능을 검증합니다.");

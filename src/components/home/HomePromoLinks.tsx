@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, ChevronRight, Gamepad2, Gift, Sparkles } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useCouponStore, WELCOME_COUPON } from "@/features/consumer/coupons";
 import {
   requestWelcomeCouponClaim,
   requestWelcomeCouponStatus,
@@ -9,7 +10,6 @@ import {
 type CouponButtonState = "checking" | "available" | "claiming" | "claimed";
 
 export function HomeCouponBanner() {
-  const navigate = useNavigate();
   const effectTimer = useRef<number | null>(null);
   const [buttonState, setButtonState] = useState<CouponButtonState>("checking");
   const [message, setMessage] = useState("");
@@ -18,14 +18,17 @@ export function HomeCouponBanner() {
   useEffect(() => {
     let isCurrent = true;
 
+    const claimedHere = useCouponStore.getState().coupons.some((coupon) => coupon.id === WELCOME_COUPON.id);
     requestWelcomeCouponStatus()
       .then((hasClaimed) => {
         if (!isCurrent) return;
-        setButtonState(hasClaimed ? "claimed" : "available");
+        // A coupon claimed on the account is also usable at this device's checkout.
+        if (hasClaimed) void useCouponStore.getState().claimWelcome();
+        setButtonState(hasClaimed || claimedHere ? "claimed" : "available");
       })
       .catch(() => {
         if (!isCurrent) return;
-        setButtonState("available");
+        setButtonState(claimedHere ? "claimed" : "available");
       });
 
     return () => {
@@ -42,16 +45,14 @@ export function HomeCouponBanner() {
     try {
       setMessage("");
       setButtonState("claiming");
-      const result = await requestWelcomeCouponClaim();
-
-      if (!result) {
-        navigate("/auth/login");
-        return;
-      }
+      // Guests get the coupon on this device; signed-in users also get it on their account.
+      const result = await requestWelcomeCouponClaim().catch(() => null);
+      const claimedNow = await useCouponStore.getState().claimWelcome();
 
       setButtonState("claimed");
+      setMessage("쿠폰함에 담았어요. 결제할 때 바로 쓸 수 있어요.");
 
-      if (!result.alreadyClaimed) {
+      if (claimedNow || (result && !result.alreadyClaimed)) {
         setShowEffect(true);
         effectTimer.current = window.setTimeout(() => {
           setShowEffect(false);

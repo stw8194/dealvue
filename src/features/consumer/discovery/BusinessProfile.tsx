@@ -63,6 +63,7 @@ export default function BusinessProfile({
   const toggleBusiness = useDiscoveryFavorites((state) => state.toggleBusiness);
   const now = useDealTime();
   const activeDeals = dealsLoading || dealsError ? [] : deals.filter((deal) => isOpenDeal(deal, now));
+  const selectedDeal = selectedService ? activeDeals.find((deal) => deal.serviceId === selectedService.id) ?? deals.find((deal) => deal.serviceId === selectedService.id) : undefined;
   const images = [...new Set(business.images ?? [])];
   const supplied = business.source_details;
   const phone = business.number?.replace(/[^\d+]/g, "");
@@ -642,7 +643,7 @@ export default function BusinessProfile({
                   "자세한 시술 내용은 매장에 문의해 주세요."}
               </p>
             </div>
-            {activeDeals.find(deal => deal.serviceId === selectedService.id) && <Link to={`/checkout/${activeDeals.find(deal => deal.serviceId === selectedService.id)!.id}`} className="block rounded-xl bg-accent p-3 text-center text-sm font-bold text-white">이 시술 예약하기</Link>}
+            {selectedDeal && <Link to={`/checkout/${selectedDeal.id}`} className="block rounded-xl bg-accent p-3 text-center text-sm font-bold text-white">{activeDeals.includes(selectedDeal) ? `타임딜 ${selectedDeal.price.toLocaleString()}원으로 예약하기` : "이 시술 예약하기"}</Link>}
           </div>
         )}
       </dialog>

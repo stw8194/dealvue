@@ -47,6 +47,7 @@ export default function Router() {
         <Route path="/businesses" element={<BusinessListPage />} />
         <Route path="/provided" element={<ProvidedCatalogRedirect />} />
         <Route path="/provided/:slug" element={<ProvidedCatalogRedirect />} />
+        <Route path="/checkout/kit/:kitId" element={<CheckoutPage />} />
         <Route path="/checkout/:dealId" element={<CheckoutPage />} />
         <Route path="/booking/complete/:reservationId" element={<BookingCompletePage />} />
         <Route path="/package" element={<PackageHome />} />

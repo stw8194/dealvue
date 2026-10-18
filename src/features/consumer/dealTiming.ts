@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ConsumerDeal } from "./types";
+import type { BookingKind, ConsumerDeal } from "./types";
 import { hasActiveSale } from "./dealSchedule";
 
 export function useDealTime() {
@@ -10,6 +10,16 @@ export function useDealTime() {
 
 export function isOpenDeal(deal: ConsumerDeal, now: number) {
   return hasActiveSale(deal.startAt, deal.endAt, deal.remainingCapacity, now);
+}
+
+export type BookingOffer = { kind: BookingKind; price: number; originalPrice: number; discount: number; slots: string[] };
+
+// A running time deal books at the deal price; otherwise the same service books at the menu price.
+export function bookingOffer(deal: ConsumerDeal, now: number): BookingOffer {
+  if (deal.kitId) return { kind: "package", price: deal.price, originalPrice: deal.originalPrice, discount: Math.max(0, deal.originalPrice - deal.price), slots: deal.regularSlots ?? deal.slots };
+  if (isOpenDeal(deal, now)) return { kind: "timedeal", price: deal.price, originalPrice: deal.originalPrice, discount: Math.max(0, deal.originalPrice - deal.price), slots: deal.slots };
+  const price = deal.regularPrice ?? deal.originalPrice;
+  return { kind: "regular", price, originalPrice: price, discount: 0, slots: deal.regularSlots?.length ? deal.regularSlots : deal.slots };
 }
 
 export function remainingLabel(endAt: string, now: number) {

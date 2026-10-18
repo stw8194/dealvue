@@ -2,6 +2,7 @@ import { getSupabaseClient } from "@/api/supabase";
 import type { ServiceCategory } from "@/type/package";
 import { serviceMinutes } from "@/features/consumer/booking/serviceSelection";
 import { resolveBusinessImage } from "../businessImages";
+import { sampleStaff } from "../staff";
 
 export type BusinessSummary = Pick<ConsumerBusiness, "id" | "name" | "address" | "description"> & { business_images?: { img_url: string }[] };
 
@@ -66,10 +67,12 @@ export async function readConsumerBusiness(id: number): Promise<ConsumerBusiness
     business_category: { category: ServiceCategory }[] | null;
     business_images: { img_url: string | null }[] | null;
   };
+  const categories = (row.business_category ?? []).map((item) => item.category);
   return {
     ...row,
     services: (row.services ?? []).map((service) => ({ ...service, duration_minutes: service.display_duration_minutes ?? serviceMinutes(service) })),
-    categories: (row.business_category ?? []).map((item) => item.category),
+    staff: row.staff?.length || !row.source_details ? row.staff ?? [] : sampleStaff(row.id, categories[0]),
+    categories,
     images: (row.business_images ?? []).flatMap((item) => {
       const url = resolveBusinessImage(item.img_url);
       return url ? [url] : [];

@@ -4,6 +4,7 @@ import { getSupabaseClient } from "@/api/supabase";
 import { SPECIAL_PACKAGE_TYPES } from "@/data/packageOptions";
 import { groupDealKits, useDealKits, type DealKit, type DealKitType } from "../dealKits";
 import { EmptyState, Page } from "../ui";
+import { PROVISIONAL_TRAVEL_MINUTES } from "../booking/packageSchedule";
 
 export function DealKitPrice({ kit }: { kit: DealKit }) {
   return <div className="space-y-1"><p className="text-sm text-page-text"><s>{kit.original_price.toLocaleString()}원</s></p><p className="font-bold text-accent">{discount(kit)}% · {kit.price.toLocaleString()}원</p></div>;
@@ -88,6 +89,7 @@ function PackageOfferDetail() {
     <h1 className="text-xl font-bold">{offer.title}</h1><DealKitPrice kit={offer} /><p className="text-xs text-page-text">시간제한 없는 패키지 할인</p>
     {offer.is_demo && <p className="text-xs text-page-text">샘플 상품 · 실제 판매 상품이 아닙니다.</p>}<p className="whitespace-pre-wrap text-sm leading-6">{offer.description}</p>
     <section className="space-y-3 rounded-2xl border border-page-border p-4"><h2 className="font-bold">이 상품의 서비스 구성</h2><ul className="list-inside list-disc space-y-2 text-sm">{offer.items.map((item, index) => <li key={index}>{item}</li>)}</ul></section>
-    <p className="text-sm text-page-text">패키지 예약과 결제는 준비 중입니다. 이용 일정과 패키지 적용 방법은 운영 매장에 문의해 주세요.</p>
+    {offer.legs?.length ? <section className="space-y-2 rounded-2xl border border-page-border p-4"><h2 className="font-bold">방문 일정</h2><ol className="space-y-2 text-sm">{offer.legs.map((leg, index) => <li key={`${leg.businessId}-${index}`}><strong>{index + 1}. {leg.businessName}</strong> · {leg.serviceNames.join(" + ")}<span className="block text-xs text-page-text">시술 약 {leg.displayMinutes}분 · 예약 점유 {leg.durationMinutes}분</span></li>)}</ol>{offer.legs.length > 1 && <p className="text-xs text-page-text">매장 간 이동시간은 {PROVISIONAL_TRAVEL_MINUTES}분 기준(임시)으로 각 매장 예약을 이어서 잡습니다.</p>}</section> : null}
+    {offer.legs?.length ? <Link to={`/checkout/kit/${offer.id}`} className="block rounded-xl bg-accent p-3 text-center text-sm font-bold text-white">일정 선택 · 예약하기 (시연)</Link> : <p className="text-sm text-page-text">이 딜키트는 구성 시술이 매장 메뉴와 연결되어 있지 않아 앱에서 예약할 수 없어요. 매장에 문의해 주세요.</p>}
   </div>}</Page>;
 }

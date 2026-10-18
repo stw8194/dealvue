@@ -91,8 +91,9 @@ try {
   await page.getByRole("button", { name: "실크 리본 · 15 포인트", exact: true }).click();
   assert.equal(await page.getByRole("button", { name: "15 P로 소장하고 착용하기" }).isDisabled(), true);
   assert.equal((await state(page)).accessories.hair, "hair-none", "accessory preview must not equip or charge");
-  // Add a test-only wallet fixture to exercise all independently equipped slots.
-  await page.evaluate(async () => { const { useEngagementStore } = await import("/src/features/consumer/engagement/store.ts"); useEngagementStore.setState({ pointHistory: [{ id: "fixture", reason: "test fixture", amount: 200, createdAt: new Date().toISOString() }] }); });
+  // Add a test-only wallet fixture to exercise all independently equipped slots. Points are credited
+  // through the device ledger, which is authoritative; writing the screen store directly is undone.
+  await page.evaluate(async () => { const { useEngagementStore } = await import("/src/features/consumer/engagement/store.ts"); useEngagementStore.getState().adjustPoints("test fixture", 200 - useEngagementStore.getState().pointHistory.reduce((sum, entry) => sum + entry.amount, 0)); });
   await page.getByRole("button", { name: "15 P로 소장하고 착용하기" }).click();
   await page.getByRole("button", { name: "귀걸이", exact: true }).click(); await page.getByRole("button", { name: "진주 드롭 · 20 포인트", exact: true }).click(); await page.getByRole("button", { name: "20 P로 소장하고 착용하기" }).click();
   await page.getByRole("button", { name: "가방", exact: true }).click(); await page.getByRole("button", { name: "체리 미니백 · 25 포인트", exact: true }).click(); await page.getByRole("button", { name: "25 P로 소장하고 착용하기" }).click();

@@ -4,7 +4,7 @@ import { SERVICE_CATEGORIES } from "@/data/packageOptions";
 import { useConsumerCatalog } from "@/features/consumer/catalog";
 import { DealCard } from "@/features/consumer/discovery/DealCard";
 import { EmptyState, Page } from "@/features/consumer/ui";
-import { isOpenDeal, useDealTime } from "@/features/consumer/dealTiming";
+import { bookingOffer, isOpenDeal, useDealTime } from "@/features/consumer/dealTiming";
 
 function SearchForm({ keyword, onSearch }: { keyword: string; onSearch: (value: string) => void }) {
   const [value, setValue] = useState(keyword);
@@ -37,8 +37,14 @@ export default function Search() {
   }
   const results = deals.filter((deal) => {
     const text = `${deal.businessName} ${deal.serviceName} ${deal.address} ${deal.description}`.toLocaleLowerCase();
-    return isOpenDeal(deal, now) && text.includes(keyword.toLocaleLowerCase()) && (!category || deal.category === category) && (!area || deal.address.includes(area));
-  }).sort((a, b) => sort === "price" ? a.price - b.price : sort === "discount" ? ((1 - b.price / (b.originalPrice || b.price || 1)) - (1 - a.price / (a.originalPrice || a.price || 1))) : new Date(a.endAt).getTime() - new Date(b.endAt).getTime());
+    // A keyword search also finds shops whose time deal is not running now; they book at the menu price.
+    return (isOpenDeal(deal, now) || keyword.trim() !== "") && text.includes(keyword.toLocaleLowerCase()) && (!category || deal.category === category) && (!area || deal.address.includes(area));
+  }).sort((a, b) => {
+    const openFirst = Number(isOpenDeal(b, now)) - Number(isOpenDeal(a, now));
+    if (openFirst) return openFirst;
+    const offerA = bookingOffer(a, now), offerB = bookingOffer(b, now);
+    return sort === "price" ? offerA.price - offerB.price : sort === "discount" ? offerB.discount / (offerB.originalPrice || 1) - offerA.discount / (offerA.originalPrice || 1) : new Date(a.endAt).getTime() - new Date(b.endAt).getTime();
+  });
   const areas = [...new Set(deals.map((deal) => deal.address.split(" ").slice(0, 2).join(" ")).filter(Boolean))];
 
   return (

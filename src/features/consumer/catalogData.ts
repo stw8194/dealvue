@@ -7,13 +7,19 @@ import { applyDealRotation } from "./dealSchedule";
 
 type DealRow = { id: number; business_id: number; service_id: number | null; original_price: number; deal_price: number; remaining_capacity: number; start_at?: string; end_at: string };
 type TemplateRow = Omit<DealRow, "id" | "end_at" | "start_at"> & { source_key: string; start_time: string; end_time: string; source_details?: { discount_rate?: number } };
-type BusinessRow = { id: number; name: string; address: string; description: string | null; business_category: { category: string }[] | { category: string } | null; source_details?: { closed_days?: string } };
-type ServiceRow = { id: number; name: string; description: string | null; duration_minutes?: number; display_duration_minutes?: number };
+type BusinessRow = { id: number; name: string; address: string; description: string | null; business_category: { category: string }[] | { category: string } | null; source_details?: { closed_days?: string; opening_hours?: string; cancellation_policy?: string } };
+type ServiceRow = { id: number; name: string; description: string | null; price?: number; duration_minutes?: number; display_duration_minutes?: number };
 
 function categoryOf(business: BusinessRow | undefined): ServiceCategory | null {
   const relation = business?.business_category;
   const value = Array.isArray(relation) ? relation[0]?.category : relation?.category;
   return SERVICE_CATEGORIES.find((category) => category.id === value)?.id ?? null;
+}
+
+// Regular bookings use the shop's opening hours, e.g. "10:00~21:00".
+export function openingHourSlots(openingHours: string | undefined, duration: number, closedDays = ""): string[] {
+  const match = openingHours?.match(/(\d{1,2}:\d{2})\s*[~\-–]\s*(\d{1,2}:\d{2})/);
+  return match ? requestSlots(match[1], match[2], duration, closedDays) : requestSlots("10:00", "20:00", duration, closedDays);
 }
 
 // Service visit windows are separate from the rotating sale's start/deadline.
@@ -52,7 +58,7 @@ export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
   const serviceIds = [...new Set(rows.flatMap((row) => row.service_id === null ? [] : [row.service_id]))];
   const [businesses, services, images] = await Promise.all([
     client.from("businesses").select("id,name,address,description,source_details,business_category(category)").in("id", businessIds),
-    serviceIds.length ? client.from("services").select("id,name,description,duration_minutes,display_duration_minutes").in("id", serviceIds) : Promise.resolve({ data: [], error: null }),
+    serviceIds.length ? client.from("services").select("id,name,description,price,duration_minutes,display_duration_minutes").in("id", serviceIds) : Promise.resolve({ data: [], error: null }),
     client.from("business_images").select("business_id,img_url").in("business_id", businessIds).order("created_at"),
   ]);
   if (businesses.error) throw new Error(businesses.error.message);
@@ -75,6 +81,9 @@ export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
       remainingCapacity: row.remaining_capacity, endAt: template ? "" : (row as DealRow).end_at,
       startAt: template ? "" : (row as DealRow).start_at,
       slots: template ? requestSlots(template.start_time, template.end_time, duration, business?.source_details?.closed_days) : [],
+      regularPrice: service?.price ?? row.original_price,
+      regularSlots: openingHourSlots(business?.source_details?.opening_hours, duration, business?.source_details?.closed_days),
+      cancellationPolicy: business?.source_details?.cancellation_policy,
       durationMinutes: duration,
       ...(template ? { scheduleKind: "rotation" as const, timeWindow: `${template.start_time.slice(0, 5)}–${template.end_time.slice(0, 5)}`, discountRate: template.source_details?.discount_rate } : {}),
     };

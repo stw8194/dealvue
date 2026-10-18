@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { requestUserCoupons } from "@/api/coupon";
+import { useCouponStore } from "@/features/consumer/coupons";
 import { useBusinessHistory } from "@/features/consumer/history";
 import { pointBalance, useEngagementStore } from "@/features/consumer/engagement/store";
 import { useReservations } from "@/features/consumer/booking/useReservations";
@@ -81,7 +82,7 @@ const MENU_ITEMS: MenuItem[] = [
   },
   {
     label: "내 통계",
-    path: "/mypage/point",
+    path: "/mypage/stats",
     icon: BarChart3,
     iconClassName: "text-[#45afbd]",
     iconBackgroundClassName: "bg-[#edfafd]",
@@ -102,6 +103,7 @@ export default function MyPageDashboard({
   const { reservations } = useReservations();
   const pointHistory = useEngagementStore(state => state.pointHistory);
   const [couponCount, setCouponCount] = useState(0);
+  const localCouponCount = useCouponStore(state => state.coupons.filter(coupon => !coupon.usedReservationId).length);
   const visits = useBusinessHistory((state) => state.visits);
   const recentShops = visits.filter((visit) => !visit.preview).slice(0, 4);
   const [isCopied, setIsCopied] = useState(false);
@@ -138,7 +140,7 @@ export default function MyPageDashboard({
     { label: "예약내역", value: String(reservations.length), icon: CalendarDays, path: "/reservation" },
     {
       label: "쿠폰",
-      value: user ? String(couponCount) : "-",
+      value: String(Math.max(user ? couponCount : 0, localCouponCount)),
       icon: Tag,
       path: "/mypage/coupon",
     },

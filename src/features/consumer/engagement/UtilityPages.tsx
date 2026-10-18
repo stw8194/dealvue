@@ -15,7 +15,7 @@ export function NotificationsPage() {
 
 function NotificationList() {
   const { notifications, readNotification } = useEngagementStore();
-  return <div className="space-y-4"><p className="text-sm">이 브라우저의 체험 활동 알림입니다. 기기로 푸시 알림을 보내지 않습니다.</p><button type="button" disabled={!notifications.some((item) => !item.read)} onClick={() => readNotification()} className="rounded border border-page-border px-3 py-2 text-sm disabled:opacity-40">모두 읽음</button>{notifications.length ? <ul className="space-y-3">{notifications.map((item) => <li key={item.id} className={`rounded border border-page-border p-4 ${item.read ? "bg-white" : "bg-pink-50"}`}><Link to={item.link} onClick={() => readNotification(item.id)}><h2 className="font-semibold">{!item.read && "• "}{item.title}</h2><p className="mt-1 text-sm">{item.body}</p></Link><p className="mt-2 text-xs">{new Date(item.createdAt).toLocaleString("ko-KR")}</p></li>)}</ul> : <EmptyState title="새 알림이 없습니다" description="운세와 룰렛을 체험하면 선물 알림을 확인할 수 있어요." action={<Link to="/rewards" className="text-accent">놀이터에서 행운 모으기</Link>} />}</div>;
+  return <div className="space-y-4"><p className="text-sm">예약 확정·변경·취소와 포인트 혜택 소식을 모아 보여드려요.</p><button type="button" disabled={!notifications.some((item) => !item.read)} onClick={() => readNotification()} className="rounded border border-page-border px-3 py-2 text-sm disabled:opacity-40">모두 읽음</button>{notifications.length ? <ul className="space-y-3">{notifications.map((item) => <li key={item.id} className={`rounded border border-page-border p-4 ${item.read ? "bg-white" : "bg-pink-50"}`}><Link to={item.link} onClick={() => readNotification(item.id)}><h2 className="font-semibold">{!item.read && "• "}{item.title}</h2><p className="mt-1 text-sm">{item.body}</p></Link><p className="mt-2 text-xs">{new Date(item.createdAt).toLocaleString("ko-KR")}</p></li>)}</ul> : <EmptyState title="새 알림이 없습니다" description="운세와 룰렛을 체험하면 선물 알림을 확인할 수 있어요." action={<Link to="/rewards" className="text-accent">놀이터에서 행운 모으기</Link>} />}</div>;
 }
 
 export function SettingsPage() {
@@ -30,9 +30,9 @@ export function SettingsPage() {
     <fieldset className="space-y-3 rounded border border-page-border p-4 disabled:opacity-60"><legend>알림 설정</legend>{([["activity", "활동 알림"], ["benefits", "혜택 알림"]] as const).map(([key, label]) => <label key={key} className="flex items-center justify-between gap-3"><span>{label}</span><input type="checkbox" checked={notificationSettings[key]} onChange={(event) => setNotificationSetting(key, event.target.checked)} /></label>)}</fieldset>
     <p className="text-sm">활동 알림과 혜택 알림을 설정할 수 있어요.</p>
     {<button type="button" className="rounded border border-red-200 px-4 py-3 text-sm text-red-600" onClick={() => {
-      if (!window.confirm("이 기기에 저장한 예약, 찜, 게시글, 포인트, 아바타 꾸미기를 모두 초기화할까요?")) return;
+      if (!window.confirm("이 기기에 저장한 예약, 찜, 쿠폰, 게시글, 포인트, 최근 본 매장, 아바타 꾸미기를 모두 초기화할까요?")) return;
       reset(); useBookingStore.getState().resetDemo(); useDiscoveryFavorites.setState({ dealIds: [], businessIds: [] });
-      useBusinessHistory.setState((state) => ({ visits: state.visits.filter((visit) => !visit.preview) }));
+      useBusinessHistory.setState({ visits: [] });
       localStorage.removeItem("dealvue-preview-profile");
       setMessage("기기 저장 데이터를 초기화했습니다.");
     }}>기기 저장 데이터 초기화</button>}

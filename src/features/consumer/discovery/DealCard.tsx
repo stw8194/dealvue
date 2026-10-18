@@ -3,13 +3,15 @@ import { Link } from "react-router-dom";
 import type { ConsumerDeal } from "@/features/consumer/types";
 import { SERVICE_CATEGORIES } from "@/data/packageOptions";
 import { useDiscoveryFavorites } from "./favorites";
-import { isOpenDeal, remainingLabel, useDealTime } from "@/features/consumer/dealTiming";
+import { bookingOffer, isOpenDeal, remainingLabel, useDealTime } from "@/features/consumer/dealTiming";
 
 export function DealCard({ deal }: { deal: ConsumerDeal }) {
   const now = useDealTime();
   const liked = useDiscoveryFavorites((state) => state.dealIds.includes(deal.id));
   const toggleDeal = useDiscoveryFavorites((state) => state.toggleDeal);
-  const discount = deal.originalPrice > deal.price && deal.originalPrice > 0
+  const open = isOpenDeal(deal, now);
+  const offer = bookingOffer(deal, now);
+  const discount = open && deal.originalPrice > deal.price && deal.originalPrice > 0
     ? (deal.discountRate ?? Math.round((1 - deal.price / deal.originalPrice) * 100)) : 0;
   return (
     <article className="rounded-xl border border-page-border bg-white p-4">
@@ -28,10 +30,10 @@ export function DealCard({ deal }: { deal: ConsumerDeal }) {
         <p className="text-sm text-page-text">{deal.address || "주소 정보 준비 중"}</p>
         <p className="flex flex-wrap items-baseline gap-2">
           {discount > 0 && <span className="font-bold text-accent">{discount}%</span>}
-          <strong className="text-lg text-page-heading">{deal.price.toLocaleString()}원</strong>
+          <strong className="text-lg text-page-heading">{offer.price.toLocaleString()}원</strong>
           {discount > 0 && <span className="text-xs text-page-text line-through">{deal.originalPrice.toLocaleString()}원</span>}
         </p>
-        <p className="text-xs text-page-text">{isOpenDeal(deal, now) ? `${deal.remainingCapacity}자리 · ${deal.timeWindow ?? remainingLabel(deal.endAt, now)}` : "예약 마감"}</p>
+        <p className="text-xs text-page-text">{open ? `${deal.remainingCapacity}자리 · ${deal.timeWindow ?? remainingLabel(deal.endAt, now)}` : `정상가 예약 · 타임딜가 ${deal.price.toLocaleString()}원`}</p>
         <span className="inline-block text-sm font-semibold text-accent">상세 · 일정 확인 →</span>
       </Link>
     </article>
