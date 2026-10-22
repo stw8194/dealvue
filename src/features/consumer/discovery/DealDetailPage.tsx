@@ -4,6 +4,7 @@ import { EmptyState, Page } from "@/features/consumer/ui";
 import { useDiscoveryFavorites } from "./favorites";
 import { bookingOffer, isOpenDeal, remainingLabel, useDealTime } from "@/features/consumer/dealTiming";
 import { formatSlotDay, formatSlotTime, slotDay } from "@/features/consumer/booking/rules";
+import { BookingButton } from "@/features/consumer/auth/loginGate";
 
 export function DealDetailPage() {
   const { dealId } = useParams();
@@ -43,7 +44,7 @@ export function DealDetailPage() {
         </section>
         <div className="flex gap-2">
           {<button type="button" aria-pressed={liked} onClick={() => toggleDeal(deal.id)} className="rounded-lg border border-page-border px-4 py-3 text-sm">{liked ? "찜 해제" : "찜 추가"}</button>}
-          {!deal.serviceId ? <p className="flex-1 rounded-lg bg-gray-100 px-4 py-3 text-center text-sm text-page-text">예약할 시술을 준비 중입니다</p> : <Link to={`/checkout/${deal.id}`} className="flex-1 rounded-lg bg-accent px-4 py-3 text-center text-sm font-bold text-white">{closed ? "정상가로 예약하기" : "일정 선택 · 예약하기"}</Link>}
+          {!deal.serviceId ? <p className="flex-1 rounded-lg bg-gray-100 px-4 py-3 text-center text-sm text-page-text">예약할 시술을 준비 중입니다</p> : <BookingButton to={`/checkout/${deal.id}`} className="flex-1 rounded-lg bg-accent px-4 py-3 text-center text-sm font-bold text-white">{closed ? "정상가로 예약하기" : "일정 선택 · 예약하기"}</BookingButton>}
         </div>
       </div>
     </Page>

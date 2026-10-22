@@ -1,4 +1,5 @@
 .avatar-custom-head, .avatar-hair-layer, .avatar-face-features { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.redesigned-hair-art { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; overflow: visible; pointer-events: none; }
 .avatar-hair-layer { transform-origin: 50% 0; transform: translate(-4.5%, -11.5%) scale(.89,.8); }
 /* Each hairstyle cutout is one atlas cell plus a margin (100×80 of 418×627 px, scripts/build-hair-cutouts.mjs), so it overhangs this cell-sized layer. */
 .hair-art { position: absolute; left: -23.923%; top: -12.759%; width: 147.847%; height: 125.518%; max-width: none; pointer-events: none; user-select: none; }
@@ -14,6 +15,7 @@
 .body-region { mask-image: linear-gradient(transparent 49.7%, black 50.7%); }
 .part-torso .body-region { mask-image: linear-gradient(transparent 48.5%, black 49%); }
 .original-portrait { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.painted-head-art { overflow: visible; }
 .hair-key-defs { position: absolute; width: 0; height: 0; }
 /* The original head has its own eyes, brows and mouth; overlays (and the skin patches under them) show only when changed. */
 .uses-original-portrait .face-eye > path, .uses-original-portrait:not(.custom-eyes) :is(.eye-open, .eye-cover), .uses-original-portrait:not(.custom-mouth) :is(.mouth-chosen, .mouth-cover), .avatar-custom-head:not(.uses-original-portrait) :is(.eye-cover, .mouth-cover) { visibility: hidden; }
@@ -46,3 +48,5 @@
 .play-modal :is(button,a,input):focus-visible { outline: 2px solid #b880a0; outline-offset: 3px; }
 @media (max-width: 700px) { .appearance-intro { font-size: 9px; margin-bottom: 12px; }.appearance-section h3 { font-size: 11px; }.appearance-section { margin-bottom: 17px; }.appearance-hair-grid { gap: 6px; }.head-thumbnail { height: 69px; }.head-thumbnail .avatar-custom-head { width: 85px; height: 127.5px; left: calc(50% - 42.5px); }.appearance-eye-grid strong { font-size: 8px; }.appearance-mouth-grid strong { font-size: 8px; }.appearance-swatches small { font-size: 7px; } }
 @media (prefers-reduced-motion: reduce) { .eye-open, .eye-closed { animation: none !important; } }
+
+.hair-variant-label { display: block; margin-top: 3px; color: #b48fae; font-size: 8px; line-height: 1.3; }

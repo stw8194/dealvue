@@ -1,8 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { requestReservations } from "@/api/reservation";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { Reservation } from "@/type/reservation";
-import { useBookingStore } from "./store";
+import { ownReservations, useBookingStore } from "./store";
+
+/** This account's bookings in the device ledger (no server bookings). */
+export function useOwnLocalReservations() {
+  const reservations = useBookingStore(state => state.reservations);
+  const userId = useAuthStore(state => state.user?.id);
+  return useMemo(() => ownReservations(reservations, userId), [reservations, userId]);
+}
 
 export function useReservations() {
   const previewReservations = useBookingStore(state => state.reservations);
@@ -22,12 +29,12 @@ export function useReservations() {
     return () => { active = false; };
   }, [initialized, userId, key]);
   const remote = userId && result?.key === key ? result.reservations : [];
-  const local = previewReservations.filter(item => !item.id.startsWith("preview-example-"));
+  const local = ownReservations(previewReservations, userId);
   return {
     reservations: [...remote, ...local].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
     loading: Boolean(userId) && result?.key !== key && !local.length,
     error: !local.length && result?.key === key ? result.error : null,
-    needsLogin: false,
+    needsLogin: initialized && !userId,
     isPreview: false,
     retry: () => setRevision(value => value + 1),
   };

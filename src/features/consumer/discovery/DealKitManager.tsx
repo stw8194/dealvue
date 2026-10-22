@@ -1,3 +1,4 @@
+import ChoiceGroup from "@/components/common/ChoiceGroup";
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -64,7 +65,10 @@ function DealKitManagerContent() {
       <p className="text-sm">상품종류를 선택하고 우리 매장의 패키지 이름, 실제 제공 서비스, 가격을 등록하세요. 고객은 같은 종류의 매장별 상품을 비교할 수 있습니다.</p>
       {editing ? <form onSubmit={save} className="space-y-4 rounded-2xl border border-page-border p-4"><fieldset disabled={saving} className="space-y-4">
         <legend className="font-bold">{editing.id ? "딜키트 수정" : "패키지 상품 등록"}</legend>
-        <label className="block text-sm">등록할 패키지<select required className={field} value={editing.input.template_id ?? ""} onChange={(event) => { const template = current.templates.find((item) => item.id === Number(event.target.value)); if (template) setEditing({ ...editing, input: { ...editing.input, template_id: template.id, title: template.title, description: template.description, type: template.type, purpose: template.purpose }, items: template.items.join("\n") }); else change({ template_id: null }); }}><option value="">패키지 선택</option>{current.templates.map((template) => <option key={template.id} value={template.id}>{template.title}</option>)}</select></label>
+        <ChoiceGroup label="등록할 패키지" value={String(editing.input.template_id ?? "")} required layout="cards" options={current.templates.map(template => ({ value: String(template.id), label: template.title, description: template.description }))} onChange={value => {
+          const template = current.templates.find(item => item.id === Number(value));
+          if (template) setEditing({ ...editing, input: { ...editing.input, template_id: template.id, title: template.title, description: template.description, type: template.type, purpose: template.purpose }, items: template.items.join("\n") });
+        }} />
         <label className="block text-sm">상품명<input className={field} required maxLength={100} value={editing.input.title} onChange={(event) => change({ title: event.target.value })} /></label>
         <label className="block text-sm">설명<textarea className={field} maxLength={3000} value={editing.input.description} onChange={(event) => change({ description: event.target.value })} /></label>
         <label className="block text-sm">패키지 구성 (한 줄에 하나씩, 최소 2개)<textarea className={field} required rows={4} placeholder="커트\n클리닉" value={editing.items} onChange={(event) => setEditing({ ...editing, items: event.target.value })} /></label>

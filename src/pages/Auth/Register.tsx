@@ -113,7 +113,6 @@ export default function Register() {
         return;
       }
       setUser(user);
-      navigate("/", { replace: true });
     } catch (err) {
       setEmailRegisterError(
         err instanceof Error ? err.message : "회원가입에 실패했습니다.",

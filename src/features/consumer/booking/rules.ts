@@ -8,15 +8,15 @@ export const RESERVATION_STATUS_LABEL: Record<ReservationStatus, string> = {
 };
 
 /**
- * Bookings made on this device are demonstrations: nothing reaches the shop or a payment
- * provider, so their labels must say so instead of claiming a confirmed, paid booking.
+ * Bookings made on this device never reach the shop, so they are "예약 완료" (submitted),
+ * never "예약 확정", which is reserved for shop-confirmed bookings.
  */
 export function reservationStatusLabel(reservation: Reservation, now = Date.now()) {
   if (!reservation.isPreview) return RESERVATION_STATUS_LABEL[reservation.status];
-  if (reservation.status === "cancelled") return "시연 예약 취소";
-  if (reservation.status === "done") return "시연 · 이용 완료";
-  if (Date.parse(reservation.endAt) <= now) return "시연 · 방문 확인 전";
-  return "시연 예약 · 매장 미전송";
+  if (reservation.status === "cancelled") return "예약 취소";
+  if (reservation.status === "done") return "이용 완료";
+  if (Date.parse(reservation.endAt) <= now) return "방문 확인 전";
+  return "예약 완료";
 }
 
 /** Upcoming bookings; past ones move to the usage tab even before a visit is confirmed. */
@@ -113,8 +113,9 @@ export function paymentStatusLabel(reservation: Reservation) {
   switch (reservation.paymentStatus) {
     case "paid": return `결제 완료 · ${paid}원`;
     case "refunded": return `결제 취소 · ${paid}원 환불`;
-    case "test": return `시연 결제 · 실제 청구 없음 (표시 금액 ${paid}원)`;
-    case "test_cancelled": return "시연 취소 · 청구·환불 없음";
+    case "on_site": return `방문 시 매장 결제 · ${paid}원`;
+    case "test": return `예약 금액 · ${paid}원`;
+    case "test_cancelled": return "예약 취소";
     default: return "결제 정보 없음";
   }
 }

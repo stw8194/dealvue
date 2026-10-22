@@ -28,10 +28,10 @@ const state = page => page.evaluate(async () => {
   return JSON.parse(JSON.stringify(useEngagementStore.getState()));
 });
 const category = (page, name) => page.getByRole("group", { name: "꾸미기 종류", exact: true }).getByRole("button", { name, exact: true }).click();
-const customized = { hairstyle: "twintails", hairColor: "rose", eyes: "gentle", eyeColor: "violet", mouth: "kitty", tone: "cream" };
+const customized = { hairRibbon: "none", hairstyle: "twintails", hairColor: "rose", eyes: "gentle", eyeColor: "violet", mouth: "kitty", tone: "cream" };
 async function customize(page) {
   await category(page, "얼굴·헤어");
-  for (const name of ["리본 트윈테일", "로즈 핑크 머리색", "순둥순둥 눈 모양", "포도빛 눈동자", "고양이 미소", "크림 얼굴 톤"]) await page.getByRole("button", { name, exact: true }).click();
+  for (const name of ["포근 트윈테일", "로즈 핑크 머리색", "순둥순둥 눈 모양", "포도빛 눈동자", "고양이 미소", "크림 얼굴 톤"]) await page.getByRole("button", { name, exact: true }).click();
 }
 try {
   const { context, page } = await setup(); const initial = await state(page);
@@ -53,6 +53,7 @@ try {
   assert.deepEqual((await state(page)).appearance, customized, "changing clothing keeps face and hair");
   await category(page, "코디북"); await page.getByLabel("코디 이름", { exact: true }).fill("핑크 트윈테일");
   await page.getByRole("button", { name: "현재 코디 저장", exact: true }).click();
+  await page.getByText("이 조합을 코디북에 저장했어요.", { exact: true }).waitFor();
   assert.deepEqual((await state(page)).savedLooks[0].appearance, customized);
   await category(page, "얼굴·헤어"); await page.getByRole("button", { name: "기본 얼굴·헤어로 되돌리기", exact: true }).click();
   assert.deepEqual((await state(page)).appearance, customized, "reset is also a preview");
@@ -64,8 +65,14 @@ try {
   await category(page, "얼굴·헤어");
   const catalog = await page.evaluate(async () => {
     const a = await import("/src/features/consumer/engagement/playground/appearance.ts");
-    return { hairs: a.HAIRSTYLES, colors: a.HAIR_COLORS };
+    return { hairs: a.HAIRSTYLES, choices: a.HAIR_CHOICES, colors: a.HAIR_COLORS };
   });
+  assert.equal(await page.getByRole("group", { name: "헤어스타일", exact: true }).getByRole("button").count(), 11, "all six plain and five ribbon styles must be visible as individual choices");
+  for (const choice of catalog.choices) {
+    await page.getByRole("button", { name: choice.name, exact: true }).click();
+    await page.waitForFunction(choice => { const a = JSON.parse(document.querySelector("[data-avatar-turn][data-ready]").dataset.appearance); return a.hairstyle === choice.hairstyle && a.hairRibbon === choice.hairRibbon; }, choice);
+    assert.equal(await page.getByRole("group", { name: "헤어스타일", exact: true }).locator('[aria-pressed="true"]').count(), 1, "exactly one variant must be selected");
+  }
   for (const hair of catalog.hairs) {
     await page.getByRole("button", { name: hair.name, exact: true }).click();
     await page.waitForFunction(id => JSON.parse(document.querySelector("[data-avatar-turn][data-ready]").dataset.appearance).hairstyle === id, hair.id);
@@ -85,7 +92,7 @@ try {
   assert.ok(assets.every(asset => asset.width > 1000 && asset.alpha === 0));
   for (const width of [320, 390, 768, 1440]) {
     await page.setViewportSize({ width, height: 900 });
-    assert.equal(await page.locator("dialog").evaluate(node => node.scrollWidth > node.clientWidth + 1), false, `editor overflow at ${width}px`);
+    assert.equal(await page.getByRole("dialog", { name: "드레스룸", exact: true }).evaluate(node => node.scrollWidth > node.clientWidth + 1), false, `editor overflow at ${width}px`);
     const apply = await page.locator(".appearance-apply").boundingBox(); assert.ok(apply.y > 0 && apply.y + apply.height <= 900);
     await page.getByRole("button", { name: "크림 얼굴 톤", exact: true }).click();
     await page.screenshot({ path: `node_modules/.tmp/appearance-${width}.png` });
@@ -107,7 +114,7 @@ try {
   await reduced.page.locator("[data-avatar-turn][data-outfit=pink]").waitFor(); assert.equal(await reduced.page.locator("[data-avatar-turn][data-ready]").getAttribute("data-turning"), "false");
   await reduced.context.close();
   const legacy = await setup({}, { appearance: { hairstyle: "removed-hair", hairColor: "mint", eyes: "unknown" }, savedLooks: [{ id: "old-look", name: "기존 코디", outfit: "basic", accessories: { hair: "hair-none", ears: "ears-none", bag: "bag-none", necklace: "necklace-none" }, backdrop: "lavender", createdAt: "2026-10-01" }] });
-  assert.equal((await state(legacy.page)).appearance.hairstyle, "bob"); assert.equal((await state(legacy.page)).appearance.hairColor, "mint");
+  assert.equal((await state(legacy.page)).appearance.hairRibbon, "ribbon", "legacy appearances preserve ribbon variants"); assert.equal((await state(legacy.page)).appearance.hairstyle, "bob"); assert.equal((await state(legacy.page)).appearance.hairColor, "mint");
   await category(legacy.page, "코디북"); await legacy.page.getByRole("button", { name: "기존 코디 코디 입기", exact: true }).click();
   assert.equal((await state(legacy.page)).appearance.hairColor, "mint", "legacy outfits without appearance preserve the current face");
   await legacy.context.close(); assert.deepEqual(errors, []); assert.deepEqual(external, []);

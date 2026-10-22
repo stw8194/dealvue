@@ -1,0 +1,33 @@
+{
+  "mode": "built-in image_gen",
+  "use_case": "precise-object-edit",
+  "transparent_background": true,
+  "prompt": "Edit this production hair sprite atlas. Remove ALL pink fabric bows, ribbon knots and ribbon tails from ALL FIVE views, replacing their occluded areas with seamlessly matching chestnut brown painted hair. Keep the exact existing hairstyles, fringe, curl volume, braids/buns/pigtail shapes, head sizes, silhouettes and positions. Where hair is tied, use an invisible or tiny matching brown elastic rather than an accessory. Absolutely NO ribbons, bows, flowers, jewels, headbands or other accessories. Preserve the exact original canvas size, pixel alignment, transparent face openings and five-view layout: front/top left, three-quarter/top center, side/top right, rear-three-quarter/bottom left, back/bottom center; bottom right empty. Do not shift, scale, recenter or reframe any head. Hair only, NO face, skin, eyes, ears, neck, clothing or text. Match original soft doll-like painterly brown hair texture. Transparent background and face holes. Only change bow-covered areas and the necessary nearby hair.",
+  "edit_targets": [
+    {
+      "source": "../waves-turns.png",
+      "output": "waves-turns.png"
+    },
+    {
+      "source": "../twintails-turns.png",
+      "output": "twintails-turns.png"
+    },
+    {
+      "source": "../braids-turns.png",
+      "output": "braids-turns.png"
+    },
+    {
+      "source": "../bun-turns.png",
+      "output": "bun-turns.png"
+    },
+    {
+      "source": "../pixie-turns.png",
+      "output": "pixie-turns.png"
+    }
+  ],
+  "invariants": [
+    "Coco face and bob unchanged",
+    "Same hair geometry and five-view placement",
+    "No fabric bows, ribbon tails, or replacement accessories"
+  ]
+}

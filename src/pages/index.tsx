@@ -14,6 +14,7 @@ import Search from "./Search";
 import Nearby from "./Nearby";
 import Auth from "./Auth";
 import BottomNav from "@/components/layout/BottomNav";
+import { LoginRequiredDialog } from "@/features/consumer/auth/loginGate";
 import { NotFoundPage } from "@/features/consumer/ui";
 import { DealDetailPage } from "@/features/consumer/discovery/DealDetailPage";
 import { BusinessDetailPage } from "@/features/consumer/discovery/BusinessDetailPage";
@@ -72,6 +73,7 @@ export default function Router() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <BottomNav />
+      <LoginRequiredDialog />
     </BrowserRouter>
   );
 }

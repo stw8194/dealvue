@@ -1,3 +1,4 @@
+import ChoiceGroup from "@/components/common/ChoiceGroup";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -26,6 +27,7 @@ import { BusinessDealKits, BusinessTimeDeals } from "./BusinessPromotions";
 import BusinessReviews from "./BusinessReviews";
 import { BusinessMenuManagementLink } from "./BusinessMenuManager";
 import BusinessBookingFlow from "@/features/consumer/booking/BusinessBookingFlow";
+import { BookingButton } from "@/features/consumer/auth/loginGate";
 
 const tabs = ["홈", "시술 메뉴", "담당자", "사진", "리뷰", "정보"] as const;
 type Tab = (typeof tabs)[number];
@@ -394,18 +396,7 @@ export default function BusinessProfile({
                   className="min-w-0 flex-1 bg-transparent text-sm outline-none"
                 />
               </label>
-              <label className="flex justify-end gap-2 text-sm text-page-text">
-                정렬
-                <select
-                  value={sort}
-                  onChange={(event) => setSort(event.target.value)}
-                  className="bg-transparent"
-                >
-                  <option value="default">기본순</option>
-                  <option value="price">낮은 가격순</option>
-                  <option value="duration">짧은 소요시간순</option>
-                </select>
-              </label>
+              <ChoiceGroup label="시술 정렬" value={sort} onChange={setSort} options={[{ value: "default", label: "기본순" }, { value: "price", label: "낮은 가격순" }, { value: "duration", label: "짧은 소요시간순" }]} />
               {services.length ? (
                 services.map(serviceCard)
               ) : (
@@ -643,7 +634,7 @@ export default function BusinessProfile({
                   "자세한 시술 내용은 매장에 문의해 주세요."}
               </p>
             </div>
-            {selectedDeal && <Link to={`/checkout/${selectedDeal.id}`} className="block rounded-xl bg-accent p-3 text-center text-sm font-bold text-white">{activeDeals.includes(selectedDeal) ? `타임딜 ${selectedDeal.price.toLocaleString()}원으로 예약하기` : "이 시술 예약하기"}</Link>}
+            {selectedDeal && <BookingButton to={`/checkout/${selectedDeal.id}`} className="block w-full rounded-xl bg-accent p-3 text-center text-sm font-bold text-white">{activeDeals.includes(selectedDeal) ? `타임딜 ${selectedDeal.price.toLocaleString()}원으로 예약하기` : "이 시술 예약하기"}</BookingButton>}
           </div>
         )}
       </dialog>

@@ -1,3 +1,4 @@
+import ChoiceGroup from "@/components/common/ChoiceGroup";
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SERVICE_CATEGORIES } from "@/data/packageOptions";
@@ -54,9 +55,9 @@ export default function Search() {
         <div className="flex flex-wrap gap-2" role="group" aria-label="시술 카테고리">
           {[{ id: "", label: "전체" }, ...SERVICE_CATEGORIES].map((item) => <button key={item.id} type="button" aria-pressed={category === item.id} onClick={() => updateParam("category", item.id)} className={`rounded-lg border px-3 py-2 text-sm ${category === item.id ? "border-accent text-accent" : "border-page-border text-page-text"}`}>{item.label}</button>)}
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          <label className="space-y-1 text-sm"><span>지역</span><select value={area} onChange={(event) => updateParam("area", event.target.value)} className="w-full rounded-lg border border-page-border p-2"><option value="">전체 지역</option>{area && !areas.includes(area) && <option value={area}>{area}</option>}{areas.map((value) => <option key={value} value={value}>{value}</option>)}</select></label>
-          <label className="space-y-1 text-sm"><span>정렬</span><select value={sort} onChange={(event) => updateParam("sort", event.target.value)} className="w-full rounded-lg border border-page-border p-2"><option value="ending">마감 빠른순</option><option value="price">낮은 가격순</option><option value="discount">할인율 높은순</option></select></label>
+        <div className="space-y-4 rounded-2xl bg-[#faf7f8] p-4">
+          <ChoiceGroup label="지역" value={area} onChange={value => updateParam("area", value)} options={[{ value: "", label: "전체 지역" }, ...[...new Set([...(area ? [area] : []), ...areas])].map(value => ({ value, label: value.replace(/^서울특별시 /, "") }))]} />
+          <ChoiceGroup label="정렬" value={sort} onChange={value => updateParam("sort", value)} options={[{ value: "ending", label: "마감 빠른순" }, { value: "price", label: "낮은 가격순" }, { value: "discount", label: "할인율 높은순" }]} />
         </div>
         {loading ? <p role="status" className="py-8 text-center text-sm">검색 결과를 불러오는 중입니다.</p> : error ? <EmptyState title="검색 결과를 불러오지 못했습니다" description={error} action={<button type="button" onClick={() => window.location.reload()} className="text-accent">다시 시도</button>} /> : <>
           <p className="text-sm text-page-text" aria-live="polite">{keyword ? `“${keyword}” ` : ""}검색 결과 {results.length}건</p>

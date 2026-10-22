@@ -1,12 +1,16 @@
 import { useId } from "react";
-import { DEFAULT_APPEARANCE, EYE_COLORS, FACE_HOLES, FACE_TONES, HAIR_COLORS, hairCutoutSource, hairRecolorStyle, type AvatarAppearance } from "./appearance";
+import faceArt from "@/data/avatar-face-v5.json";
+import { DEFAULT_APPEARANCE, EYE_COLORS, FACE_HOLES, FACE_TONES, HAIR_COLORS, hairRecolorStyle, type AvatarAppearance } from "./appearance";
 import { HairKeyFilter } from "./HairRecolor";
+import PaintedHead from "./PaintedHead";
+import FacialFeatures, { PaintedMouth } from "./FacialFeatures";
+import { hasPaintedHead } from "./paintedHeadData";
 
 /** The original drawn head. Skin tone and hair colour recolour it in place, so the character never changes shape. */
 function OriginalPortrait({ appearance }: { appearance: AvatarAppearance }) {
   const id = useId().replaceAll(":", ""), color = HAIR_COLORS.find(item => item.id === appearance.hairColor)!, tone = FACE_TONES.find(item => item.id === appearance.tone)!;
   // One canonical head keeps the character's identity independent of clothing atlas cells.
-  const head = (clip: string) => <svg className="original-portrait" viewBox="0 0 512 768" aria-hidden="true"><defs><clipPath id={clip}><path d="M0 0H493V384H328V362H286V390H227V362H184V384H0Z" /></clipPath></defs><image href="/images/playground/cute-fashion-atlas-v3.png" x="-37.9" width="1536" height="1536" clipPath={`url(#${clip})`} /></svg>;
+  const head = (clip: string) => <svg className="original-portrait" viewBox="0 0 512 768" aria-hidden="true"><defs><mask id={clip} maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="768"><rect width="474" height="768" fill="white" /><path d={faceArt.headGarmentContour} transform="scale(512 768)" fill="black" /></mask></defs><image href="/images/playground/cute-fashion-atlas-v3.png" x="-37.9" width="1536" height="1536" mask={`url(#${clip})`} /></svg>;
   const recolor = color.id !== "chestnut" || tone.id !== "peach";
   return <>
     <span className="original-portrait" style={{ filter: tone.filter }}>{head(`${id}-head`)}</span>
@@ -17,7 +21,10 @@ function OriginalPortrait({ appearance }: { appearance: AvatarAppearance }) {
 
 function SkinPatch({ x, y, rx, ry }: { x: number; y: number; rx: number; ry: number }) {
   const id = useId().replaceAll(":", "");
-  return <g><defs><radialGradient id={`${id}-fade`}><stop offset=".72" stopColor="white" /><stop offset="1" stopColor="white" stopOpacity="0" /></radialGradient><mask id={`${id}-patch`} maskUnits="userSpaceOnUse" x={x - rx} y={y - ry} width={rx * 2} height={ry * 2}><ellipse cx={x} cy={y} rx={rx} ry={ry} fill={`url(#${id}-fade)`} /></mask></defs><image href="/images/playground/avatar-face-base.png" x="97.28" y="76.032" width="317.44" height="337.92" mask={`url(#${id}-patch)`} /></g>;
+  return <g><defs><radialGradient id={`${id}-fade`}><stop offset=".45" stopColor="white" /><stop offset="1" stopColor="white" stopOpacity="0" /></radialGradient><mask id={`${id}-patch`} maskUnits="userSpaceOnUse" x={x - rx} y={y - ry} width={rx * 2} height={ry * 2}><ellipse cx={x} cy={y} rx={rx} ry={ry} fill={`url(#${id}-fade)`} /></mask></defs><g mask={`url(#${id}-patch)`}>{rx <= 32
+    ? <image href="/images/playground/cute-fashion-atlas-v3.png" x={-37.9 - 52} width="1536" height="1536" />
+    : <svg x={x - rx} y={y - ry} width={rx * 2} height={ry * 2} viewBox="258 226 20 22" preserveAspectRatio="none"><image href="/images/playground/cute-fashion-atlas-v3.png" x="-37.9" width="1536" height="1536" /></svg>}
+  </g></g>;
 }
 
 export function FaceEyes({ appearance }: { appearance: AvatarAppearance }) {
@@ -36,27 +43,19 @@ export function FaceEyes({ appearance }: { appearance: AvatarAppearance }) {
   </g>;
 }
 export function FaceMouth({ mouth }: { mouth: AvatarAppearance["mouth"] }) {
-  if (mouth === "grin") return <g><path d="M237 319q19 11 38 0-2 24-19 24t-19-24z" fill="#924b55" stroke="#c88584" strokeWidth="1" /><path d="M242 323q14 6 28 0v5q-14 5-28 0z" fill="#fff7ee" /><ellipse cx="257" cy="337" rx="9" ry="4" fill="#eea1a8" /></g>;
-  if (mouth === "pout") return <g><ellipse cx="256" cy="325" rx="6" ry="4" fill="#d78b8d" /><path d="M251 325h10" stroke="#a56570" strokeWidth="1.4" strokeLinecap="round" /></g>;
-  if (mouth === "ooh") return <g><ellipse cx="256" cy="327" rx="7" ry="9" fill="#a56167" stroke="#db9b98" strokeWidth="1.2" /><ellipse cx="254" cy="324" rx="2" ry="3" fill="#733e4a" /><path d="M253 333h5" stroke="#ecafb0" strokeWidth="2" strokeLinecap="round" /></g>;
-  if (mouth === "kitty") return <path d="M241 322q2 10 10 7 5-2 5-7 0 5 5 7 8 3 10-7" fill="none" stroke="#ba747c" strokeWidth="2.6" strokeLinecap="round" />;
-  return <g><path d="M243 320q13 9 26 0" fill="none" stroke="#bd7379" strokeWidth="2.5" strokeLinecap="round" /><path d="M250 328q6 3 12 0" stroke="#e7a2a0" strokeWidth="2" strokeLinecap="round" fill="none" /></g>;
+  return <PaintedMouth mouth={mouth} x={256} y={326} />;
 }
 export function FaceFeatures({ appearance }: { appearance: AvatarAppearance }) {
-  const tone = FACE_TONES.find(item => item.id === appearance.tone)!;
-  // Toned like the face, so eye and mouth patches never show the default skin.
-  return <svg className="avatar-face-features" viewBox="0 0 512 768" aria-hidden="true" style={{ filter: tone.filter }}>
-    <g className="eye-cover">{[186, 330].map(x => <SkinPatch key={x} x={x} y={264} rx={67} ry={70} />)}</g><FaceEyes appearance={appearance} />
-    <g className="mouth-cover"><SkinPatch x={256} y={321} rx={32} ry={22} /></g><g className="mouth-chosen"><FaceMouth mouth={appearance.mouth} /></g><g className="mouth-happy"><SkinPatch x={256} y={321} rx={32} ry={22} /><FaceMouth mouth="grin" /></g><g className="mouth-sleepy"><SkinPatch x={256} y={321} rx={32} ry={22} /><FaceMouth mouth="ooh" /></g><g className="mouth-camera"><SkinPatch x={256} y={321} rx={32} ry={22} /><FaceMouth mouth="kitty" /></g>
-  </svg>;
+  return <FacialFeatures appearance={appearance} />;
 }
 export default function AvatarHead({ appearance = DEFAULT_APPEARANCE }: { appearance?: AvatarAppearance }) {
-  const color = HAIR_COLORS.find(item => item.id === appearance.hairColor)!, tone = FACE_TONES.find(item => item.id === appearance.tone)!;
+  const custom = `${appearance.eyes !== DEFAULT_APPEARANCE.eyes || appearance.eyeColor !== DEFAULT_APPEARANCE.eyeColor ? "custom-eyes" : ""} ${appearance.mouth !== DEFAULT_APPEARANCE.mouth ? "custom-mouth" : ""}`;
+  if (hasPaintedHead(appearance)) {
+    return <span className={`avatar-custom-head hair-${appearance.hairstyle} uses-original-portrait ${custom}`} aria-hidden="true"><PaintedHead appearance={appearance} /><FaceFeatures appearance={appearance} /></span>;
+  }
   // The original bob is the drawn character itself; colours, eyes and mouth are changed on it rather than replacing it.
   if (appearance.hairstyle === "bob") {
-    const custom = `${appearance.eyes !== DEFAULT_APPEARANCE.eyes || appearance.eyeColor !== DEFAULT_APPEARANCE.eyeColor ? "custom-eyes" : ""} ${appearance.mouth !== DEFAULT_APPEARANCE.mouth ? "custom-mouth" : ""}`;
     return <span className={`avatar-custom-head hair-bob uses-original-portrait ${custom}`} aria-hidden="true"><OriginalPortrait appearance={appearance} /><FaceFeatures appearance={appearance} /></span>;
   }
-  const hair = <img className="hair-art" src={hairCutoutSource("front", appearance.hairstyle)} alt="" draggable="false" />;
-  return <span className={`avatar-custom-head hair-${appearance.hairstyle}`} aria-hidden="true"><span className="hair-follow hair-behind"><span className="avatar-hair-layer hair-back" style={{ filter: color.filter }}>{hair}</span></span><img className="avatar-face-skin" src="/images/playground/avatar-face-base.png" alt="" draggable="false" style={{ filter: tone.filter }} /><FaceFeatures appearance={appearance} /><span className="hair-follow hair-ahead"><span className="avatar-hair-layer hair-front" style={{ filter: color.filter }}>{hair}</span></span></span>;
+  return null;
 }

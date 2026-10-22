@@ -23,6 +23,8 @@ import { useBusinessHistory } from "@/features/consumer/history";
 import { pointBalance, useEngagementStore } from "@/features/consumer/engagement/store";
 import { useReservations } from "@/features/consumer/booking/useReservations";
 import type { User } from "@/type/auth";
+import { useBusinessImages } from "@/features/consumer/useBusinessImages";
+import BusinessImage from "@/components/common/BusinessImage";
 
 type DashboardProps = {
   isCheckingUser: boolean;
@@ -106,6 +108,7 @@ export default function MyPageDashboard({
   const localCouponCount = useCouponStore(state => state.coupons.filter(coupon => !coupon.usedReservationId).length);
   const visits = useBusinessHistory((state) => state.visits);
   const recentShops = visits.filter((visit) => !visit.preview).slice(0, 4);
+  const shopImages = useBusinessImages(recentShops.map(shop => shop.id));
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
@@ -208,11 +211,11 @@ export default function MyPageDashboard({
               to={item.path}
               className="flex min-w-0 flex-col items-center gap-2 text-center"
             >
-              <Icon className="h-5 w-5 text-gray-300" strokeWidth={2} />
-              <span className="text-lg font-bold text-gray-300">
+              <Icon className="h-5 w-5 text-[#c6577c]" strokeWidth={2} />
+              <span className="text-lg font-bold text-[#a63e66]">
                 {item.value}
               </span>
-              <span className="truncate text-xs text-gray-400">
+              <span className="truncate text-xs font-medium text-[#6e6073]">
                 {item.label}
               </span>
             </Link>
@@ -292,7 +295,7 @@ export default function MyPageDashboard({
             {recentShops.map((shop) => (
               <li key={shop.id} className="min-w-0">
                 <Link to={`/business/${shop.id}`} className="block text-center">
-                  <span className="mx-auto grid aspect-square w-full max-w-20 place-items-center rounded-full bg-pink-50 text-accent">매장</span>
+                  <BusinessImage src={shopImages[shop.id]} className="mx-auto aspect-square w-full max-w-20 rounded-full border border-[#f0dfe7]" />
                   <span className="mt-2 block truncate text-xs text-page-text">
                     {shop.name}
                   </span>

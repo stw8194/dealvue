@@ -1,9 +1,8 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { ConsumerDeal } from "@/features/consumer/types";
-import type { PaymentMethod, Reservation, ReservationReview } from "@/type/reservation";
+import type { Reservation, ReservationReview } from "@/type/reservation";
 import { bookingOffer, type BookingOffer } from "../dealTiming";
-import { isCouponUsable } from "../coupons";
 import { useEngagementStore } from "../engagement/store";
 import { commitLedger, registerLedgerCache, type LedgerState } from "../ledger";
 import { canCompleteVisit, canManageReservation, cancellationTerm, findOverlap, formatReservationDate, parseCancellationPolicy, validateBooking, validateReview } from "./rules";
@@ -11,19 +10,16 @@ import { legTimes, splitPrice } from "./packageSchedule";
 
 export const REVIEW_REWARD_POINTS = 100;
 
-/** The amounts the customer saw and agreed to on the checkout screen. */
+/** The price the customer saw and agreed to on the booking screen; it is paid at the shop. */
 export interface AgreedQuote {
   kind: BookingOffer["kind"];
   price: number;
-  couponDiscount: number;
-  pointsUsed: number;
-  total: number;
 }
 
 export class QuoteChangedError extends Error {
   readonly quote: AgreedQuote;
   constructor(quote: AgreedQuote) {
-    super("결제 금액이 바뀌었어요. 바뀐 금액을 확인하고 다시 동의해 주세요.");
+    super("예약 금액이 바뀌었어요. 바뀐 금액을 확인하고 다시 동의해 주세요.");
     this.quote = quote;
   }
 }
@@ -34,9 +30,7 @@ interface CreateReservationInput {
   agreed: boolean;
   agreedQuote: AgreedQuote;
   idempotencyKey: string;
-  paymentMethod: PaymentMethod;
-  couponId?: string;
-  points?: number;
+  userId: string;
   staffName?: string;
 }
 
@@ -51,23 +45,17 @@ interface BookingState {
   resetDemo: () => void;
 }
 
-function balance(state: LedgerState) {
-  return state.pointHistory.reduce((sum, entry) => sum + entry.amount, 0);
+export function quoteFor(offer: BookingOffer): AgreedQuote {
+  return { kind: offer.kind, price: offer.price };
 }
 
-/** Recomputes the checkout amounts from the stored ledger; throws when the coupon or points are gone. */
-export function quoteFor(state: LedgerState, offer: BookingOffer, couponId: string | undefined, requestedPoints: number, now: number): AgreedQuote {
-  const coupon = couponId ? state.coupons.find(item => item.id === couponId) : undefined;
-  if (couponId && (!coupon || !isCouponUsable(coupon, offer.price, now))) throw new Error("이 쿠폰은 이미 사용되었거나 조건에 맞지 않아요. 쿠폰을 다시 선택해 주세요.");
-  const couponDiscount = coupon ? Math.min(coupon.discountAmount, offer.price) : 0;
-  const points = Math.max(0, Math.floor(requestedPoints || 0));
-  if (points > balance(state)) throw new Error("보유 포인트가 부족해요. 사용할 포인트를 다시 입력해 주세요.");
-  const pointsUsed = Math.min(points, offer.price - couponDiscount);
-  return { kind: offer.kind, price: offer.price, couponDiscount, pointsUsed, total: offer.price - couponDiscount - pointsUsed };
+export function sameQuote(a: AgreedQuote, b: AgreedQuote) {
+  return a.kind === b.kind && a.price === b.price;
 }
 
-function sameQuote(a: AgreedQuote, b: AgreedQuote) {
-  return a.kind === b.kind && a.price === b.price && a.couponDiscount === b.couponDiscount && a.pointsUsed === b.pointsUsed && a.total === b.total;
+/** Device-ledger bookings of one account; other accounts on the same device are not visible. */
+export function ownReservations(reservations: Reservation[], userId: string | undefined) {
+  return userId ? reservations.filter(reservation => reservation.userId === userId) : [];
 }
 
 function notify(title: string, body: string, link: string, kind: "activity" | "benefits" = "activity") {
@@ -81,33 +69,35 @@ function groupOf(state: LedgerState, reservation: Reservation) {
 export const useBookingStore = create<BookingState>()(persist(set => ({
   reservations: [],
   reviews: [],
-  // Booking, coupon use and point spending are one ledger transaction: all saved or none.
-  createReservation: async ({ deal, slot, agreed, agreedQuote, idempotencyKey, paymentMethod, couponId, points = 0, staffName }) => {
-    if (!agreed) throw new Error("예약 및 취소·환불 규정에 동의해 주세요.");
+  // Nothing is paid when booking; the agreed price is paid at the shop.
+  createReservation: async ({ deal, slot, agreed, agreedQuote, idempotencyKey, userId, staffName }) => {
+    if (!userId) throw new Error("로그인 후 예약해 주세요.");
+    if (!agreed) throw new Error("예약 내용과 취소 규정에 동의해 주세요.");
     if (!idempotencyKey.trim()) throw new Error("예약 요청을 다시 시작해 주세요.");
     const groupId = crypto.randomUUID();
     const created = await commitLedger(state => {
-      const previous = state.reservations.find(reservation => reservation.requestKey === idempotencyKey);
+      const previous = state.reservations.find(reservation => reservation.requestKey === idempotencyKey && reservation.userId === userId);
       if (previous) return { next: state, result: previous };
       const now = Date.now();
       const offer = bookingOffer(deal, now);
       const legs = deal.legs?.length ? deal.legs : null;
-      const error = legs ? null : validateBooking(deal, slot, state.reservations, now, undefined, offer.kind);
+      const mine = ownReservations(state.reservations, userId);
+      const error = legs ? null : validateBooking(deal, slot, mine, now, undefined, offer.kind);
       if (error) throw new Error(error);
       if (legs && !(deal.regularSlots ?? []).includes(slot)) throw new Error("선택할 수 없는 일정입니다. 일정을 다시 확인해 주세요.");
-      const quote = quoteFor(state, offer, couponId, points, now);
+      const quote = quoteFor(offer);
       if (!sameQuote(quote, agreedQuote)) throw new QuoteChangedError(quote);
       const timestamp = new Date(now).toISOString();
       const parts = legs ?? [null];
       const times = legs ? legTimes(Date.parse(slot), legs) : [{ start: Date.parse(slot), end: Date.parse(slot) + (deal.durationMinutes ?? 60) * 60_000 }];
       const prices = legs ? splitPrice(quote.price, legs) : [quote.price];
-      const paid = legs ? splitPrice(quote.total, legs) : [quote.total];
       const originals = legs ? splitPrice(offer.originalPrice, legs) : [offer.originalPrice];
       const reservations: Reservation[] = parts.map((leg, index) => {
-        const overlap = findOverlap(state.reservations, times[index].start, times[index].end);
+        const overlap = findOverlap(mine, times[index].start, times[index].end);
         if (overlap) throw new Error(`같은 시간에 ${overlap.shopName} 예약이 있어요. 다른 시간을 선택해 주세요.`);
         return {
           id: `preview-${crypto.randomUUID()}`,
+          userId,
           dealId: deal.id,
           businessId: leg?.businessId ?? deal.businessId,
           serviceId: leg?.serviceIds[0] ?? deal.serviceId!,
@@ -119,13 +109,8 @@ export const useBookingStore = create<BookingState>()(persist(set => ({
           price: prices[index],
           originalPrice: originals[index],
           kind: offer.kind,
-          couponId: index === 0 && quote.couponDiscount ? couponId : undefined,
-          couponDiscount: index === 0 ? quote.couponDiscount : 0,
-          pointsUsed: index === 0 ? quote.pointsUsed : 0,
-          paidAmount: paid[index],
-          paymentMethod,
-          // Nothing is charged: demo bookings never reach a payment provider.
-          paymentStatus: "test",
+          paidAmount: prices[index],
+          paymentStatus: "on_site",
           staffName: staffName || undefined,
           address: leg?.address ?? deal.address,
           imageUrl: deal.imageUrl,
@@ -138,11 +123,9 @@ export const useBookingStore = create<BookingState>()(persist(set => ({
           ...(legs ? { groupId, legIndex: index, legCount: legs.length } : {}),
         };
       });
-      const coupons = quote.couponDiscount ? state.coupons.map(coupon => coupon.id === couponId ? { ...coupon, usedReservationId: reservations[0].id } : coupon) : state.coupons;
-      const pointHistory = quote.pointsUsed ? [{ id: crypto.randomUUID(), reason: `예약 결제 사용 · ${deal.businessName}`, amount: -quote.pointsUsed, createdAt: timestamp }, ...state.pointHistory] : state.pointHistory;
-      return { next: { ...state, reservations: [...reservations, ...state.reservations], coupons, pointHistory }, result: reservations[0] };
+      return { next: { ...state, reservations: [...reservations, ...state.reservations] }, result: reservations[0] };
     });
-    notify("시연 예약이 저장되었어요", `${deal.businessName} · ${deal.serviceName} · ${formatReservationDate(created.reservedAt)}`, `/reservation/${created.id}`);
+    notify("예약이 완료되었어요", `${deal.businessName} · ${deal.serviceName} · ${formatReservationDate(created.reservedAt)}`, `/reservation/${created.id}`);
     return created;
   },
   cancelReservation: async (id, reason = "소비자 취소") => {
@@ -159,14 +142,14 @@ export const useBookingStore = create<BookingState>()(persist(set => ({
       return {
         next: {
           ...state,
-          reservations: state.reservations.map(item => ids.has(item.id) ? { ...item, status: "cancelled", paymentStatus: "test_cancelled", cancelTerm: term, cancellationReason: reason.trim().slice(0, 200), updatedAt: new Date(now).toISOString() } : item),
+          reservations: state.reservations.map(item => ids.has(item.id) ? { ...item, status: "cancelled", paymentStatus: item.paymentStatus === "test" ? "test_cancelled" : item.paymentStatus, cancelTerm: term, cancellationReason: reason.trim().slice(0, 200), updatedAt: new Date(now).toISOString() } : item),
           coupons: state.coupons.map(coupon => coupon.usedReservationId && ids.has(coupon.usedReservationId) ? { ...coupon, usedReservationId: undefined } : coupon),
           pointHistory: restoredPoints ? [{ id: crypto.randomUUID(), reason: `예약 취소 환급 · ${reservation.shopName}`, amount: restoredPoints, createdAt: new Date(now).toISOString() }, ...state.pointHistory] : state.pointHistory,
         },
         result: { reservation, term },
       };
     });
-    if (cancelled) notify("시연 예약이 취소되었어요", `${cancelled.reservation.shopName} · ${cancelled.reservation.productName}`, `/reservation/${id}`);
+    if (cancelled) notify("예약이 취소되었어요", `${cancelled.reservation.shopName} · ${cancelled.reservation.productName}`, `/reservation/${id}`);
   },
   rescheduleReservation: async (id, deal, slot) => {
     const moved = await commitLedger(state => {
@@ -175,12 +158,12 @@ export const useBookingStore = create<BookingState>()(persist(set => ({
       if (reservation.groupId) throw new Error("패키지 예약은 일정을 바꿀 수 없어요. 취소 후 다시 예약해 주세요.");
       if (!canManageReservation(reservation)) throw new Error("방문 전 예약만 변경할 수 있습니다.");
       if (reservation.dealId !== deal.id || reservation.businessId !== deal.businessId || reservation.serviceId !== deal.serviceId) throw new Error("같은 시술의 일정만 변경할 수 있습니다.");
-      const error = validateBooking(deal, slot, state.reservations, Date.now(), id, reservation.kind ?? "timedeal");
+      const error = validateBooking(deal, slot, ownReservations(state.reservations, reservation.userId), Date.now(), id, reservation.kind ?? "timedeal");
       if (error) throw new Error(error);
       const endAt = new Date(new Date(slot).getTime() + (deal.durationMinutes ?? 60) * 60_000).toISOString();
       return { next: { ...state, reservations: state.reservations.map(item => item.id === id ? { ...item, reservedAt: slot, endAt, updatedAt: new Date().toISOString() } : item) }, result: reservation };
     });
-    notify("시연 예약 일정이 변경되었어요", `${moved.shopName} · ${formatReservationDate(slot)}`, `/reservation/${id}`);
+    notify("예약 일정이 변경되었어요", `${moved.shopName} · ${formatReservationDate(slot)}`, `/reservation/${id}`);
   },
   completeVisit: async id => {
     const done = await commitLedger(state => {

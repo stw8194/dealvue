@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CalendarDays, ChevronRight, Store } from "lucide-react";
 import { EmptyState } from "@/features/consumer/ui";
 import type { Reservation } from "@/type/reservation";
 import { formatReservationDate, isAwaitingVisitCheck, isUpcoming, reservationStatusLabel } from "./rules";
@@ -26,17 +27,27 @@ export default function ReservationList({ tab, emptyTitle }: { tab: ReservationT
     <div className="space-y-3">
       <ul className="space-y-3">
         {filtered.map(reservation => (
-          <li key={reservation.id} className="rounded-xl border border-page-border p-4">
-            <Link to={`/reservation/${reservation.id}`} className="block space-y-2">
-              <p className="text-xs font-semibold text-accent">{reservationStatusLabel(reservation, now)}</p>
-              <h2 className="font-semibold">{reservation.productName}</h2>
-              <p className="text-sm text-page-text">{reservation.shopName}{reservation.legCount ? ` · 패키지 ${(reservation.legIndex ?? 0) + 1}/${reservation.legCount}` : ""}</p>
-              <p className="text-sm">{formatReservationDate(reservation.reservedAt)}</p>
-              {reservation.staffName && <p className="text-sm text-page-text">담당 {reservation.staffName}</p>}
-              <p className="text-sm">{(reservation.paidAmount ?? reservation.price).toLocaleString()}원{reservation.isPreview ? " · 실제 청구 없음" : ""}</p>
-              <p className="text-sm text-accent">예약 상세 보기 →</p>
+          <li key={reservation.id} className="overflow-hidden rounded-3xl border border-page-border bg-white">
+            <Link to={`/reservation/${reservation.id}`} aria-label={`${reservation.shopName} ${reservation.productName} 예약 상세 보기`} className="block p-5 transition hover:bg-[#fffcfd]">
+              <div className="mb-4 flex items-center justify-between gap-2">
+                <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${tab === "cancelled" ? "bg-gray-100 text-page-text" : "bg-accent/10 text-accent"}`}>{reservationStatusLabel(reservation, now)}</span>
+                <ChevronRight size={17} className="text-gray-400" />
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[#faf4f6] text-accent">{reservation.imageUrl ? <img src={reservation.imageUrl} alt="" className="h-full w-full object-cover" /> : <Store size={23} strokeWidth={1.6} />}</span>
+                <div className="min-w-0">
+                  <p className="text-xs text-page-text">{reservation.shopName}{reservation.legCount ? ` · 패키지 ${(reservation.legIndex ?? 0) + 1}/${reservation.legCount}` : ""}</p>
+                  <h2 className="mt-1 break-words text-sm font-bold leading-snug text-page-heading">{reservation.productName}</h2>
+                </div>
+              </div>
+              <p className="mt-4 flex items-center gap-2 text-xs text-page-text"><CalendarDays size={14} className="shrink-0" />{formatReservationDate(reservation.reservedAt)}</p>
+              {reservation.staffName && <p className="mt-2 text-xs text-page-text">담당 {reservation.staffName}</p>}
+              <div className="mt-4 flex items-center justify-between gap-3 border-t border-page-border pt-3">
+                <span className="text-xs text-page-text">{reservation.paymentStatus === "on_site" ? "방문 시 결제" : "예약 금액"}</span>
+                <span className="text-base font-bold text-page-heading">{(reservation.paidAmount ?? reservation.price).toLocaleString()}원</span>
+              </div>
             </Link>
-            {reservation.status === "done" && reservation.isPreview && reservation.completedAt && <Link to={`/reservation/${reservation.id}/review`} className="mt-3 inline-block text-sm text-accent underline">리뷰 작성·수정</Link>}
+            {reservation.status === "done" && reservation.isPreview && reservation.completedAt && <Link to={`/reservation/${reservation.id}/review`} className="mx-5 mb-4 flex min-h-11 items-center justify-center rounded-xl bg-accent/5 text-sm font-semibold text-accent">리뷰 작성·수정</Link>}
           </li>
         ))}
       </ul>

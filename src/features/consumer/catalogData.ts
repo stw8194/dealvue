@@ -1,3 +1,4 @@
+import { businessAddress } from "./businessAddress";
 import { getSupabaseClient } from "@/api/supabase";
 import { SERVICE_CATEGORIES } from "@/data/packageOptions";
 import type { ServiceCategory } from "@/type/package";
@@ -77,7 +78,7 @@ export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
       businessName: business?.name ?? "매장 정보 없음", serviceName: service?.name ?? "타임딜",
       category: categoryOf(business), description: service?.description ?? business?.description ?? "",
       imageUrl: resolveBusinessImage(images.data?.find((image) => image.business_id === row.business_id)?.img_url as string | undefined),
-      address: business?.address ?? "", originalPrice: row.original_price, price: row.deal_price,
+      address: businessAddress(business?.address), originalPrice: row.original_price, price: row.deal_price,
       remainingCapacity: row.remaining_capacity, endAt: template ? "" : (row as DealRow).end_at,
       startAt: template ? "" : (row as DealRow).start_at,
       slots: template ? requestSlots(template.start_time, template.end_time, duration, business?.source_details?.closed_days) : [],

@@ -1,0 +1,6 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Asset type: transparent facial-expression mouth sprites for the provided hand-painted chibi doll avatar. Reference: use ONLY the tiny peach-coral sculpted lips of the Coco doll in the first top-left character as material/style reference. Generate a square transparent sprite sheet, 3 columns x 2 rows, exactly FIVE standalone tiny mouths centered in the first five equal cells, sixth empty. Top row left: very small gentle closed smile. Top center: modest open happy smile with tiny upper milk-white teeth, never a giant black cartoon hole. Top right: cute small closed pout. Bottom left: small round surprised 'o'. Bottom center: small soft catlike smile (subtle curved corners, not drawn W). Paint only the lips and mouth interior, with very faint soft lip shading fading directly to real transparent alpha. NO skin rectangle or oval, NO face, NO nose, NO eyes, NO chin, NO hair, NO label, NO outline, no makeup lipstick, no text. Each sprite should be broad enough to see detail but plenty of transparent gutter around all sides, same light from upper left, peach-pink miniature doll sculpted mouth, smoothly shaded and delicate like the reference. Output actual transparent RGBA.",
+  "reference": "public/images/playground/cute-fashion-atlas-v3.png",
+  "output": "mouths.png"
+}

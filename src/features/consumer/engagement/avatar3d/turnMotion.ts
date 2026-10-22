@@ -1,7 +1,7 @@
 /** Dress-room spin timing, shared by the drawn-view turn and the synthesized 3D turn. */
 
 /** Whole turn in milliseconds — lower is faster. The spin itself is the middle 44%. */
-export const TURN_DURATION = 620;
+export const TURN_DURATION = 730;
 /** Hop height as a fraction of the avatar's height (0 spins in place). */
 export const TURN_HOP = .03;
 /** Longest frame step the turn advances by; dropped frames slow it down rather than skip drawings. */

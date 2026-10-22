@@ -7,7 +7,10 @@ import type { ModelStyle } from "./WardrobeModel";
 type Portrait = ModelStyle & { view?: TurnView };
 const decoded = new Map<string, Promise<void>>();
 function decode(url: string) {
-  if (!decoded.has(url)) { const image = new Image(); image.src = url; decoded.set(url, image.decode().catch(() => undefined)); }
+  if (!decoded.has(url)) {
+    const image = new Image(); image.src = url;
+    decoded.set(url, image.decode().catch(error => { decoded.delete(url); throw error; }));
+  }
   return decoded.get(url)!;
 }
 
@@ -36,7 +39,16 @@ export default function DrawnTurn({ outfit, accessories, appearance, fallback, v
     let alive = true;
     // Decode every drawing first so no layer pops in half-loaded mid-spin.
     Promise.all([from, next].flatMap(style => turnImageSources(style, hasTurnViews(views, style.outfit) ? faces : ["front"])).map(decode))
-      .then(() => { if (alive) { setTurn({ from, to: next, quarters }); setEffects(count => count + 1); } });
+      .then(() => {
+        if (alive) {
+          delete root.current?.dataset.turnFallback;
+          setTurn({ from, to: next, quarters }); setEffects(count => count + 1);
+        }
+      }).catch(() => {
+        // Missing turn art must never produce a half-loaded face. Keep the usable
+        // front portrait and apply the latest outfit without starting a turn.
+        if (alive) { if (root.current) root.current.dataset.turnFallback = "image-unavailable"; setSettled(next); }
+      });
     return () => { alive = false; };
   }, [targetKey, shownKey, turn, views]);
 

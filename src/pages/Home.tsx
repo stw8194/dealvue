@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { toHomeTimeDeals } from "@/api/home";
 import { useConsumerCatalog } from "@/features/consumer/catalog";
 import { useDealTime } from "@/features/consumer/dealTiming";
-import { groupActiveTimeDeals } from "@/features/consumer/dealSchedule";
+import { groupActiveTimeDeals, topDiscountDeals } from "@/features/consumer/dealSchedule";
 import HomeHeader from "@/components/home/HomeHeader";
 import TimeDealBanner from "@/components/home/TimeDealBanner";
 import TimeDealModal from "@/components/home/TimeDealModal";
@@ -17,7 +17,7 @@ import {
   HomePlaygroundBanner,
 } from "@/components/home/HomePromoLinks";
 import { SERVICE_CATEGORIES } from "@/data/packageOptions";
-import type { TimeDealBusiness } from "@/type/home";
+import type { TimeDeal, TimeDealBusiness } from "@/type/home";
 import type { ServiceCategory } from "@/type/package";
 import { Clock } from "lucide-react";
 
@@ -33,9 +33,10 @@ function ConnectedHome() {
   const [searchParams] = useSearchParams();
   const { deals, loading: isTimeDealsLoading } = useConsumerCatalog();
   const currentTime = useDealTime();
-  const [selection, setSelection] = useState<{ businessId: number; endAt: string } | null>(null);
+  // The modal keeps the shop as it was when opened, so a deal ending while it is open is shown as closed.
+  const [selection, setSelection] = useState<{ business: TimeDealBusiness; dealId?: number } | null>(null);
   const closeTimeDealModal = useCallback(() => setSelection(null), []);
-  const selectTimeDealBusiness = useCallback((business: TimeDealBusiness) => setSelection({ businessId: business.businessId, endAt: business.endAt }), []);
+  const selectTimeDealBusiness = useCallback((business: TimeDealBusiness) => setSelection({ business }), []);
   const selectedCategory = useMemo(() => {
     const categoryParam = searchParams.get("category");
     return categoryParam && isServiceCategory(categoryParam)
@@ -46,12 +47,15 @@ function ConnectedHome() {
     () => groupActiveTimeDeals(toHomeTimeDeals(deals), currentTime),
     [currentTime, deals],
   );
+  const homeTimeDeals = useMemo(() => toHomeTimeDeals(deals), [deals]);
   const bannerDeals = useMemo(
-    () =>
-      activeTimeDeals.slice(0, 5),
-    [activeTimeDeals],
+    () => topDiscountDeals(homeTimeDeals, currentTime, 5),
+    [homeTimeDeals, currentTime],
   );
-  const visibleSelectedTimeDeal = activeTimeDeals.find(business => business.businessId === selection?.businessId && business.endAt === selection.endAt) ?? null;
+  const selectBannerDeal = useCallback((deal: TimeDeal) => {
+    const business = activeTimeDeals.find(item => item.businessId === deal.businessId && item.deals.some(candidate => candidate.id === deal.id));
+    setSelection({ business: business ?? { businessId: deal.businessId, businessName: deal.businessName, category: deal.category, imageUrl: deal.imageUrl, deals: [deal], endAt: deal.endAt ?? "", remainingCapacity: deal.remaining_capacity, discountLabel: "" }, dealId: deal.id });
+  }, [activeTimeDeals]);
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-[480px] bg-page-background pb-20 md:pb-16">
@@ -59,7 +63,7 @@ function ConnectedHome() {
       <TimeDealBanner
         currentTime={currentTime}
         deals={bannerDeals}
-        onSelectDeal={selectTimeDealBusiness}
+        onSelectDeal={selectBannerDeal}
       />
       <PopularSearchBar />
       <IconCategoryGrid />
@@ -93,7 +97,7 @@ function ConnectedHome() {
       </>}
       <HomeCouponBanner />
       <section>
-        <div className="flex items-center justify-between px-4 pt-4">
+        <div className="flex items-center justify-between px-4 pt-4 min-[390px]:px-5">
           <h2 className="text-base font-semibold text-page-heading">
             딜키트 추천
           </h2>
@@ -105,9 +109,10 @@ function ConnectedHome() {
       </section>
       <HomePlaygroundBanner />
       <TimeDealModal
-        key={selection ? `${selection.businessId}:${selection.endAt}` : "closed"}
+        key={selection ? `${selection.business.businessId}:${selection.business.endAt}:${selection.dealId ?? "best"}` : "closed"}
         currentTime={currentTime}
-        business={visibleSelectedTimeDeal}
+        business={selection?.business ?? null}
+        initialDealId={selection?.dealId}
         onClose={closeTimeDealModal}
       />
     </main>

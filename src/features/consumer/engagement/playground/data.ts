@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import type { AvatarAppearance } from "./appearance";
-import { ACCESSORIES, type AccessoryId, type AccessorySlot } from "./accessoryCatalog";
+import { ACCESSORIES, isAvailableAccessory, type AccessoryId, type AccessorySlot } from "./accessoryCatalog";
 export { ACCESSORIES, type AccessoryId, type AccessorySlot } from "./accessoryCatalog";
 
 export const LOOKS = [
@@ -84,7 +84,7 @@ export const AVATAR_MOTIONS = [{ id: "hello", label: "손 흔들기", symbol: "�
 export type AvatarMotion = (typeof AVATAR_MOTIONS)[number]["id"];
 export const AVATAR_POSES = [{ id: "natural", label: "기본", symbol: "♡" }, { id: "sweet", label: "수줍게", symbol: "❀" }, { id: "model", label: "런웨이", symbol: "✧" }, { id: "curtsy", label: "공주 인사", symbol: "♔" }] as const;
 export type AvatarPose = (typeof AVATAR_POSES)[number]["id"];
-export const TOTAL_COLLECTIBLES = LOOKS.length + ACCESSORIES.filter(item => item.price > 0).length + BACKDROPS.length;
+export const TOTAL_COLLECTIBLES = LOOKS.length + ACCESSORIES.filter(item => isAvailableAccessory(item) && item.price > 0).length + BACKDROPS.length;
 export type SavedLook = { id: string; name: string; outfit: Outfit; accessories: Accessories; backdrop: BackdropId; appearance?: AvatarAppearance; createdAt: string };
 export const ROULETTE_REWARDS = [5, 20, 10, 50, 5, 30, 10, 100] as const;
 export type RoulettePlay = { id: string; day: string; index: number; amount: number; settled: boolean };

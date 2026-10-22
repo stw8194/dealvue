@@ -1,119 +1,144 @@
-import assert from 'node:assert/strict';
-import { pathToFileURL } from 'node:url';
-const { chromium } = await import(process.env.DEALVUE_PLAYWRIGHT_MODULE ? pathToFileURL(process.env.DEALVUE_PLAYWRIGHT_MODULE).href : 'playwright');
-const base = process.env.DEALVUE_TEST_URL ?? 'http://127.0.0.1:5174';
+import assert from "node:assert/strict";
+import { mkdir } from "node:fs/promises";
+import { pathToFileURL } from "node:url";
+import { installAuthFixture, chooseBookingSlot } from "./booking-test-helpers.mjs";
+
+const { chromium } = await import(process.env.DEALVUE_PLAYWRIGHT_MODULE ? pathToFileURL(process.env.DEALVUE_PLAYWRIGHT_MODULE).href : "playwright");
+const base = process.env.DEALVUE_TEST_URL ?? "http://127.0.0.1:5185";
 const browser = await chromium.launch({ headless: true });
+const errors = [], writes = [];
+const output = "node_modules/.tmp/deal-kits";
+await mkdir(output, { recursive: true });
 try {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  await context.addInitScript(() => localStorage.setItem('dealvue-consumer-preview-mode', JSON.stringify({ state: { enabled: true }, version: 0 })));
-  await context.route('**/*', (route) => route.request().url().startsWith(base) ? route.continue() : route.abort());
-  const page = await context.newPage();
-  const errors = [];
-  page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto(base + '/package');
-  await page.getByRole('navigation', { name: '딜키트 상품종류' }).waitFor();
-  assert.equal(await page.locator('a[href^="/package/detail/"]').count(), 6);
-  await page.getByText('480,000원', { exact: true }).waitFor();
-  await page.getByText('300,000원', { exact: true }).waitFor();
-  await page.getByText('99,000원', { exact: true }).waitFor();
-  await page.waitForFunction(() => [...document.querySelectorAll('img[src^="/images/deal-kits/"]')].every((img) => img.complete && img.naturalWidth > 0));
-  await page.getByRole('navigation', { name: '딜키트 상품종류' }).getByRole('link', { name: '웨딩 헤메드 패키지', exact: true }).click();
-  assert.equal(await page.locator('a[href^="/package/detail/"]').count(), 2);
-  await page.getByLabel('상품 정렬').selectOption('price');
-  await page.waitForFunction(() => document.querySelector('a[href^="/package/detail/"]')?.getAttribute('href') === '/package/detail/1');
-  assert.ok((await page.locator('a[href^="/package/detail/"]').first().innerText()).includes('내추럴 웨딩 헤메드'));
-  await page.screenshot({ path: 'node_modules/.tmp/deal-kit-shop-products.png', fullPage: true });
-  await page.getByRole('link').filter({ hasText: '내추럴 웨딩 헤메드' }).click();
-  await page.getByRole('heading', { name: '이 상품의 서비스 구성', exact: true }).waitFor();
-  await page.getByRole('link', { name: '딜뷰 헤어 스튜디오 ›', exact: true }).waitFor();
-  await page.getByText('드레스 피팅', { exact: true }).waitFor();
-  await page.getByText('40% · 480,000원', { exact: true }).waitFor();
-  assert.equal(await page.locator('a[href^="/checkout/"]').count(), 0);
-  assert.equal(await page.getByText('시간제한 없는 패키지 할인', { exact: true }).count(), 1);
-  assert.equal(await page.getByText('연결 매장 확인', { exact: false }).count(), 0);
-  for (const path of ['one-shop', 'shop-shop']) {
-    await page.goto(base + '/package/' + path);
-    await page.getByText('판매 중인 딜키트가 없습니다', { exact: true }).waitFor();
-  }
-  await page.goto(base + '/package/special?category=999999');
-  await page.getByText('판매 중인 딜키트가 없습니다', { exact: true }).waitFor();
-  await page.goto(base + '/package/detail/999999');
-  await page.getByText('판매 중인 딜키트를 찾을 수 없습니다', { exact: true }).waitFor();
-  await page.goto(base + '/deal/9001');
-  await page.getByText('타임딜 상세', { exact: true }).waitFor();
-  await page.goto(base + '/business/7001');
-  await page.getByRole('heading', { name: '내추럴 웨딩 헤메드', exact: true }).waitFor();
-  await page.getByText('480,000원', { exact: true }).waitFor();
-  await page.goto(base + '/business/7002');
-  await page.getByRole('heading', { name: '본식 프리미엄 헤어·메이크업', exact: true }).waitFor();
-  await page.getByText('600,000원', { exact: true }).waitFor();
-  assert.equal(await page.getByRole('heading', { name: '내추럴 웨딩 헤메드', exact: true }).count(), 0);
-  await page.goto(base + '/');
-  const recommendation = page.locator('section').filter({ has: page.getByRole('heading', { name: '딜키트 추천', exact: true }) });
-  await recommendation.scrollIntoViewIfNeeded();
-  await page.waitForFunction(() => [...document.querySelectorAll('img[src^="/images/deal-kits/"]')].every((img) => img.complete && img.naturalWidth > 0));
-  assert.equal(await recommendation.locator('a[href^="/package/template/"]').count(), 3);
-  await recommendation.screenshot({ path: 'node_modules/.tmp/deal-kit-recommendation.png' });
-  assert.deepEqual(errors, []);
-  console.log('PASS: grouped minimum prices, independent package offers, local photos, filters, business scope, mobile recommendation cards');
-
-  const liveContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
-  const live = await liveContext.newPage();
-  live.on('pageerror', (error) => errors.push(error.message));
-  let rows = [];
-  let templates = [];
-  const writes = [];
-  await live.route('**/*', (route) => {
-    const url = new URL(route.request().url());
-    if (url.href.startsWith(base)) return route.continue();
-    const table = url.pathname.split('/').at(-1);
-    const json = (data) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(data) });
-    if (table === 'can_manage_deal_kits') return json(true);
-    if (table === 'deal_kit_templates') return json(templates);
-    if (table === 'deal_kits') {
-      if (route.request().method() === 'POST') {
-        const input = route.request().postDataJSON();
-        writes.push(input);
-        const saved = { ...input, id: 50, template: templates.find((template) => template.id === input.template_id) };
-        rows.push(saved);
-        return json({ id: saved.id });
-      }
-      return json(rows.filter((row) => (!url.searchParams.has('active') || row.active) && (!url.searchParams.has('business_id') || row.business_id === Number(url.searchParams.get('business_id').slice(3)))));
-    }
+  await context.route("**/*", route => {
+    const request = route.request();
+    if (request.url().startsWith(base) || request.url().startsWith("data:")) return route.continue();
+    if (new URL(request.url()).pathname.startsWith("/rest/v1/") && request.method() === "GET") return route.continue();
+    if (!["GET", "HEAD"].includes(request.method())) writes.push(`${request.method()} ${new URL(request.url()).pathname}`);
     return route.abort();
   });
-  await live.goto(base + '/package');
-  const fixtures = await live.evaluate(async () => {
-    const module = await import('/src/features/consumer/dealKits.ts');
-    return { rows: module.PREVIEW_DEAL_KITS, templates: module.PREVIEW_DEAL_KIT_TEMPLATES };
+  await installAuthFixture(context, { userId: null, firstProfileDelayMs: 300 });
+  const page = await context.newPage();
+  page.on("pageerror", error => errors.push(error.message));
+  await page.clock.install({ time: new Date("2026-10-15T00:10:00+09:00") });
+  const go = async path => { await page.goto(base + path); await page.locator("main").waitFor(); };
+  await go("/package");
+  await page.locator('a[href="/package/detail/101"]').waitFor();
+  const { kits, templates } = await page.evaluate(async () => {
+    const module = await import("/src/features/consumer/dealKits.ts");
+    return { kits: await module.readDealKits(), templates: module.DEAL_KIT_TEMPLATES };
   });
-  rows = fixtures.rows; templates = fixtures.templates;
-  await live.reload();
-  await live.getByText('480,000원', { exact: true }).waitFor();
-  rows[0].active = false;
-  await live.reload();
-  await live.getByText('600,000원', { exact: true }).waitFor();
-  assert.equal(await live.getByText('480,000원', { exact: true }).count(), 0);
-  const weddingCard = live.getByRole('link').filter({ hasText: '본식 프리미엄 헤어·메이크업' });
-  assert.ok((await weddingCard.innerText()).includes('25%'));
-  await live.goto(base + '/business/7001/manage-deal-kits');
-  await live.evaluate(async () => {
-    const { useAuthStore } = await import('/src/store/useAuthStore.ts');
-    useAuthStore.getState().setUser({ id: '11111111-1111-4111-8111-111111111111' });
+  assert.equal(kits.length, 14);
+  assert.equal(await page.locator('a[href^="/package/detail/"]').count(), kits.length);
+  await page.getByRole("navigation", { name: "딜키트 상품종류" }).getByRole("link", { name: "웨딩 헤메드 패키지", exact: true }).click();
+  assert.equal(await page.locator('a[href^="/package/detail/"]').count(), 2);
+  await page.getByRole("group", { name: "상품 정렬", exact: true }).getByText("낮은 가격순", { exact: true }).click();
+  const wedding = kits.filter(kit => kit.template_id === 1).sort((a, b) => a.price - b.price || a.id - b.id);
+  assert.equal(await page.locator('a[href^="/package/detail/"]').first().getAttribute("href"), `/package/detail/${wedding[0].id}`);
+  await page.locator('a[href^="/package/detail/"]').first().click();
+  await page.getByRole("heading", { name: "이 상품의 서비스 구성", exact: true }).waitFor();
+  await page.getByRole("heading", { name: "방문 일정", exact: true }).waitFor();
+  await page.getByRole("link", { name: `${wedding[0].business.name} ›`, exact: true }).waitFor();
+  for (const item of wedding[0].items) await page.getByText(item, { exact: true }).waitFor();
+  await page.getByText("시간제한 없는 패키지 할인", { exact: true }).waitFor();
+  await page.getByRole("button", { name: "일정 선택 · 예약하기", exact: true }).click();
+  const login = page.getByRole("dialog", { name: "로그인이 필요합니다", exact: true });
+  await login.getByRole("button", { name: "취소", exact: true }).click();
+  assert.ok(page.url().endsWith(`/package/detail/${wedding[0].id}`));
+  await page.getByRole("button", { name: "일정 선택 · 예약하기", exact: true }).click();
+  await login.getByRole("button", { name: "로그인하기", exact: true }).click();
+  await page.waitForURL("**/auth/login");
+  await page.locator('input[type="email"]').fill("booking-test@example.invalid");
+  await page.locator('input[type="password"]').fill("test-password");
+  await page.getByRole("button", { name: "로그인", exact: true }).click();
+  await page.waitForURL(`**/checkout/kit/${wedding[0].id}`);
+  await chooseBookingSlot(page);
+  await page.waitForLoadState("networkidle");
+  assert.ok(page.url().endsWith(`/checkout/kit/${wedding[0].id}`), "session bridge and form completion must not redirect back home");
+  assert.equal(await page.evaluate(() => sessionStorage.getItem("dealvue-login-return")), null, "return path consumed after mocked email login");
+  await page.getByText("방문 시 결제할 금액", { exact: true }).waitFor();
+  assert.equal(await page.getByRole("heading", { name: /쿠폰|포인트|결제수단/ }).count(), 0);
+  await page.screenshot({ path: `${output}/booking.png`, fullPage: true });
+  for (const [path, type] of [["one-shop", "oneShop"], ["shop-shop", "shopShop"]]) {
+    await go(`/package/${path}`);
+    await page.locator('a[href^="/package/detail/"]').first().waitFor();
+    assert.equal(await page.locator('a[href^="/package/detail/"]').count(), kits.filter(kit => kit.type === type).length);
+  }
+  await go("/package/special?category=999999");
+  await page.getByText("판매 중인 딜키트가 없습니다", { exact: true }).waitFor();
+  await go("/package/detail/999999");
+  await page.getByText("판매 중인 딜키트를 찾을 수 없습니다", { exact: true }).waitFor();
+  for (const businessId of [...new Set(kits.map(kit => kit.business_id))]) {
+    await go(`/business/${businessId}`);
+    const region = page.getByRole("region", { name: "딜키트", exact: true });
+    await region.locator('a[href^="/package/detail/"]').first().waitFor();
+    const shown = await region.locator('a[href^="/package/detail/"]').evaluateAll(nodes => nodes.map(node => Number(node.getAttribute("href").split("/").at(-1))));
+    assert.deepEqual(shown.sort((a, b) => a - b), kits.filter(kit => kit.business_id === businessId).map(kit => kit.id).sort((a, b) => a - b));
+  }
+  await go("/");
+  const recommendation = page.locator("section").filter({ has: page.getByRole("heading", { name: "딜키트 추천", exact: true }) });
+  await recommendation.locator('a[href^="/package/template/"]').first().waitFor();
+  assert.equal(await recommendation.locator('a[href^="/package/template/"]').count(), 3);
+  for (const template of templates) {
+    const lowest = Math.min(...kits.filter(kit => kit.template_id === template.id).map(kit => kit.price));
+    await recommendation.locator(`a[href="/package/template/${template.id}"]`).getByText(`${lowest.toLocaleString()}원~`, { exact: true }).waitFor();
+  }
+  await recommendation.scrollIntoViewIfNeeded();
+  await recommendation.screenshot({ path: `${output}/recommendations.png` });
+
+  // Keep API-adapter/admin coverage isolated: every write below is intercepted locally.
+  const extra = { ...kits[0], id: 90001, title: "테스트 등록 패키지", price: 1000 };
+  let active = true;
+  await context.route("**/rest/v1/deal_kits*", route => {
+    const request = route.request(), url = new URL(request.url());
+    if (request.method() === "POST") {
+      const input = request.postDataJSON();
+      assert.equal(input.business_id, extra.business_id);
+      extra.price = input.price;
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ id: extra.id }) });
+    }
+    const businessMatches = !url.searchParams.has("business_id") || url.searchParams.get("business_id") === `eq.${extra.business_id}`;
+    return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(active && businessMatches ? [extra] : []) });
   });
-  await live.getByRole('button', { name: '패키지 상품 등록', exact: true }).click();
-  await live.getByLabel('등록할 패키지').selectOption('1');
-  assert.equal(await live.getByLabel('상품명', { exact: true }).inputValue(), '웨딩 헤메드 패키지');
-  await live.getByLabel('정상가 (원)', { exact: true }).fill('800000');
-  await live.getByLabel('패키지 할인가 (원)', { exact: true }).fill('450000');
-  await live.getByLabel('판매 중 (소비자에게 공개)').check();
-  await live.getByRole('button', { name: '저장', exact: true }).click();
-  await live.getByText('딜키트를 저장했습니다.', { exact: true }).waitFor();
-  assert.equal(writes.length, 1);
-  assert.equal(writes[0].template_id, 1);
-  assert.equal(writes[0].business_id, 7001);
-  await live.goto(base + '/package');
-  await live.getByText('450,000원', { exact: true }).waitFor();
+  await go("/package");
+  await page.locator(`a[href="/package/detail/${extra.id}"]`).waitFor();
+  active = false;
+  await page.reload();
+  await page.locator('a[href="/package/detail/101"]').waitFor();
+  assert.equal(await page.locator(`a[href="/package/detail/${extra.id}"]`).count(), 0, "inactive API offer excluded");
+  // Call the real adapter against the local intercepted endpoint.
+  await page.evaluate(async ({ businessId, templateId }) => {
+    const { saveDealKit } = await import("/src/features/consumer/dealKits.ts");
+    await saveDealKit(businessId, { title: "테스트 등록 패키지", description: "로컬 API 검증", type: "special", purpose: "wedding", items: ["시술 A", "시술 B"], original_price: 100000, price: 50000, active: true, template_id: templateId });
+  }, { businessId: extra.business_id, templateId: extra.template_id });
+  assert.equal(extra.price, 50000);
+  active = true;
+  await page.reload();
+  await page.locator(`a[href="/package/detail/${extra.id}"]`).getByText("50,000원", { exact: true }).waitFor();
   assert.deepEqual(errors, []);
-  console.log('PASS: API adapter, inactive offer exclusion, matching discount, template selection, registration and updated minimum price (mocked API)');
+  assert.deepEqual(writes, []);
+  console.log("PASS: 14 current packages, category/price filters, service legs, guest dialog/cancel, mocked email login return, no payment controls, business scope, grouped minimum prices, inactive API offers and mocked adapter save");
+  await context.close();
+
+  const signupContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await installAuthFixture(signupContext, { userId: null, mockSignup: true, firstProfileDelayMs: 300 });
+  const signup = await signupContext.newPage();
+  signup.on("pageerror", error => errors.push(error.message));
+  await signup.goto(`${base}/checkout/kit/121`);
+  await signup.waitForURL("**/auth/login");
+  await signup.getByRole("link", { name: "회원가입", exact: true }).click();
+  await signup.getByRole("button", { name: "이메일 회원가입", exact: true }).click();
+  await signup.getByLabel("이메일", { exact: true }).fill("booking-test@example.invalid");
+  await signup.getByLabel("비밀번호", { exact: true }).fill("test-password");
+  await signup.getByLabel("닉네임", { exact: true }).fill("예약 테스트");
+  await signup.getByRole("button", { name: "가입하기", exact: true }).click();
+  await signup.waitForURL("**/checkout/kit/121");
+  await chooseBookingSlot(signup);
+  await signup.waitForLoadState("networkidle");
+  assert.ok(signup.url().endsWith("/checkout/kit/121"), "mocked signup keeps the booking return destination");
+  assert.equal(await signup.evaluate(() => sessionStorage.getItem("dealvue-login-return")), null);
+  await signupContext.close();
+  assert.deepEqual(errors, []);
+  console.log("PASS: mocked signup returns to the pending booking without competing redirects");
 } finally { await browser.close(); }

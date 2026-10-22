@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { installAuthFixture, chooseBookingSlot } from "./booking-test-helpers.mjs";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
@@ -26,6 +27,7 @@ async function contextWithMode(enabled) {
     }
     return route.abort();
   });
+  await installAuthFixture(context);
   await context.addInitScript(enabled => {
     localStorage.setItem("dealvue-consumer-preview-mode", JSON.stringify({ state: { enabled }, version: 0 }));
   }, enabled);
@@ -105,21 +107,48 @@ try {
   await page.getByRole("button", { name: "매장 찜 추가", exact: true }).click();
   await page.getByRole("button", { name: "예약하기", exact: true }).click();
   const booking = page.getByRole("dialog", { name: "매장 예약", exact: true });
-  await booking.waitFor(); await booking.locator('a[href^="/checkout/"]').first().waitFor(); assert.equal(await booking.locator('a[href^="/checkout/"]').count(), 5);
-  await booking.locator(`a[href="/checkout/${offer.id}"]`).click();
+  await booking.waitFor();
+  await booking.getByRole("button").filter({ hasText: offer.serviceName }).click();
   await contains(page, offer.serviceName);
-  // Checkout is a labelled demo: the button states that nothing is charged.
-  const save = page.getByRole("button", { name: /원 시연 결제하기 \(청구 없음\)$/ });
+  const save = page.getByRole("button", { name: "예약하기", exact: true });
+  await page.getByRole("button", { name: "방문 시간을 선택해 주세요", exact: true }).waitFor();
+  assert.equal(await page.getByRole("combobox").count(), 0, "dates and times use radio choices");
+  assert.equal(await page.locator('input[name="booking-day"]:checked').count(), 1, "first available date selected");
+  assert.equal(await page.getByRole("heading", { name: /쿠폰|포인트|결제수단/ }).count(), 0);
+  await page.getByText("방문 시 결제할 금액", { exact: true }).waitFor();
+  await chooseBookingSlot(page);
   assert.equal(await save.isDisabled(), true);
-  await page.getByLabel("방문 날짜", { exact: true }).selectOption({ index: 1 });
-  await page.getByLabel("방문 시간", { exact: true }).selectOption({ index: 1 });
   await page.getByRole("checkbox").check(); await save.click();
-  await page.waitForURL("**/booking/complete/**"); await contains(page, "시연 예약이 저장되었습니다");
-  await page.reload(); await contains(page, "시연 예약이 저장되었습니다");
+  await page.waitForURL("**/booking/complete/**"); await contains(page, "예약이 완료되었습니다");
+  await page.reload(); await contains(page, "예약이 완료되었습니다");
+  const completePath = new URL(page.url()).pathname;
+  const bookingId = completePath.split("/").at(-1);
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    assert.doesNotMatch(await page.locator("main").innerText(), /시연|체험|샘플|예시 지역|이 기기에만/);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `booking confirmation overflow at ${width}px`);
+    await screenshot(page, `booking-complete-${width}`);
+    await page.getByRole("link", { name: "예약 상세 보기", exact: true }).click();
+    await page.getByRole("region", { name: "예약 요약" }).waitFor();
+    assert.equal(await page.getByRole("radiogroup", { name: "변경할 날짜", exact: true }).count(), 0, "management form is collapsed initially");
+    assert.doesNotMatch(await page.locator("main").innerText(), /시연|체험|샘플|예시 지역|이 기기에만/);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `booking detail overflow at ${width}px`);
+    await screenshot(page, `booking-detail-${width}`);
+    await page.getByText("예약 정보 및 취소 규정", { exact: true }).click();
+    await page.getByText("예약 번호", { exact: true }).waitFor();
+    await go(page, "/reservation");
+    await page.locator(`a[href="/reservation/${bookingId}"]`).waitFor();
+    await page.getByText("방문 시 결제", { exact: true }).waitFor();
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `booking list overflow at ${width}px`);
+    await screenshot(page, `booking-list-${width}`);
+    await go(page, completePath); await contains(page, "예약이 완료되었습니다");
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.getByRole("link", { name: "예약 상세 보기", exact: true }).click();
-  await page.getByLabel("변경할 날짜", { exact: true }).selectOption({ index: 1 });
-  await page.getByLabel("변경할 시간", { exact: true }).selectOption({ index: 1 });
-  await page.getByRole("button", { name: "일정 변경", exact: true }).click(); await contains(page, "예약 일정을 변경했습니다");
+  await page.getByRole("button", { name: "일정 변경", exact: true }).click();
+  await page.locator('label:has(input[name="reschedule-day"]:not(:disabled))').first().click();
+  await page.locator('label:has(input[name="reschedule-slot"])').first().click();
+  await page.getByRole("button", { name: "변경 내용 저장", exact: true }).click(); await contains(page, "예약 일정을 변경했습니다");
   await page.getByRole("button", { name: "예약 취소", exact: true }).click(); await page.getByRole("button", { name: "취소 확정", exact: true }).click();
   await contains(page, "예약 취소");
   // Only this isolated browser gets a completed local reservation fixture.
@@ -139,10 +168,10 @@ try {
   await go(page, "/community/new");
   await page.getByLabel("제목", { exact: true }).fill("통합 기능 검증 글");
   await page.getByLabel("내용", { exact: true }).fill("기존 글쓰기와 댓글 기능을 모드 구분 없이 사용할 수 있는지 확인합니다.");
-  await page.getByRole("button", { name: "체험 글 등록", exact: true }).click();
+  await page.getByRole("button", { name: "글 등록", exact: true }).click();
   await contains(page, "통합 기능 검증 글");
   await page.getByLabel("댓글 남기기", { exact: true }).fill("저장 후 새로고침 검증 댓글입니다.");
-  await page.getByRole("button", { name: "체험 댓글 등록", exact: true }).click();
+  await page.getByRole("button", { name: "댓글 등록", exact: true }).click();
   await page.reload(); await contains(page, "저장 후 새로고침 검증 댓글입니다.");
   await go(page, "/provided/ardien"); await page.waitForURL(`**/business/${rows.find(row => row.name === "Ardien").id}`); await contains(page, "Ardien");
   await go(page, "/mypage");

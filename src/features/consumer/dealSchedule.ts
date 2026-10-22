@@ -78,6 +78,26 @@ export function timeDealDiscount(deal: Pick<TimeDeal, "discountRate" | "original
   return Number.isFinite(deal.discountRate) ? deal.discountRate : deal.originalPrice > 0 ? Math.round((1 - deal.price / deal.originalPrice) * 100) : 0;
 }
 
+/** Highest discount first; ties go to the lower price, the sooner deadline, then the lower ID. */
+export function compareByDiscount(a: TimeDeal, b: TimeDeal) {
+  return timeDealDiscount(b) - timeDealDiscount(a) || a.price - b.price
+    || Date.parse(a.endAt ?? "") - Date.parse(b.endAt ?? "") || a.id - b.id;
+}
+
+/** The highest-discount running deal from each shop, ranked across shops. */
+export function topDiscountDeals(deals: TimeDeal[], now: number, limit = 5): TimeDeal[] {
+  const running = new Map<number, TimeDeal>();
+  for (const deal of deals) {
+    if (hasActiveSale(deal.startAt, deal.endAt, deal.remaining_capacity, now)) running.set(deal.id, deal);
+  }
+  const seenBusinesses = new Set<number>();
+  return [...running.values()].sort(compareByDiscount).filter(deal => {
+    if (seenBusinesses.has(deal.businessId)) return false;
+    seenBusinesses.add(deal.businessId);
+    return true;
+  }).slice(0, limit);
+}
+
 export function groupActiveTimeDeals(deals: TimeDeal[], now: number): TimeDealBusiness[] {
   const groups = new Map<number, TimeDealBusiness>();
   for (const deal of deals) {

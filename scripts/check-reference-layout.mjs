@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { installAuthFixture, chooseBookingSlot } from "./booking-test-helpers.mjs";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 
@@ -21,7 +22,9 @@ try {
     }
     return route.abort();
   });
+  await installAuthFixture(context);
   const page = await context.newPage();
+  await page.clock.install({ time: new Date("2026-10-15T00:10:00+09:00") });
   page.on("pageerror", error => errors.push(error.message));
   for (const width of [320, 375, 390, 430, 768, 1440]) {
     await page.setViewportSize({ width, height: 844 });
@@ -66,16 +69,26 @@ try {
     await page.evaluate(() => window.scrollTo(0, 0));
     await page.waitForTimeout(350);
     await page.screenshot({ path: `${output}/home-${width}.png` });
+    const checkoutId = await page.evaluate(async () => {
+      const deals = await (await import("/src/features/consumer/catalog.ts")).requestConsumerCatalog();
+      return deals.find(deal => deal.regularSlots.length > 0).id;
+    });
+    await page.goto(`${base}/checkout/${checkoutId}`);
+    await chooseBookingSlot(page);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1), false, `checkout page overflow at ${width}px`);
+    await page.screenshot({ path: `${output}/checkout-${width}.png`, fullPage: true });
     results.push({ width, menuRows: menuRows.length, menuHeight: menuSize.height, homeWidth: mainSize.width, cardHeight: cardSize.height, checkedCards: fits.length });
   }
   // A dated offer still ticks down; an undated source row does not invent a date.
+  const fixture = await page.evaluate(async () => (await (await import("/src/features/consumer/catalog.ts")).requestConsumerCatalog()).find(deal => deal.category === "hair"));
+  const fixtureNow = await page.evaluate(() => Date.now());
   await page.route("**/rest/v1/provided_deal_templates*", route => route.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
-  await page.route("**/rest/v1/time_deals*", route => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify([{ id: 10, business_id: 42, service_id: 261, original_price: 170000, deal_price: 76500, remaining_capacity: 1, end_at: new Date(Date.now() + 3600000).toISOString() }]) }));
+  await page.route("**/rest/v1/time_deals*", route => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify([{ id: 10, business_id: fixture.businessId, service_id: fixture.serviceId, original_price: 170000, deal_price: 76500, remaining_capacity: 1, end_at: new Date(fixtureNow + 3600000).toISOString() }]) }));
   await page.goto(base + "/");
   const timer = page.locator('[aria-label="마감까지 남은 시간"]').first();
   await timer.waitFor();
   const first = await timer.innerText();
-  await page.waitForTimeout(1200);
+  await page.clock.fastForward(1200);
   assert.notEqual(await timer.innerText(), first, "existing countdown still ticks for dated offers");
   assert.deepEqual(errors, []); assert.deepEqual(writes, []);
   await writeFile(`${output}/verification.json`, JSON.stringify({ results, browserErrors: errors, databaseWrites: writes }, null, 2));

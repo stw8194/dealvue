@@ -19,7 +19,7 @@ export default function Stats() {
     ["전체 예약", `${kept.length}건`, "/reservation"],
     ["이용 완료", `${kept.filter((reservation) => reservation.status === "done").length}건`, "/reservation/usage"],
     ["딜뷰로 아낀 금액", `${saved.toLocaleString()}원`, "/reservation"],
-    ["누적 예약 금액 (시연 · 청구 없음)", `${spent.toLocaleString()}원`, "/reservation"],
+    ["누적 예약 금액", `${spent.toLocaleString()}원`, "/reservation"],
     ["작성한 리뷰", `${reviews.length}개`, "/mypage/review"],
     ["보유 포인트", `${points.toLocaleString()} P`, "/mypage/point"],
     ["찜한 매장", `${favoriteShops}곳`, "/wishlist"],

@@ -1,12 +1,22 @@
 /* Preserve the original portrait; use its own artwork on a closed volume during the turn. */
 .hair-follow { position: absolute; inset: 0; display: block; }
 .avatar-dressing-turn, .avatar-static-body, .avatar-static-head { position: absolute; inset: 0; }
+/* Foreground sleeves and hands reuse the original outfit paint. Hair may
+   overlap the torso/back, but cannot cover the arms. */
+.avatar-static-body { z-index: 0; }
+.avatar-static-head { z-index: 1; }
+.avatar-foreground-arms { position: absolute; inset: 0; display: block; z-index: 2; pointer-events: none; }
+.avatar-foreground-arms[data-arm-view="side"] { mask-image: none; }
+.avatar-layer-defs { position: absolute; width: 0; height: 0; }
+.avatar-dress-up :is(.accessories-torso, .accessories-head) { z-index: 3; }
+.avatar-dress-up .accessories-arm-right { z-index: 4; }
 .avatar-dress-up .fashion-avatar-body { animation: none; }
 .avatar-dress-up :is(.eye-open, .eye-closed) { animation: none; }
 .avatar-dress-up .avatar-static-body { display: block; mask-image: linear-gradient(transparent 49.7%, black 50.7%); }
 /* The original head is cut out with two shoulder notches (AvatarHead clip path, x 184–227 and 286–328, y 362–384 of 512×768);
    show the current outfit there, or the background shows through as two light squares. */
 .avatar-dress-up.has-original-portrait .avatar-static-body { mask-image: linear-gradient(transparent 49.7%, black 50.7%), linear-gradient(#000, #000), linear-gradient(#000, #000); mask-size: 100% 100%, 9% 3.4%, 9% 3.4%; mask-position: 0 0, 39.06% 48.65%, 60.94% 48.65%; mask-repeat: no-repeat; }
+.avatar-dress-up.has-painted-head .avatar-static-body { mask-image: linear-gradient(transparent 49.7%, black 50.7%), radial-gradient(ellipse 7% 5% at 50% 48%, black 75%, transparent 100%), radial-gradient(ellipse 15% 3% at 50% 51%, black 70%, transparent 100%); }
 .wardrobe-3d-canvas, .wardrobe-design-portrait, .wardrobe-design-source { position: absolute; inset: 0; }
 /* Turn views (docs/avatar-turn-views.md): the generated skin/hair views share the front layers' framing,
    but the outfit art places the profile and back head differently, so each view shifts its layers onto it. */
@@ -81,3 +91,6 @@
   .avatar-dress-up .figure-entering { animation: none; opacity: 1; }
   .outfit-change-effects { display: none; }
 }
+
+/* Follow the painted garment edge instead of cutting all shoulders at one horizontal height. */
+.avatar-dress-up .avatar-static-body.avatar-front-body { mask-image: none; }

@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isAvailableAccessory } from "./playground/accessoryCatalog";
 import { persist } from "zustand/middleware";
 import { DEFAULT_APPEARANCE, normalizeAppearance, type AvatarAppearance } from "./playground/appearance";
 import { ACCESSORIES, BACKDROPS, DEFAULT_ACCESSORIES, LOOKS, ROULETTE_REWARDS, type Accessories, type AccessoryId, type BackdropId, type Outfit, type RoulettePlay, type SavedLook } from "./playground/data";
@@ -33,17 +34,9 @@ export function localDay(date = new Date()) {
   return ["year", "month", "day"].map(type => parts.find(part => part.type === type)?.value).join("-");
 }
 
-function seedPosts(): CommunityPost[] {
-  const timestamp = "2026-09-01T09:00:00+09:00";
-  return [
-    { id: "example-playground", authorId: "example-neighbor", authorName: "예시 이웃", board: "playground", region: "강남구", title: "가을 네일 컬러 이야기해요", body: "발표용 예시 글입니다. 이번 가을에 시도하고 싶은 네일 컬러를 댓글로 남겨보세요.", tags: ["네일"], createdAt: timestamp, updatedAt: timestamp, liked: false, comments: [] },
-    { id: "example-neighbors", authorId: "example-neighbor", authorName: "예시 이웃", board: "neighbors", region: "마포구", title: "우리 동네에서 쉬어가는 하루", body: "발표용 예시 글입니다. 동네와 태그로 관심 있는 이야기를 찾아보세요.", tags: ["일상"], createdAt: timestamp, updatedAt: timestamp, liked: false, comments: [] },
-  ];
-}
-
 function initialData() {
   return {
-    posts: seedPosts(),
+    posts: [] as CommunityPost[],
     attendance: [] as string[],
     missionClaims: [] as string[],
     pointHistory: [] as PointEntry[],
@@ -118,12 +111,12 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
     const now = new Date().toISOString();
     const post: CommunityPost = {
       ...input, title: input.title.trim().slice(0, 80), body: input.body.trim().slice(0, 3000),
-      id: existing?.id ?? identifier(), authorId: PREVIEW_AUTHOR, authorName: "나 (체험)",
+      id: existing?.id ?? identifier(), authorId: PREVIEW_AUTHOR, authorName: "나",
       createdAt: existing?.createdAt ?? now, updatedAt: now, liked: existing?.liked ?? false, comments: existing?.comments ?? [],
     };
     set(state => ({
       posts: existing ? state.posts.map(item => item.id === id ? post : item) : [post, ...state.posts],
-      notifications: state.notificationSettings.activity && !existing ? [notice("체험 게시글 저장", "이 브라우저에서 내 글을 확인할 수 있어요.", `/community/${post.id}`, "activity"), ...state.notifications] : state.notifications,
+      notifications: state.notificationSettings.activity && !existing ? [notice("게시글 등록 완료", "등록한 글을 확인해 보세요.", `/community/${post.id}`, "activity"), ...state.notifications] : state.notifications,
     }));
     return post.id;
   },
@@ -137,7 +130,7 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
   },
   addComment: (postId, body) => {
     if (!canChange() || !body.trim() || !get().posts.some(post => post.id === postId)) return false;
-    const comment = { id: identifier(), authorId: PREVIEW_AUTHOR, authorName: "나 (체험)", body: body.trim().slice(0, 500), createdAt: new Date().toISOString() };
+    const comment = { id: identifier(), authorId: PREVIEW_AUTHOR, authorName: "나", body: body.trim().slice(0, 500), createdAt: new Date().toISOString() };
     set(state => ({ posts: state.posts.map(post => post.id === postId ? { ...post, comments: [...post.comments, comment] } : post) }));
     return true;
   },
@@ -188,7 +181,7 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
   },
   chooseAccessory: id => {
     const item = ACCESSORIES.find(item => item.id === id);
-    if (!item) return false;
+    if (!item || !isAvailableAccessory(item)) return false;
     const entry = newPoint(`아바타 장신구 · ${item.name}`, -item.price);
     const ok = applyOptimistic(state => purchase(state, "ownedAccessories", id, item.price, entry));
     if (ok) set(state => ({ accessories: { ...state.accessories, [item.slot]: id } }));
@@ -267,7 +260,7 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
   name: "dealvue-consumer-engagement-preview-v1", version: 1,
   merge: (persisted, current) => {
     const saved = (persisted ?? {}) as Partial<EngagementStore>;
-    return { ...current, ...saved, appearance: normalizeAppearance(saved.appearance), savedLooks: (saved.savedLooks ?? current.savedLooks).map(look => ({ ...look, appearance: look.appearance ? normalizeAppearance(look.appearance) : undefined })), accessories: { ...DEFAULT_ACCESSORIES, ...saved.accessories }, ownedAccessories: [...new Set([...Object.values(DEFAULT_ACCESSORIES), ...(saved.ownedAccessories ?? current.ownedAccessories)])] };
+    return { ...current, ...saved, posts: (saved.posts ?? current.posts).filter(post => post.authorId !== "example-neighbor"), appearance: normalizeAppearance(saved.appearance), savedLooks: (saved.savedLooks ?? current.savedLooks).map(look => ({ ...look, appearance: look.appearance ? normalizeAppearance(look.appearance) : undefined })), accessories: { ...DEFAULT_ACCESSORIES, ...saved.accessories }, ownedAccessories: [...new Set([...Object.values(DEFAULT_ACCESSORIES), ...(saved.ownedAccessories ?? current.ownedAccessories)])] };
   },
 }));
 

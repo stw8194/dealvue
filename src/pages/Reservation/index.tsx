@@ -9,7 +9,7 @@ import CancelRefundHistory from "./CancelRefundHistory";
 const TABS = [
   { label: "예정된 예약", path: "/reservation" },
   { label: "이용 내역", path: "/reservation/usage" },
-  { label: "취소·환불 내역", path: "/reservation/cancel-refund" },
+  { label: "취소 내역", path: "/reservation/cancel-refund" },
 ];
 
 export default function Reservation() {
@@ -28,19 +28,21 @@ export default function Reservation() {
 function ReservationTabs() {
   return (
     <Page title="예약내역">
-      <nav aria-label="예약내역 분류" className="mb-5 flex gap-4 border-b border-page-border pb-3">
+      <div className="mx-auto max-w-md">
+      <nav aria-label="예약내역 분류" className="mb-5 flex gap-1 rounded-2xl bg-[#f7f5f6] p-1">
         {TABS.map(tab => (
           <NavLink
             key={tab.path}
             to={tab.path}
             end={tab.path === "/reservation"}
-            className={({ isActive }) => `text-sm ${isActive ? "font-semibold text-accent" : "text-page-text"}`}
+            className={({ isActive }) => `flex min-h-11 flex-1 items-center justify-center rounded-xl text-xs font-semibold transition ${isActive ? "bg-white text-page-heading shadow-sm" : "text-page-text hover:text-page-heading"}`}
           >
             {tab.label}
           </NavLink>
         ))}
       </nav>
       <Outlet />
+      </div>
     </Page>
   );
 }

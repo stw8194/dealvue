@@ -1,7 +1,8 @@
 /** Mirrors public.reservation_status_enum. Payment state is separate. */
 export type ReservationStatus = "waiting" | "confirmed" | "cancelled" | "done" | "no_show";
 
-export type ReservationPaymentStatus = "test" | "test_cancelled" | "unavailable" | "paid" | "refunded";
+/** "on_site": nothing is paid when booking; the customer pays at the shop. */
+export type ReservationPaymentStatus = "on_site" | "test" | "test_cancelled" | "unavailable" | "paid" | "refunded";
 
 export type PaymentMethod = "card" | "kakaopay" | "naverpay" | "tosspay";
 
@@ -12,6 +13,8 @@ export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
 export interface Reservation {
   rotationKey?: string;
   id: string;
+  /** Account that made a device-ledger booking; bookings are only shown to that account. */
+  userId?: string;
   dealId: number | null;
   businessId: number;
   serviceId: number;

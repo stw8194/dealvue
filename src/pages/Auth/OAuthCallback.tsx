@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { handleSocialLoginCallback } from "@/api/auth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { consumeReturnPath } from "@/features/consumer/auth/loginReturn";
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function OAuthCallback() {
       .then((user) => {
         if (!isMounted) return;
         setUser(user);
-        navigate("/", { replace: true });
+        navigate(consumeReturnPath(), { replace: true });
       })
       .catch((err) => {
         if (!isMounted) return;

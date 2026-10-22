@@ -12,6 +12,7 @@ import logoUrl from "@/assets/logo.svg";
 import { useForm, useWatch } from "react-hook-form";
 import type { LoginForm } from "@/type/auth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { hasPendingReturn } from "@/features/consumer/auth/loginReturn";
 
 const LOGIN_OPTIONS: {
   label: string;
@@ -45,6 +46,7 @@ export default function Login() {
     useState<SocialLoginProvider | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isEmailLoginLoading, setIsEmailLoginLoading] = useState(false);
+  const [bookingPending] = useState(hasPendingReturn);
 
   const handleSocialLogin = async (provider: SocialLoginProvider) => {
     try {
@@ -92,7 +94,6 @@ export default function Login() {
       const { email, password } = getValues();
       const user = await requestLogin({ email, password });
       setUser(user);
-      navigate("/", { replace: true });
     } catch (err) {
       setErrorMessage(
         err instanceof Error ? err.message : "로그인에 실패했습니다.",
@@ -119,6 +120,11 @@ export default function Login() {
           가치는 그대로, 가격은 최적화
         </p>
       </div>
+      {bookingPending && (
+        <p role="status" className="mt-8 rounded-2xl bg-accent/10 px-4 py-3 text-sm font-semibold text-accent">
+          예약하려면 로그인이 필요합니다. 로그인하면 예약 화면으로 돌아가요.
+        </p>
+      )}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="grid gap-3 mt-12  w-full mb-5"

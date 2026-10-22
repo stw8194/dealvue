@@ -50,7 +50,7 @@ export function HomeCouponBanner() {
       const claimedNow = await useCouponStore.getState().claimWelcome();
 
       setButtonState("claimed");
-      setMessage("쿠폰함에 담았어요. 결제할 때 바로 쓸 수 있어요.");
+      setMessage("쿠폰함에 담았어요.");
 
       if (claimedNow || (result && !result.alreadyClaimed)) {
         setShowEffect(true);

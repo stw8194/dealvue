@@ -2,7 +2,7 @@ import { getSupabaseClient } from "@/api/supabase";
 import type { ServiceCategory } from "@/type/package";
 import { serviceMinutes } from "@/features/consumer/booking/serviceSelection";
 import { resolveBusinessImage } from "../businessImages";
-import { sampleStaff } from "../staff";
+import { businessAddress } from "../businessAddress";
 
 export type BusinessSummary = Pick<ConsumerBusiness, "id" | "name" | "address" | "description"> & { business_images?: { img_url: string }[] };
 
@@ -21,7 +21,7 @@ export async function readCategoryBusinesses(category?: ServiceCategory): Promis
     const { data, error } = await query;
     if (error) throw new Error(error.message);
     const rows = data ?? [];
-    businesses.push(...rows);
+    businesses.push(...rows.map(row => ({ ...row, address: businessAddress(row.address) })));
     if (rows.length < pageSize) return businesses;
   }
 }
@@ -70,14 +70,21 @@ export async function readConsumerBusiness(id: number): Promise<ConsumerBusiness
   const categories = (row.business_category ?? []).map((item) => item.category);
   return {
     ...row,
+    address: businessAddress(row.address),
     services: (row.services ?? []).map((service) => ({ ...service, duration_minutes: service.display_duration_minutes ?? serviceMinutes(service) })),
-    staff: row.staff?.length || !row.source_details ? row.staff ?? [] : sampleStaff(row.id, categories[0]),
+    staff: row.staff ?? [],
     categories,
     images: (row.business_images ?? []).flatMap((item) => {
       const url = resolveBusinessImage(item.img_url);
       return url ? [url] : [];
     }),
   } as ConsumerBusiness;
+}
+
+export async function readBusinessStaff(businessId: number): Promise<ConsumerBusiness["staff"]> {
+  const { data, error } = await getSupabaseClient().from("staff").select("id, name, position").eq("business_id", businessId).order("id");
+  if (error) throw new Error(error.message);
+  return data ?? [];
 }
 
 export type BusinessReview = { id: number | string; rating: number; content: string; created_at: string };

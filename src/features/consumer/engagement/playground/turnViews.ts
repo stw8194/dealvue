@@ -1,5 +1,6 @@
 import { ATLAS_SOURCES, LOOKS, type Accessories, type Outfit } from "./data";
-import { hairCutoutSource, type AvatarAppearance } from "./appearance";
+import type { AvatarAppearance } from "./appearance";
+import { hasPaintedHead, paintedHeadSource } from "./paintedHeadData";
 
 /**
  * Drawn turn views for the dress-room spin. Images live in /images/playground/views/ and are listed in its
@@ -35,15 +36,16 @@ export function turnFaces(quarters: boolean): [TurnFace, boolean][] {
 
 const file = (path: string) => path.slice(path.lastIndexOf("/") + 1, -".png".length);
 export const turnAtlasSource = (atlas: AtlasKey, view: TurnView) => `${root}/${file(ATLAS_SOURCES[atlas])}-${view}.webp`;
-export const turnSkinSource = (view: TurnView) => `${root}/avatar-face-base-${view}.webp`;
+
 
 /** Every image a style's turn faces draw, so they can be decoded before the spin starts. */
 export function turnImageSources(style: Style, faces: TurnFace[]) {
-  const atlas = atlasOf(style.outfit), urls = new Set<string>([ATLAS_SOURCES[atlas]]);
+  const atlas = atlasOf(style.outfit), urls = new Set<string>([ATLAS_SOURCES[atlas], ATLAS_SOURCES.base]);
+  if (hasPaintedHead(style.appearance)) urls.add(paintedHeadSource(style.appearance)!);
+  if (style.appearance.hairRibbon === "ribbon" && !usesOwnHead(style.appearance)) urls.add("/images/playground/accessories-v4/hair-accessories.webp");
   for (const face of faces) {
     if (face === "front") continue;
     urls.add(turnAtlasSource(atlas, face));
-    if (!usesOwnHead(style.appearance)) { urls.add(turnSkinSource(face)); urls.add(hairCutoutSource(face, style.appearance.hairstyle)); }
   }
   return [...urls];
 }

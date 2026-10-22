@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { PreviewBoundary } from "@/features/consumer/preview";
 import { EmptyState, Page } from "@/features/consumer/ui";
 import type { Reservation, ReservationReview } from "@/type/reservation";
+import { useOwnLocalReservations } from "./useReservations";
 import { REVIEW_REWARD_POINTS, useBookingStore } from "./store";
 
 function ReviewForm({ reservation, existing }: { reservation: Reservation; existing?: ReservationReview }) {
@@ -41,7 +42,7 @@ function ReviewForm({ reservation, existing }: { reservation: Reservation; exist
 
 export default function ReviewEditorPage() {
   const { reservationId } = useParams();
-  const reservation = useBookingStore(state => state.reservations.find(item => item.id === reservationId));
+  const reservation = useOwnLocalReservations().find(item => item.id === reservationId);
   const existing = useBookingStore(state => state.reviews.find(item => item.reservationId === reservationId));
   return (
     <Page title={existing ? "리뷰 수정" : "리뷰 작성"}>

@@ -4,6 +4,7 @@ import type { ServiceCategory } from "@/type/package";
 import { resolveBusinessImage } from "@/features/consumer/businessImages";
 import { requestConsumerCatalog } from "@/features/consumer/catalogData";
 import { hasActiveSale } from "@/features/consumer/dealSchedule";
+import { businessAddress } from "@/features/consumer/businessAddress";
 
 export type NearbyBusiness = {
   id: number;
@@ -97,6 +98,7 @@ export async function requestNearbyBusinesses(
     return [
       {
         ...business,
+        address: businessAddress(business.address),
         latitude: business.latitude,
         longitude: business.longitude,
         categories: (business.business_category ?? []).map((item) => item.category),

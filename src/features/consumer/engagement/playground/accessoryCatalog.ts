@@ -51,6 +51,9 @@ export const ACCESSORY_DESIGNS = [
   { id: "snowflake-necklace", slot: "necklace", name: "눈꽃 펜던트", price: 45, color: "#bad7f1" },
 ] as const;
 export type AccessoryDesign = (typeof ACCESSORY_DESIGNS)[number]["id"];
+const REMOVED_HAIR_DESIGNS: readonly string[] = ["crystal-tiara", "mini-crown", "bunny-band", "cat-band", "panda-band"];
+// Retain IDs and ownership records; retired designs are neither offered nor rendered.
+export const isAvailableAccessory = (item: { design: string }) => !REMOVED_HAIR_DESIGNS.includes(item.design);
 export type AccessorySlot = (typeof ACCESSORY_DESIGNS)[number]["slot"];
 export type AccessoryId = AccessoryDesign | `${AccessoryDesign}-pearl` | `${AccessoryDesign}-midnight` | `${AccessorySlot}-none`;
 export type AccessoryItem = { id: AccessoryId; design: AccessoryDesign | "none"; slot: AccessorySlot; name: string; price: number; color: string; accent: string; colorway: "original" | "pearl" | "midnight" };

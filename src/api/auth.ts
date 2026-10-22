@@ -77,7 +77,11 @@ export async function getUserFromSession(session: Session) {
 }
 
 function getSocialLoginScopes(provider: SocialLoginProvider) {
-  if (provider === "kakao" || provider === "custom:kakao") {
+  if (provider === "custom:kakao") {
+    return "openid profile_nickname";
+  }
+
+  if (provider === "kakao") {
     return "profile_nickname";
   }
 
@@ -193,16 +197,15 @@ export async function requestSocialLogin(provider: SocialLoginProvider) {
 
 export async function handleSocialLoginCallback() {
   const supabase = getSupabaseClient();
-  const code = new URLSearchParams(window.location.search).get("code");
-
-  if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (error) throw error;
-  }
+  // detectSessionInUrl owns the callback, including PKCE code exchange. Repeating
+  // the exchange here can consume the same one-use code twice (also in StrictMode).
+  // getSession() waits for initialization but does not propagate its OAuth errors.
+  const { error: callbackError } = await supabase.auth.initialize();
+  if (callbackError) throw callbackError;
 
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
-  if (!data.session) throw new Error("로그인 세션을 만들지 못했습니다.");
+  if (!data.session) throw new Error("로그인 결과를 확인할 수 없습니다. 로그인을 시작한 브라우저와 주소에서 다시 시도해 주세요.");
 
   sessionStorage.setItem("userToken", data.session.access_token);
   return getUserFromSession(data.session);

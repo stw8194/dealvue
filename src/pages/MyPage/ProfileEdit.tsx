@@ -9,12 +9,15 @@ export default function ProfileEdit() {
 
 function ProfileForm() {
   const user = useAuthStore(state => state.user);
-  const [nickname, setNickname] = useState(() => localStorage.getItem("dealvue-preview-profile") ?? user?.nickname ?? "체험 소비자");
+  const [nickname, setNickname] = useState(() => {
+    const saved = localStorage.getItem("dealvue-preview-profile");
+    return saved && saved !== "체험 소비자" ? saved : user?.nickname ?? "딜뷰 회원";
+  });
   const [message, setMessage] = useState("");
 
   const handleSubmit = () => {
     if (!nickname.trim()) { setMessage("닉네임을 입력해 주세요."); return; }
-    try { localStorage.setItem("dealvue-preview-profile", nickname.trim()); setMessage("이 브라우저에 예시 프로필을 저장했습니다."); }
+    try { localStorage.setItem("dealvue-preview-profile", nickname.trim()); setMessage("닉네임을 저장했습니다."); }
     catch { setMessage("브라우저 저장소를 사용할 수 없습니다."); }
   };
 
@@ -26,7 +29,6 @@ function ProfileForm() {
       }}
       className="flex flex-col gap-3 px-4 py-4"
     >
-      <p className="text-sm">미리보기 프로필이며 실제 계정 정보는 변경하지 않습니다.</p>
       <label className="flex flex-col gap-1 text-sm text-page-text">
         닉네임
         <input

@@ -2,10 +2,11 @@
 // Data: the public catalog is read from Supabase (GET only); bookings, coupons and points are
 // stored in the browser's IndexedDB ledger. Nothing is sent to a shop or a payment provider.
 import assert from "node:assert/strict";
+import { installAuthFixture, chooseBookingSlot, switchAccount, TEST_USER_ID, OTHER_USER_ID } from "./booking-test-helpers.mjs";
 import { pathToFileURL } from "node:url";
 
 const { chromium } = await import(process.env.DEALVUE_PLAYWRIGHT_MODULE ? pathToFileURL(process.env.DEALVUE_PLAYWRIGHT_MODULE).href : "playwright");
-const base = process.env.DEALVUE_TEST_URL ?? "http://localhost:5173";
+const base = process.env.DEALVUE_TEST_URL ?? "http://127.0.0.1:5185";
 const browser = await chromium.launch({ headless: true });
 const errors = [];
 const results = [];
@@ -27,20 +28,17 @@ const helpers = `
       const db = await new Promise(resolve => { const r = indexedDB.open("dealvue-ledger", 1); r.onsuccess = () => resolve(r.result); });
       return new Promise(resolve => { const r = db.transaction("ledger").objectStore("ledger").get("main"); r.onsuccess = () => resolve(r.result ?? null); });
     },
-    async book(dealId, slotIndex, { couponId, points = 0, overrideEnd } = {}) {
+    async book(dealId, slotIndex, { userId = "11111111-1111-4111-8111-111111111111", requestKey = crypto.randomUUID(), overrideEnd } = {}) {
       const { useBookingStore } = await this.store();
       const { bookingOffer } = await this.timing();
       const deals = await this.catalog();
       let deal = deals.find(item => item.id === dealId);
       if (overrideEnd) deal = { ...deal, endAt: overrideEnd };
       const offer = bookingOffer(deal, Date.now());
-      const coupons = (await import("/src/features/consumer/coupons.ts")).useCouponStore.getState().coupons;
-      const coupon = coupons.find(item => item.id === couponId);
-      const couponDiscount = coupon ? Math.min(coupon.discountAmount, offer.price) : 0;
-      const agreedQuote = { kind: offer.kind, price: offer.price, couponDiscount, pointsUsed: points, total: offer.price - couponDiscount - points };
+      const agreedQuote = { kind: offer.kind, price: offer.price };
       const slot = offer.slots.filter(value => Date.parse(value) > Date.now())[slotIndex];
       try {
-        const reservation = await useBookingStore.getState().createReservation({ deal, slot, agreed: true, agreedQuote, idempotencyKey: crypto.randomUUID(), paymentMethod: "card", couponId, points });
+        const reservation = await useBookingStore.getState().createReservation({ deal, slot, agreed: true, agreedQuote, idempotencyKey: requestKey, userId });
         return { ok: true, id: reservation.id, kind: offer.kind };
       } catch (error) { return { ok: false, message: error.message, name: error.constructor.name }; }
     },
@@ -53,6 +51,7 @@ async function check(name, fn) {
 
 async function newContext(options = {}) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, ...options });
+  await installAuthFixture(context);
   await context.addInitScript(helpers);
   return context;
 }
@@ -84,25 +83,50 @@ try {
     return "IndexedDB 2건 · 새로고침 후 2건";
   });
 
-  await check("같은 쿠폰을 두 탭에서 동시에 사용하면 한 건만 성공", async () => {
+  await check("동일 예약 요청 재전송은 한 건만 저장하고 쿠폰·포인트는 소비하지 않음", async () => {
     const context = await newContext();
     const a = await open(context), b = await open(context);
-    await a.evaluate(async () => (await import("/src/features/consumer/coupons.ts")).useCouponStore.getState().claimWelcome());
-    await b.waitForFunction(async () => (await import("/src/features/consumer/coupons.ts")).useCouponStore.getState().coupons.length === 1);
+    await a.evaluate(async () => {
+      await (await import("/src/features/consumer/coupons.ts")).useCouponStore.getState().claimWelcome();
+      await (await import("/src/features/consumer/engagement/store.ts")).useEngagementStore.getState().checkIn();
+    });
+    const before = await a.evaluate(() => window.__t.ledger());
     const deals = await regularDeals(a);
-    const other = deals.find(deal => deal.businessId !== deals[0].businessId);
-    const [first, second] = await Promise.all([
-      a.evaluate(id => window.__t.book(id, 3, { couponId: "welcome-3000" }), deals[0].id),
-      b.evaluate(id => window.__t.book(id, 50, { couponId: "welcome-3000" }), other.id),
-    ]);
-    const outcomes = [first, second];
-    assert.equal(outcomes.filter(item => item.ok).length, 1, JSON.stringify(outcomes));
-    assert.match(outcomes.find(item => !item.ok).message, /쿠폰/);
+    const outcomes = await Promise.all([a, b].map(page => page.evaluate(id => window.__t.book(id, 3, { requestKey: "same-booking-request" }), deals[0].id)));
+    assert.ok(outcomes.every(item => item.ok), JSON.stringify(outcomes));
+    assert.equal(outcomes[0].id, outcomes[1].id);
     const stored = await a.evaluate(() => window.__t.ledger());
     assert.equal(stored.reservations.length, 1);
-    assert.equal(stored.coupons.filter(coupon => coupon.usedReservationId).length, 1);
+    assert.equal(stored.reservations[0].userId, TEST_USER_ID);
+    assert.equal(stored.reservations[0].paymentStatus, "on_site");
+    assert.deepEqual(stored.coupons, before.coupons);
+    assert.deepEqual(stored.pointHistory, before.pointHistory);
     await context.close();
-    return outcomes.find(item => !item.ok).message;
+  });
+
+  await check("같은 기기에서 계정 전환·로그아웃 시 타 계정 및 이전 익명 예약을 숨김", async () => {
+    const context = await newContext();
+    const page = await open(context);
+    const deals = await regularDeals(page);
+    const first = await page.evaluate(id => window.__t.book(id, 3), deals[0].id);
+    const second = await page.evaluate(({ id, userId }) => window.__t.book(id, 3, { userId }), { id: deals[0].id, userId: OTHER_USER_ID });
+    assert.ok(first.ok && second.ok, JSON.stringify([first, second]));
+    await page.evaluate(async id => {
+      const { commitLedger } = await import("/src/features/consumer/ledger.ts");
+      await commitLedger(state => ({ next: { ...state, reservations: [...state.reservations, { ...state.reservations.find(row => row.id === id), id: "legacy-anonymous", userId: undefined, requestKey: "legacy-anonymous" }] }, result: null }));
+    }, first.id);
+    const visibleIds = () => page.locator('a[href^="/reservation/preview-"]').evaluateAll(nodes => nodes.map(node => node.getAttribute("href")));
+    await page.reload({ waitUntil: "networkidle" });
+    assert.deepEqual(await visibleIds(), [`/reservation/${first.id}`]);
+    await switchAccount(page, OTHER_USER_ID);
+    assert.deepEqual(await visibleIds(), [`/reservation/${second.id}`]);
+    await page.goto(`${base}/reservation/${first.id}`, { waitUntil: "networkidle" });
+    await page.getByText("예약을 찾을 수 없습니다", { exact: true }).waitFor();
+    await page.goto(`${base}/reservation`, { waitUntil: "networkidle" });
+    await switchAccount(page, null);
+    assert.deepEqual(await visibleIds(), []);
+    assert.equal((await page.evaluate(() => window.__t.ledger())).reservations.length, 3, "hidden reservations are preserved");
+    await context.close();
   });
 
   await check("동의 후 타임딜이 마감되면 다른 금액으로 저장하지 않고 재동의 요구", async () => {
@@ -119,11 +143,11 @@ try {
       const { bookingOffer } = await window.__t.timing();
       const deal = { ...(await window.__t.catalog()).find(item => item.id === id), endAt: endsSoon };
       const offer = bookingOffer(deal, Date.now());
-      const agreedQuote = { kind: offer.kind, price: offer.price, couponDiscount: 0, pointsUsed: 0, total: offer.price };
+      const agreedQuote = { kind: offer.kind, price: offer.price };
       const slot = deal.slots.find(value => Date.parse(value) > Date.now() + 86400000) ?? deal.regularSlots.find(value => Date.parse(value) > Date.now() + 86400000);
       await new Promise(resolve => setTimeout(resolve, 2000));
-      try { await useBookingStore.getState().createReservation({ deal, slot, agreed: true, agreedQuote, idempotencyKey: crypto.randomUUID(), paymentMethod: "card" }); return { saved: true }; }
-      catch (error) { return { saved: false, name: error.constructor.name, agreed: agreedQuote.total, now: error.quote?.total, kind: error.quote?.kind }; }
+      try { await useBookingStore.getState().createReservation({ deal, slot, agreed: true, agreedQuote, idempotencyKey: crypto.randomUUID(), userId: "11111111-1111-4111-8111-111111111111" }); return { saved: true }; }
+      catch (error) { return { saved: false, name: error.constructor.name, agreed: agreedQuote.price, now: error.quote?.price, kind: error.quote?.kind }; }
     }, target);
     assert.equal(outcome.saved, false, JSON.stringify(outcome));
     assert.equal(outcome.name, "QuoteChangedError");
@@ -133,7 +157,7 @@ try {
     return `동의 ${outcome.agreed.toLocaleString()}원 → 현재 ${outcome.now.toLocaleString()}원, 저장 0건`;
   });
 
-  await check("결제 화면: 마감 시각이 지나면 동의가 자동 해제됨", async () => {
+  await check("예약 화면: 마감 시각이 지나면 동의가 자동 해제됨", async () => {
     const context = await newContext();
     const page = await context.newPage();
     page.on("pageerror", error => errors.push(error.message));
@@ -144,14 +168,13 @@ try {
       return (await window.__t.catalog()).find(item => isOpenDeal(item, Date.now()));
     });
     await page.goto(`${base}/checkout/${deal.id}`, { waitUntil: "networkidle" });
-    await page.selectOption("#booking-day", { index: 1 });
-    await page.selectOption("#booking-slot", { index: 1 });
+    await chooseBookingSlot(page);
     await page.getByRole("checkbox").check();
-    assert.equal(await page.getByRole("button", { name: /시연 결제하기/ }).isEnabled(), true);
+    assert.equal(await page.getByRole("button", { name: "예약하기", exact: true }).isEnabled(), true);
     await page.clock.fastForward(Date.parse(deal.endAt) - await page.evaluate(() => Date.now()) + 2000);
-    await page.getByText("금액이 바뀌어 동의가 해제되었어요").waitFor({ timeout: 10000 });
+    await page.getByText("타임딜이 끝나 예약 금액이 바뀌었어요. 바뀐 금액을 확인하고 다시 동의해 주세요.").waitFor({ timeout: 10000 });
     assert.equal(await page.getByRole("checkbox").isChecked(), false);
-    assert.equal(await page.getByRole("button", { name: /시연 결제하기/ }).isDisabled(), true);
+    assert.equal(await page.getByRole("button", { name: "예약하기", exact: true }).isDisabled(), true);
     await context.close();
   });
 
@@ -174,7 +197,7 @@ try {
     assert.match(early.complete, /끝난 뒤/);
     assert.match(early.review, /이용 완료/);
     await page.goto(`${base}/reservation/${booked.id}`, { waitUntil: "networkidle" });
-    assert.equal(await page.getByRole("button", { name: "이용 완료로 표시" }).isDisabled(), true);
+    assert.equal(await page.getByRole("button", { name: "이용 완료로 표시" }).count(), 0, "hide visit check until the visit has ended");
     const endAt = await page.evaluate(async id => (await window.__t.store()).useBookingStore.getState().reservations.find(item => item.id === id).endAt, booked.id);
     await page.clock.fastForward(Date.parse(endAt) - await page.evaluate(() => Date.now()) + 60_000);
     await page.getByRole("button", { name: "이용 완료로 표시" }).click();
@@ -201,10 +224,9 @@ try {
     assert.equal(magic.legs[0].durationMinutes, 240); assert.equal(magic.legs[0].displayMinutes, 230);
     assert.equal(interview.legs.length, 2);
     await page.goto(`${base}/checkout/kit/121`, { waitUntil: "networkidle" });
-    await page.selectOption("#booking-day", { index: 1 });
-    await page.selectOption("#booking-slot", { index: 1 });
+    await chooseBookingSlot(page);
     await page.getByRole("checkbox").check();
-    await page.getByRole("button", { name: /시연 결제하기/ }).click();
+    await page.getByRole("button", { name: "예약하기", exact: true }).click();
     await page.waitForURL("**/booking/complete/**");
     const legs = (await page.evaluate(() => window.__t.ledger())).reservations.sort((x, y) => x.legIndex - y.legIndex);
     assert.equal(legs.length, 2);
@@ -223,7 +245,7 @@ try {
     await page.goto(`${base}/reservation/${legs[0].id}`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "예약 취소" }).click();
     await page.getByRole("button", { name: "취소 확정" }).click();
-    await page.getByText("시연 예약 취소", { exact: true }).waitFor();
+    await page.getByText("예약 취소", { exact: true }).waitFor();
     const after = (await page.evaluate(() => window.__t.ledger())).reservations;
     assert.ok(after.every(item => item.status === "cancelled"));
     await context.close();
@@ -233,7 +255,9 @@ try {
   await check("딜키트 조회 오류는 '상품 없음'이 아니라 오류로 표시", async () => {
     const context = await newContext();
     await context.route("**/rest/v1/deal_kits*", route => route.fulfill({ status: 500, contentType: "application/json", body: JSON.stringify({ message: "test error" }) }));
-    const page = await open(context, "/business/42");
+    const page = await open(context, "/");
+    const businessId = (await regularDeals(page))[0].businessId;
+    await page.goto(`${base}/business/${businessId}`, { waitUntil: "networkidle" });
     const kits = page.getByRole("region", { name: "딜키트", exact: true });
     await kits.getByRole("alert").waitFor();
     assert.equal(await kits.getByText("판매 중인 상품 없음", { exact: true }).count(), 0);
@@ -274,7 +298,7 @@ try {
     }, deals[0].id);
     assert.equal(outcome.far.term, "free");
     assert.equal(outcome.near.term, outcome.near.hoursAhead >= outcome.near.hours ? "free" : "needs_review");
-    assert.equal(outcome.far.payment, "test_cancelled");
+    assert.equal(outcome.far.payment, "on_site");
     await context.close();
     return JSON.stringify(outcome);
   });

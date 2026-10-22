@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/api/supabase";
 import type { ConsumerDeal, KitLeg } from "./types";
 import { resolveBusinessImage } from "./businessImages";
+import { businessAddress } from "./businessAddress";
 import { packageSlots } from "./booking/packageSchedule";
 
 export const KIT_DEAL_OFFSET = 2_000_000;
@@ -38,21 +39,12 @@ export interface DealKit {
 }
 export type DealKitInput = Omit<DealKit, "id" | "business_id" | "template" | "is_demo" | "business" | "legs">;
 
-// Independent packages: no time-deal references, deadlines or slot inventory.
-export const PREVIEW_DEAL_KIT_TEMPLATES: DealKitTemplate[] = [
+// Package themes; mirrors public.deal_kit_templates.
+export const DEAL_KIT_TEMPLATES: DealKitTemplate[] = [
   { id: 1, slug: "wedding", title: "웨딩 헤메드 패키지", description: "특별한 날을 위한 헤어, 메이크업, 드레스 구성", type: "special", purpose: "wedding", items: ["웨딩 헤어", "신부 메이크업", "드레스 피팅"], image_url: "/images/deal-kits/wedding.png", sort_order: 10 },
   { id: 2, slug: "profile", title: "프로필 촬영 패키지", description: "나다운 모습을 담는 헤어·메이크업과 프로필 촬영", type: "special", purpose: "photoShoot", items: ["촬영 헤어", "메이크업", "프로필 촬영"], image_url: "/images/deal-kits/profile.png", sort_order: 20 },
   { id: 3, slug: "student", title: "수험생 뷰티 패키지", description: "새로운 시작을 위한 스타일링과 뷰티 케어", type: "special", purpose: "exam", items: ["헤어 스타일링", "내추럴 메이크업"], image_url: "/images/deal-kits/student.png", sort_order: 30 },
 ];
-export const PREVIEW_DEAL_KITS: DealKit[] = PREVIEW_DEAL_KIT_TEMPLATES.flatMap((template, index) => [0, 1].map((variant) => ({
-  id: index * 2 + variant + 1, business_id: variant ? 7002 : 7001, template_id: template.id, template,
-  business: { id: variant ? 7002 : 7001, name: variant ? "오늘 메이크업" : "딜뷰 헤어 스튜디오", address: variant ? "서울 강남구 청담동" : "서울 강남구 신사동" },
-  title: [variant ? "본식 프리미엄 헤어·메이크업" : "내추럴 웨딩 헤메드", variant ? "스튜디오 프로필 촬영 + 메이크업" : "퍼스널 프로필 헤어·메이크업", variant ? "새내기 메이크업 클래스" : "수험생 헤어 변신 패키지"][index], description: "화면 확인용 샘플 상품입니다. 실제 판매 상품이 아닙니다.",
-  type: template.type, purpose: template.purpose,
-  items: [variant ? ["본식 헤어·메이크업", "신랑 스타일링", "현장 수정 1회"] : ["신부 헤어", "내추럴 메이크업", "드레스 피팅"], variant ? ["촬영 메이크업", "스튜디오 촬영 60분", "보정 사진 3장"] : ["프로필 헤어", "카메라 메이크업"], variant ? ["퍼스널 메이크업 레슨 60분", "데일리 메이크업"] : ["디자인 커트", "수분 클리닉", "데일리 스타일링"]][index],
-  original_price: [800000, 500000, 180000][index], price: (variant ? [600000, 360000, 120000] : [480000, 300000, 99000])[index], active: true, is_demo: true,
-})));
-
 export async function canManageDealKits(businessId: number) {
   const { data, error } = await getSupabaseClient().rpc("can_manage_deal_kits", { p_business_id: businessId });
   return !error && data === true;
@@ -138,7 +130,7 @@ async function readProvidedKits(): Promise<{ kits: DealKit[]; shops: Map<string,
       if (!shop || items.some(item => !item || item.business_id !== shop.id)) return [];
       const rows = items as ProvidedService[];
       legs.push({
-        businessId: shop.id, businessName: shop.name, address: shop.address,
+        businessId: shop.id, businessName: shop.name, address: businessAddress(shop.address),
         serviceIds: rows.map(row => row.id), serviceNames: rows.map(row => row.name),
         durationMinutes: rows.reduce((sum, row) => sum + row.duration_minutes, 0),
         displayMinutes: rows.reduce((sum, row) => sum + (row.display_duration_minutes ?? row.duration_minutes), 0),
@@ -147,9 +139,9 @@ async function readProvidedKits(): Promise<{ kits: DealKit[]; shops: Map<string,
       });
     }
     const first = shops.get(visits[0].shop)!;
-    const template = PREVIEW_DEAL_KIT_TEMPLATES.find((item) => item.slug === templateSlug) ?? null;
+    const template = DEAL_KIT_TEMPLATES.find((item) => item.slug === templateSlug) ?? null;
     const items = legs.flatMap(leg => leg.serviceNames.map(name => legs.length > 1 ? `${name} · ${leg.businessName}` : name));
-    return [{ ...kit, items, legs, business_id: first.id, active: true, template_id: template?.id ?? null, template, business: { id: first.id, name: first.name, address: first.address, business_images: first.business_images } }];
+    return [{ ...kit, items, legs, business_id: first.id, active: true, template_id: template?.id ?? null, template, business: { id: first.id, name: first.name, address: businessAddress(first.address), business_images: first.business_images } }];
   });
   return { kits, shops };
 }
