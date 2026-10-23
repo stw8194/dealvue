@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Ticket } from "lucide-react";
 import { requestUserCoupons, type UserCoupon } from "@/api/coupon";
-import { useCouponStore } from "@/features/consumer/coupons";
+import { RequireLogin } from "@/features/consumer/auth/loginGate";
 import { useAuthStore } from "@/store/useAuthStore";
 
 function formatDate(date: string | null) {
@@ -19,7 +19,11 @@ type CouponRow = Pick<UserCoupon, "title" | "discountAmount" | "minimumOrderAmou
 
 export default function CouponList() {
   const userId = useAuthStore((state) => state.user?.id);
-  const localCoupons = useCouponStore((state) => state.coupons);
+  return <RequireLogin>{userId && <AccountCoupons key={userId} userId={userId} />}</RequireLogin>;
+}
+
+function AccountCoupons({ userId }: { userId: string }) {
+  const [error, setError] = useState("");
   const [remote, setRemote] = useState<{ userId: string; coupons: UserCoupon[] } | null>(null);
 
   useEffect(() => {
@@ -27,13 +31,15 @@ export default function CouponList() {
     let isCurrent = true;
     requestUserCoupons()
       .then((coupons) => { if (isCurrent) setRemote({ userId, coupons }); })
-      .catch(() => { if (isCurrent) setRemote({ userId, coupons: [] }); });
+      .catch(() => { if (isCurrent) setError("쿠폰을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요."); });
     return () => {
       isCurrent = false;
     };
   }, [userId]);
 
-  if (userId && remote?.userId !== userId) {
+  if (error) return <p role="alert" className="px-5 py-12 text-center text-sm text-page-text">{error}</p>;
+
+  if (remote?.userId !== userId) {
     return (
       <p className="px-5 py-12 text-center text-sm text-gray-400">
         쿠폰을 불러오는 중입니다.
@@ -41,11 +47,7 @@ export default function CouponList() {
     );
   }
 
-  // Coupons on this device are the ones checkout applies; account coupons with the same title are not listed twice.
-  const rows: CouponRow[] = [
-    ...localCoupons.map((coupon) => ({ key: coupon.id, title: coupon.title, discountAmount: coupon.discountAmount, minimumOrderAmount: coupon.minimumOrderAmount, expiresAt: coupon.expiresAt, used: Boolean(coupon.usedReservationId) })),
-    ...(userId && remote ? remote.coupons.filter((coupon) => !localCoupons.some((local) => local.discountAmount === coupon.discountAmount && local.minimumOrderAmount === coupon.minimumOrderAmount)).map((coupon) => ({ ...coupon, key: `account-${coupon.id}` })) : []),
-  ];
+  const rows: CouponRow[] = remote.coupons.map(coupon => ({ ...coupon, key: `account-${coupon.id}` }));
 
   if (rows.length === 0) {
     return (

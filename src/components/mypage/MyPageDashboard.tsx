@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { requestUserCoupons } from "@/api/coupon";
-import { useCouponStore } from "@/features/consumer/coupons";
 import { useBusinessHistory } from "@/features/consumer/history";
 import { pointBalance, useEngagementStore } from "@/features/consumer/engagement/store";
 import { useReservations } from "@/features/consumer/booking/useReservations";
@@ -104,8 +103,7 @@ export default function MyPageDashboard({
 }: DashboardProps) {
   const { reservations } = useReservations();
   const pointHistory = useEngagementStore(state => state.pointHistory);
-  const [couponCount, setCouponCount] = useState(0);
-  const localCouponCount = useCouponStore(state => state.coupons.filter(coupon => !coupon.usedReservationId).length);
+  const [couponSummary, setCouponSummary] = useState<{ userId: string; count: number } | null>(null);
   const visits = useBusinessHistory((state) => state.visits);
   const recentShops = visits.filter((visit) => !visit.preview).slice(0, 4);
   const shopImages = useBusinessImages(recentShops.map(shop => shop.id));
@@ -118,7 +116,7 @@ export default function MyPageDashboard({
 
     requestUserCoupons()
       .then((coupons) => {
-        if (isCurrent) setCouponCount(coupons.length);
+        if (isCurrent) setCouponSummary({ userId: user.id, count: coupons.filter(coupon => !coupon.used && (!coupon.expiresAt || Date.parse(coupon.expiresAt) > Date.now())).length });
       })
       .catch((error) => console.error(error));
 
@@ -143,7 +141,7 @@ export default function MyPageDashboard({
     { label: "예약내역", value: String(reservations.length), icon: CalendarDays, path: "/reservation" },
     {
       label: "쿠폰",
-      value: String(Math.max(user ? couponCount : 0, localCouponCount)),
+      value: String(user && couponSummary?.userId === user.id ? couponSummary.count : 0),
       icon: Tag,
       path: "/mypage/coupon",
     },

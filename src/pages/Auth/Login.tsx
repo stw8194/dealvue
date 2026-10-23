@@ -122,7 +122,7 @@ export default function Login() {
       </div>
       {bookingPending && (
         <p role="status" className="mt-8 rounded-2xl bg-accent/10 px-4 py-3 text-sm font-semibold text-accent">
-          예약하려면 로그인이 필요합니다. 로그인하면 예약 화면으로 돌아가요.
+          계속하려면 로그인이 필요합니다. 로그인 후 이전 화면으로 돌아가요.
         </p>
       )}
       <form

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, ChevronRight, Gamepad2, Gift, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useCouponStore, WELCOME_COUPON } from "@/features/consumer/coupons";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
+import { saveReturnPath } from "@/features/consumer/auth/loginReturn";
 import {
   requestWelcomeCouponClaim,
   requestWelcomeCouponStatus,
@@ -10,25 +11,31 @@ import {
 type CouponButtonState = "checking" | "available" | "claiming" | "claimed";
 
 export function HomeCouponBanner() {
+  const userId = useAuthStore(state => state.user?.id);
+  const initialized = useAuthStore(state => state.initialized);
+  return <AccountCouponBanner key={userId ?? "guest"} userId={userId} initialized={initialized} />;
+}
+
+function AccountCouponBanner({ userId, initialized }: { userId?: string; initialized: boolean }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const effectTimer = useRef<number | null>(null);
-  const [buttonState, setButtonState] = useState<CouponButtonState>("checking");
+  const [buttonState, setButtonState] = useState<CouponButtonState>(userId ? "checking" : "available");
   const [message, setMessage] = useState("");
   const [showEffect, setShowEffect] = useState(false);
 
   useEffect(() => {
     let isCurrent = true;
 
-    const claimedHere = useCouponStore.getState().coupons.some((coupon) => coupon.id === WELCOME_COUPON.id);
+    if (!userId) return;
     requestWelcomeCouponStatus()
       .then((hasClaimed) => {
         if (!isCurrent) return;
-        // A coupon claimed on the account is also usable at this device's checkout.
-        if (hasClaimed) void useCouponStore.getState().claimWelcome();
-        setButtonState(hasClaimed || claimedHere ? "claimed" : "available");
+        setButtonState(hasClaimed ? "claimed" : "available");
       })
       .catch(() => {
         if (!isCurrent) return;
-        setButtonState(claimedHere ? "claimed" : "available");
+        setButtonState("available");
       });
 
     return () => {
@@ -37,22 +44,26 @@ export function HomeCouponBanner() {
         window.clearTimeout(effectTimer.current);
       }
     };
-  }, []);
+  }, [userId]);
 
   const handleCouponClaim = async () => {
-    if (buttonState !== "available") return;
+    if (!initialized || buttonState !== "available") return;
+    if (!useAuthStore.getState().user) {
+      saveReturnPath(location.pathname + location.search + "#welcome-coupon");
+      navigate("/auth/login");
+      return;
+    }
 
     try {
       setMessage("");
       setButtonState("claiming");
-      // Guests get the coupon on this device; signed-in users also get it on their account.
-      const result = await requestWelcomeCouponClaim().catch(() => null);
-      const claimedNow = await useCouponStore.getState().claimWelcome();
+      const result = await requestWelcomeCouponClaim();
+      if (useAuthStore.getState().user?.id !== userId) return;
 
       setButtonState("claimed");
       setMessage("쿠폰함에 담았어요.");
 
-      if (claimedNow || (result && !result.alreadyClaimed)) {
+      if (!result.alreadyClaimed) {
         setShowEffect(true);
         effectTimer.current = window.setTimeout(() => {
           setShowEffect(false);
@@ -60,6 +71,7 @@ export function HomeCouponBanner() {
         }, 1200);
       }
     } catch (error) {
+      if (useAuthStore.getState().user?.id !== userId) return;
       setButtonState("available");
       setMessage(
         error instanceof Error ? error.message : "쿠폰을 받지 못했습니다.",
@@ -67,9 +79,9 @@ export function HomeCouponBanner() {
     }
   };
 
-  const isButtonDisabled = buttonState !== "available";
+  const isButtonDisabled = !initialized || buttonState !== "available";
   const buttonLabel =
-    buttonState === "checking"
+    !initialized || buttonState === "checking"
       ? "확인 중"
       : buttonState === "claiming"
         ? "받는 중"
@@ -78,7 +90,7 @@ export function HomeCouponBanner() {
           : "쿠폰 받기";
 
   return (
-    <section className="px-4 py-5 min-[390px]:px-5">
+    <section id="welcome-coupon" className="scroll-mt-20 px-4 py-5 min-[390px]:px-5">
       <article className="grid min-h-36 grid-cols-[1fr_auto] items-center gap-4 overflow-hidden rounded-2xl border border-page-border border-l-4 border-l-accent bg-white px-5 py-5 shadow-[0_3px_14px_rgb(0_0_0/8%)]">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-accent">

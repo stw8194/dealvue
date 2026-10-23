@@ -57,8 +57,8 @@ export async function requestWelcomeCouponStatus() {
   return Boolean(data);
 }
 
-export async function requestWelcomeCouponClaim(): Promise<CouponClaimResult | null> {
-  if (!(await hasSession())) return null;
+export async function requestWelcomeCouponClaim(): Promise<CouponClaimResult> {
+  if (!(await hasSession())) throw new Error("로그인 후 쿠폰을 받아 주세요.");
 
   const { data, error } = await getSupabaseClient().rpc("claim_coupon", {
     coupon_code: WELCOME_COUPON_CODE,
