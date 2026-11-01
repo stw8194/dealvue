@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Check, Gift, RotateCw, Sparkles } from "lucide-react";
 import { useEngagementStore } from "../store";
 import RouletteWheel from "./RouletteWheel";
+import { ROULETTE_DURATION, ROULETTE_EASING, roulettePointerFrames } from "./rouletteMotion";
 import { useKoreanDay, useReducedMotion } from "./motion";
 
 export default function Roulette() {
@@ -18,14 +19,16 @@ export default function Roulette() {
   const rotation = useRef(initialRotation);
   const disc = useRef<HTMLDivElement>(null);
   const animation = useRef<Animation | null>(null);
+  const pointer = useRef<HTMLDivElement>(null);
+  const pointerAnimation = useRef<Animation | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lock = useRef(false);
   const reduced = useReducedMotion();
-  const duration = reduced ? 160 : 4600;
+  const duration = reduced ? 160 : ROULETTE_DURATION;
   useEffect(() => {
     const recover = () => { const pending = useEngagementStore.getState().roulettePlay; if (pending && !pending.settled) settle(pending.id); };
     recover();
-    return () => { if (timer.current) clearTimeout(timer.current); animation.current?.cancel(); recover(); };
+    return () => { if (timer.current) clearTimeout(timer.current); animation.current?.cancel(); pointerAnimation.current?.cancel(); recover(); };
   }, [settle]);
   const spin = () => {
     const wheel = disc.current;
@@ -36,7 +39,7 @@ export default function Roulette() {
     setSpinning(true);
     setFeedback("");
     const from = rotation.current, landing = (360 - result.index * 45) % 360;
-    const target = from + 360 * 6 + ((landing - from % 360 + 360) % 360);
+    const target = from + 360 * 8 + ((landing - from % 360 + 360) % 360);
     let finished = false;
     const finish = () => {
       if (finished) return;
@@ -44,6 +47,7 @@ export default function Roulette() {
       if (timer.current) clearTimeout(timer.current);
       wheel.style.transform = `rotate(${target}deg)`;
       animation.current?.cancel();
+      pointerAnimation.current?.cancel();
       rotation.current = target;
       settle(result.id);
       lock.current = false;
@@ -51,7 +55,8 @@ export default function Roulette() {
       setCelebration(value => value + 1);
     };
     // Drive the already mounted wheel directly, independent of React batching.
-    animation.current = wheel.animate([{ transform: `rotate(${from}deg)` }, { transform: `rotate(${target}deg)` }], { duration, easing: "cubic-bezier(.14,.03,.08,1)", fill: "forwards" });
+    animation.current = wheel.animate([{ transform: `rotate(${from}deg)` }, { transform: `rotate(${target}deg)` }], { duration, easing: reduced ? "linear" : ROULETTE_EASING, fill: "forwards" });
+    if (!reduced) pointerAnimation.current = pointer.current?.animate(roulettePointerFrames(from, target, duration), { duration, easing: "linear", fill: "forwards" }) ?? null;
     animation.current.onfinish = finish;
     timer.current = setTimeout(finish, duration + 200);
   };
@@ -59,7 +64,7 @@ export default function Roulette() {
   return <div className={`playground-content roulette-content event-roulette ${spinning ? "is-spinning" : ""}`} aria-busy={spinning}>
     <div className="event-heading"><span className="event-pill">매일 한 번 · 100% 당첨</span><h2>돌리면 터지는<br /><em>오늘의 행운!</em></h2><p>최대 <strong>100 P</strong>, 꽝 없이 선물해요.</p></div>
     <div className="roulette-stage"><span className="event-float event-float-one" aria-hidden="true">✦</span><span className="event-float event-float-two" aria-hidden="true">✦</span>
-      <div className="roulette-machine"><div className="wheel-pointer" aria-hidden="true"><span /></div><div ref={disc} className="wheel-disc" style={{ transform: `rotate(${initialRotation}deg)` }}><RouletteWheel /></div><button type="button" className="wheel-hub" onClick={spin} disabled={spinning || Boolean(todayPlay) || claimed} aria-label={spinning ? "룰렛 회전 중" : todayPlay || claimed ? "오늘의 룰렛 참여 완료" : "룰렛 중앙 START"}><span>{spinning ? "···" : todayPlay || claimed ? "DONE" : "START"}</span>{todayPlay || claimed ? <Check size={20} /> : <RotateCw size={20} />}</button></div>
+      <div className="roulette-machine"><div ref={pointer} className="wheel-pointer" aria-hidden="true"><span /></div><div ref={disc} className="wheel-disc" style={{ transform: `rotate(${initialRotation}deg)` }}><RouletteWheel /></div><button type="button" className="wheel-hub" onClick={spin} disabled={spinning || Boolean(todayPlay) || claimed} aria-label={spinning ? "룰렛 회전 중" : todayPlay || claimed ? "오늘의 룰렛 참여 완료" : "룰렛 중앙 START"}><span>{spinning ? "···" : todayPlay || claimed ? "DONE" : "START"}</span>{todayPlay || claimed ? <Check size={20} /> : <RotateCw size={20} />}</button></div>
       {won && celebration > 0 && <div className="reward-confetti" key={celebration} aria-hidden="true">{Array.from({ length: 16 }, (_, i) => <i key={i} style={{ "--i": i } as CSSProperties} />)}</div>}
     </div>
     <div className={`event-result ${won ? "has-reward" : ""}`} role="status" aria-live="polite">{spinning ? <><Sparkles size={19} /> 행운이 돌아가는 중…</> : won ? <><Gift size={22} /><span><strong>{todayPlay.amount} P</strong> 선물이 도착했어요!</span></> : claimed ? <><Check size={19} /> 오늘의 룰렛에 참여했어요. 내일 또 만나요!</> : <><Gift size={19} /> 오늘의 선물을 바로 확인해 보세요</>}</div>

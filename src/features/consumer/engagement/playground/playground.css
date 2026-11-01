@@ -304,7 +304,7 @@
 .event-roulette .roulette-machine { width: min(294px, 92%); margin: 10px auto 3px; }
 .event-roulette .wheel-disc { transition: none !important; box-shadow: 0 9px 0 #cbb3e1, 0 12px 28px #9e47b83b, 0 0 0 6px #fff; }
 .event-roulette .wheel-pointer { top: -21px; left: calc(50% - 15px); }.event-roulette .wheel-pointer > span { background: linear-gradient(140deg, #ffbd42, #f78e14); }.event-roulette .wheel-pointer::after { background: #fff1b8; }
-.event-roulette.is-spinning .wheel-pointer { animation-duration: 4.6s; }
+.event-roulette.is-spinning .wheel-pointer { animation: none; }
 .event-roulette .wheel-hub { width: 76px; height: 76px; gap: 4px; border: 5px solid white; background: linear-gradient(140deg, #f43a86, #cd1570); cursor: pointer; box-shadow: 0 3px 8px #58096033; }
 .event-roulette .wheel-hub span { font-size: 13px; font-weight: 850; letter-spacing: .5px; }.event-roulette .wheel-hub svg { margin: 0; }
 .event-float { position: absolute; color: #bd53dd; font-size: 32px; }.event-float-one { left: -4px; top: 23px; transform: rotate(-10deg); }.event-float-two { right: -3px; bottom: 7px; color: #ee8c16; font-size: 25px; }
