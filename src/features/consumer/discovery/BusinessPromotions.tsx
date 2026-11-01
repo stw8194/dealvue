@@ -3,6 +3,7 @@ import { Clock, Zap } from "lucide-react";
 import { useDealKits } from "../dealKits";
 import { remainingLabel } from "../dealTiming";
 import type { ConsumerDeal } from "../types";
+import { BookingButton } from "../auth/loginGate";
 import { OfferCard } from "./PackagePages";
 
 export function BusinessDealKits({ businessId }: { businessId: number }) {
@@ -20,15 +21,18 @@ export function BusinessDealKits({ businessId }: { businessId: number }) {
 
 export function BusinessTimeDeals({ deals, now }: { deals: ConsumerDeal[]; now: number }) {
   if (!deals.length) return null;
-  return <section aria-label="판매 중인 타임딜" className="absolute inset-x-4 bottom-4 z-10">
-    <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto rounded-2xl shadow-[0_8px_30px_rgb(0_0_0/25%)] [scrollbar-width:none]">
-      {deals.map((deal, index) => {
+  return <section aria-label="판매 중인 타임딜" className="rounded-[20px] border border-[#f7d6e2] bg-gradient-to-br from-[#fff3f7] to-[#fce7ef] p-4 shadow-[0_2px_6px_#e5a2bb20]">
+    <div className="mb-3 flex items-center justify-between"><h2 className="flex items-center gap-2 text-[15px] font-bold text-accent"><Zap size={19} />지금 진행 중인 타임딜</h2><span className="rounded-full bg-accent/10 px-2.5 py-1 text-[10px] font-bold text-accent">LIVE</span></div>
+    <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none]">
+      {deals.map(deal => {
         const discount = deal.originalPrice > deal.price && deal.originalPrice > 0 ? (deal.discountRate ?? Math.round((deal.originalPrice - deal.price) * 100 / deal.originalPrice)) : 0;
-        return <Link key={deal.id} to={`/deal/${deal.id}`} className="w-full shrink-0 snap-center rounded-2xl border border-white/70 bg-white/95 p-4 backdrop-blur-md">
-          <div className="mb-2 flex items-center justify-between gap-2"><span className="flex items-center gap-1 rounded-full bg-rose-600 px-2.5 py-1 text-[11px] font-bold text-white"><Zap size={12} fill="currentColor" />타임딜 특가</span><span className="flex items-center gap-1 text-[10px] font-semibold tabular-nums text-rose-600"><Clock size={12} />{deal.timeWindow ?? remainingLabel(deal.endAt, now)}</span></div>
-          <h2 className="truncate text-sm font-bold text-gray-900">{deal.serviceName}</h2>
-          <div className="mt-1 flex flex-wrap items-baseline gap-x-2"><strong className="text-xl font-black text-rose-600">{discount > 0 ? `${discount}%` : "특가"}</strong><strong className="text-xl font-black text-gray-900">{deal.price.toLocaleString()}원</strong>{discount > 0 && <s className="text-xs text-gray-400">{deal.originalPrice.toLocaleString()}원</s>}<span className="ml-auto text-[10px] text-gray-500">{deals.length > 1 ? `${index + 1} / ${deals.length} · ` : ""}상세 보기 ›</span></div>
-        </Link>;
+        return <article key={deal.id} className="w-full shrink-0 snap-center rounded-2xl border border-white bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-2"><span className="rounded bg-accent px-2 py-1 text-[10px] font-bold text-white">{discount}% OFF</span><span className="flex items-center gap-1 rounded-lg bg-[#38363a] px-2 py-1 text-[11px] font-semibold tabular-nums text-white"><Clock size={12} />{remainingLabel(deal.endAt, now)}</span></div>
+          <Link to={`/deal/${deal.id}`} className="mt-2 block text-[15px] font-bold text-page-heading">{deal.serviceName}</Link>
+          <p className="mt-1 text-[10px] text-gray-400">잔여 {deal.remainingCapacity}자리 · {deal.timeWindow ?? "한정 타임딜"}</p>
+          <div className="mt-3 flex items-baseline gap-2"><s className="text-[11px] text-gray-400">{deal.originalPrice.toLocaleString()}원</s><strong className="text-[22px] font-extrabold text-accent">{deal.price.toLocaleString()}원</strong></div>
+          <BookingButton to={`/checkout/${deal.id}`} className="mt-3 flex h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-accent text-[13px] font-bold text-white"><Zap size={15} />타임딜 예약하기</BookingButton>
+        </article>;
       })}
     </div>
   </section>;

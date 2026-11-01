@@ -5,7 +5,6 @@ import {
   getCachedCurrentLocation,
   requestCurrentLocation,
 } from "@/api/location";
-import logoUrl from "@/assets/logo.svg";
 
 type LocationStatus = "idle" | "loading" | "success" | "error";
 
@@ -37,13 +36,13 @@ export default function HomeHeader({
   }, [cachedLocation]);
 
   return (
-    <header className="relative flex h-14 w-full max-w-[100dvw] items-center bg-page-background px-4 min-[390px]:px-5 md:h-16">
+    <header className="home-header relative flex h-[60px] w-full items-center bg-white px-[18px]">
       <Link
         to="/"
         aria-label="딜뷰 홈"
         className="shrink-0 text-[clamp(17px,5vw,22px)] font-black leading-none tracking-normal text-accent md:text-2xl"
       >
-        <img src={logoUrl} alt="DEALVUE" className="h-8 w-auto" />
+        <span className="text-[23px] font-extrabold tracking-[-.045em] text-accent">DEALVUE</span>
       </Link>
 
       <Link
@@ -51,10 +50,10 @@ export default function HomeHeader({
         aria-live="polite"
         aria-label="동네 및 위치 설정"
         title={locationError ?? "동네 및 위치 설정"}
-        className="absolute left-1/2 top-1/2 flex w-[44vw] max-w-72 -translate-x-1/2 -translate-y-1/2 items-center justify-center gap-1 px-1 text-page-heading"
+        className="ml-auto mr-2 flex min-w-0 max-w-[38%] items-center justify-center gap-1 px-1 text-page-heading"
       >
         <MapPin className="h-4 w-4 shrink-0 md:h-5 md:w-5" strokeWidth={2.4} />
-        <span className="max-w-[34vw] truncate text-[clamp(11px,3.3vw,14px)] font-bold leading-none md:max-w-none md:text-base">
+        <span className="truncate text-[11px] font-medium leading-none">
           {locationLabel}
         </span>
         <ChevronDown
@@ -65,13 +64,13 @@ export default function HomeHeader({
         />
       </Link>
 
-      <div className="ml-auto flex shrink-0 items-center justify-end gap-1 md:gap-3">
+      <div className="flex shrink-0 items-center justify-end gap-0.5">
         <Link
           to="/notifications"
           aria-label="알림"
-          className="relative grid h-8 w-8 place-items-center text-page-heading md:h-9 md:w-9"
+          className="relative grid h-8 w-8 place-items-center text-page-heading"
         >
-          <Bell className="h-5 w-5 md:h-6 md:w-6" strokeWidth={2.2} />
+          <Bell className="h-[22px] w-[22px]" strokeWidth={2.2} />
           {unreadNotificationCount > 0 && (
             <span className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[9px] font-bold leading-none text-white">
               {unreadNotificationCount > 99 ? "99+" : unreadNotificationCount}
@@ -81,9 +80,9 @@ export default function HomeHeader({
         <Link
           to="/wishlist"
           aria-label="찜 목록"
-          className="grid h-8 w-8 place-items-center text-page-heading md:h-9 md:w-9"
+          className="grid h-8 w-8 place-items-center text-page-heading"
         >
-          <Heart className="h-5 w-5 md:h-6 md:w-6" strokeWidth={2.2} />
+          <Heart className="h-[22px] w-[22px]" strokeWidth={2.2} />
         </Link>
       </div>
     </header>

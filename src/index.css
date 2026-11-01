@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./reference-ui.css";
 
 @theme {
   --font-sans: system-ui, "Segoe UI", Roboto, sans-serif;

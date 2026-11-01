@@ -32,17 +32,11 @@ function getNestedString(value: unknown, keys: string[]) {
 
 function getSessionNickname(session: Session) {
   const metadata = session.user.user_metadata;
-
-  return (
-    getNestedString(metadata, ["nickname"]) ??
-    getNestedString(metadata, ["name"]) ??
-    getNestedString(metadata, ["full_name"]) ??
-    getNestedString(metadata, ["preferred_username"]) ??
-    getNestedString(metadata, ["properties", "nickname"]) ??
-    getNestedString(metadata, ["kakao_account", "profile", "nickname"]) ??
-    session.user.email?.split("@")[0] ??
-    "user"
-  );
+  // Provider names and email handles can be real personal identifiers.
+  // Only use a nickname explicitly chosen for DealVue.
+  return getNestedString(metadata, ["dealvue_nickname"]) ??
+    (session.user.app_metadata.provider === "email" ? getNestedString(metadata, ["nickname"]) : undefined) ??
+    "딜뷰 이웃";
 }
 
 function mapSupabaseSessionToUser(
@@ -52,7 +46,7 @@ function mapSupabaseSessionToUser(
   return {
     id: session.user.id,
     email: profile?.email ?? session.user.email ?? "",
-    nickname: profile?.name ?? getSessionNickname(session),
+    nickname: getSessionNickname(session),
     profileImage: null,
     level: 1,
     totalSavedAmount: 0,
@@ -61,7 +55,14 @@ function mapSupabaseSessionToUser(
 
 export async function getUserFromSession(session: Session) {
   const supabase = getSupabaseClient();
-  const fallbackUser = mapSupabaseSessionToUser(session);
+  // Fetch current display preferences instead of retaining an older token's name.
+  const { data: verified } = await supabase.auth.getUser();
+  const currentSession = verified.user ? { ...session, user: verified.user } : session;
+  if (verified.user && verified.user.user_metadata.dealvue_nickname !== session.user.user_metadata.dealvue_nickname) {
+    // Replace an older locally cached token after a display-name privacy correction.
+    await supabase.auth.refreshSession();
+  }
+  const fallbackUser = mapSupabaseSessionToUser(currentSession);
   const { data, error } = await supabase
     .from("users")
     .select("id, email, name")
@@ -73,7 +74,7 @@ export async function getUserFromSession(session: Session) {
     return fallbackUser;
   }
 
-  return data ? mapSupabaseSessionToUser(session, data) : fallbackUser;
+  return data ? mapSupabaseSessionToUser(currentSession, data) : fallbackUser;
 }
 
 function getSocialLoginScopes(provider: SocialLoginProvider) {
@@ -137,6 +138,7 @@ export async function requestRegister(
     options: {
       data: {
         nickname: form.nickname.trim(),
+        dealvue_nickname: form.nickname.trim(),
       },
     },
   });
@@ -176,7 +178,7 @@ export async function requestMe() {
 
 export async function requestLogout() {
   if (isSupabaseConfigured) {
-    const { error } = await getSupabaseClient().auth.signOut();
+    const { error } = await getSupabaseClient().auth.signOut({ scope: "local" });
     if (error) throw error;
   }
   sessionStorage.removeItem("userToken");
@@ -209,4 +211,12 @@ export async function handleSocialLoginCallback() {
 
   sessionStorage.setItem("userToken", data.session.access_token);
   return getUserFromSession(data.session);
+}
+
+export async function requestUpdateNickname(nickname: string) {
+  const value = nickname.trim();
+  if (!value || value.length > 30) throw new Error("닉네임은 1~30자로 입력해 주세요.");
+  const { data, error } = await getSupabaseClient().auth.updateUser({ data: { dealvue_nickname: value, nickname: value } });
+  if (error || !data.user) throw new Error("닉네임을 저장하지 못했어요. 다시 시도해 주세요.");
+  return value;
 }

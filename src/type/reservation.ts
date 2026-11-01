@@ -40,6 +40,8 @@ export interface Reservation {
   paidAmount?: number;
   paymentMethod?: PaymentMethod;
   staffName?: string;
+  staffId?: number;
+  isShared?: boolean;
   address?: string;
   imageUrl?: string | null;
   /** Package visits share a group; each leg is a booking at one shop. */

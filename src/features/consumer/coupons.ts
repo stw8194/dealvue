@@ -1,3 +1,4 @@
+import { accountStorage, registerAccountStore } from "@/features/consumer/accountScope";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { commitLedger, registerLedgerCache } from "./ledger";
@@ -16,7 +17,7 @@ export interface LocalCoupon {
 export const WELCOME_COUPON = {
   id: "welcome-3000",
   title: "첫방문 3,000원 쿠폰팩",
-  description: "15,000원 이상 예약 시 사용 가능",
+  description: "15,000원 이상 결제 시 사용 가능",
   discountAmount: 3000,
   minimumOrderAmount: 15000,
 } as const;
@@ -42,9 +43,11 @@ export const useCouponStore = create<CouponState>()(persist<CouponState, [], [],
     const coupon: LocalCoupon = { ...WELCOME_COUPON, claimedAt: new Date(now).toISOString(), expiresAt: new Date(now + VALID_DAYS * 86400000).toISOString() };
     return { next: { ...state, coupons: [coupon, ...state.coupons] }, result: true };
   }),
-}), { name: "dealvue-consumer-coupons-v1", partialize: state => ({ coupons: state.coupons }) }));
+}), { storage: accountStorage(), name: "dealvue-consumer-coupons-v1", partialize: state => ({ coupons: state.coupons }) }));
 
 registerLedgerCache({
   read: () => ({ coupons: useCouponStore.getState().coupons }),
   write: ({ coupons }) => { if (coupons) useCouponStore.setState({ coupons }); },
 });
+
+registerAccountStore(useCouponStore);

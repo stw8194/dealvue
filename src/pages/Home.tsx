@@ -31,7 +31,7 @@ export default function Home() {
 
 function ConnectedHome() {
   const [searchParams] = useSearchParams();
-  const { deals, loading: isTimeDealsLoading } = useConsumerCatalog();
+  const { deals, loading: isTimeDealsLoading, error: timeDealsError, retry: retryTimeDeals } = useConsumerCatalog();
   const currentTime = useDealTime();
   // The modal keeps the shop as it was when opened, so a deal ending while it is open is shown as closed.
   const [selection, setSelection] = useState<{ business: TimeDealBusiness; dealId?: number } | null>(null);
@@ -68,14 +68,15 @@ function ConnectedHome() {
       <PopularSearchBar />
       <IconCategoryGrid />
       <MiniCategoryMenu />
-      {(isTimeDealsLoading || activeTimeDeals.length > 0) && <><section className="px-5 pt-4">
+      {timeDealsError && <div role="alert" className="mx-[18px] mt-3 rounded-xl bg-rose-50 p-4 text-sm text-page-text"><p>타임딜을 불러오지 못했어요. 잠시 후 다시 확인해 주세요.</p><button type="button" onClick={retryTimeDeals} className="mt-2 font-semibold text-accent underline">다시 불러오기</button></div>}
+      {(isTimeDealsLoading || activeTimeDeals.length > 0) && <><section className="px-[18px] pt-2">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <h2 className="flex items-center gap-2 whitespace-nowrap text-lg font-black text-page-heading md:text-xl">
-              <Clock className="h-5 w-5 shrink-0 text-accent" />
+            <h2 className="flex items-center gap-2 whitespace-nowrap text-[18px] font-bold text-page-heading">
+              <Clock className="h-[17px] w-[17px] shrink-0 text-accent" />
               <span>실시간 인기 타임딜</span>
             </h2>
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-[12px] text-gray-400">
               지금 가장 핫한 타임딜을 확인해보세요!
             </p>
           </div>

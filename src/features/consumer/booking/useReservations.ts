@@ -1,8 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useSyncExternalStore } from "react";
 import { requestReservations } from "@/api/reservation";
 import { useAuthStore } from "@/store/useAuthStore";
 import type { Reservation } from "@/type/reservation";
 import { ownReservations, useBookingStore } from "./store";
+import { createSharedQuery } from "../sharedQuery";
+
+const queries = new Map<string, ReturnType<typeof createSharedQuery<Reservation[]>>>();
+const empty = { data: undefined, error: null, ready: false, fetching: false };
+const emptySnapshot = () => empty;
+const noSubscription = () => () => {};
+const EMPTY_RESERVATIONS: Reservation[] = [];
+function reservationQuery(userId: string) {
+  let query = queries.get(userId);
+  if (!query) {
+    // Keep only the current account's inactive cache, never reuse another user's result.
+    for (const [id, entry] of queries) if (id !== userId && !entry.isActive()) queries.delete(id);
+    query = createSharedQuery(() => requestReservations(undefined, userId), 30_000);
+    queries.set(userId, query);
+  }
+  return query;
+}
 
 /** This account's bookings in the device ledger (no server bookings). */
 export function useOwnLocalReservations() {
@@ -15,27 +32,19 @@ export function useReservations() {
   const previewReservations = useBookingStore(state => state.reservations);
   const userId = useAuthStore(state => state.user?.id);
   const initialized = useAuthStore(state => state.initialized);
-  const [revision, setRevision] = useState(0);
-  const key = `${userId ?? "guest"}:${revision}`;
-  const [result, setResult] = useState<{ key: string; reservations: Reservation[]; error: string | null } | null>(null);
-  useEffect(() => {
-    if (!initialized || !userId) return;
-    let active = true;
-    requestReservations().then(reservations => {
-      if (active) setResult({ key, reservations, error: null });
-    }).catch(error => {
-      if (active) setResult({ key, reservations: [], error: error instanceof Error ? error.message : "예약내역을 불러오지 못했습니다." });
-    });
-    return () => { active = false; };
-  }, [initialized, userId, key]);
-  const remote = userId && result?.key === key ? result.reservations : [];
+  const query = initialized && userId ? reservationQuery(userId) : undefined;
+  const result = useSyncExternalStore(query?.subscribe ?? noSubscription, query?.getSnapshot ?? emptySnapshot);
+  const remote = result.data ?? EMPTY_RESERVATIONS;
   const local = ownReservations(previewReservations, userId);
   return {
     reservations: [...remote, ...local].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)),
-    loading: Boolean(userId) && result?.key !== key && !local.length,
-    error: !local.length && result?.key === key ? result.error : null,
+    // Until auth and this account's first server read settle, an empty list is not an answer.
+    loading: !initialized || (Boolean(userId) && !result.ready),
+    error: result.data === undefined && !local.length ? result.error : null,
+    refreshError: result.data !== undefined || local.length ? result.error : null,
+    refreshing: result.fetching,
     needsLogin: initialized && !userId,
     isPreview: false,
-    retry: () => setRevision(value => value + 1),
+    retry: query?.retry ?? (() => {}),
   };
 }

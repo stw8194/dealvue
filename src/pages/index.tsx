@@ -1,4 +1,5 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { useLayoutEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import Home from "./Home";
 import Reservation from "./Reservation";
 import Content from "./Content";
@@ -32,7 +33,20 @@ import { NotificationsPage, SettingsPage, ShortsPage } from "@/features/consumer
 
 export default function Router() {
   return (
-    <BrowserRouter>
+    <BrowserRouter><AppContent /></BrowserRouter>
+  );
+}
+
+function AppContent() {
+  const { pathname, hash } = useLocation();
+  const navigationType = useNavigationType();
+  // A new page starts at its header. Keep browser Back/Forward restoration and
+  // in-page links; changing a filter/query must not jump a list to the top.
+  useLayoutEffect(() => {
+    if (navigationType !== "POP" && !hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [pathname, hash, navigationType]);
+  const avatarPage = pathname === "/rewards" || pathname === "/avatar-3d" || pathname.startsWith("/mypage/playground") || pathname === "/fortune";
+  return <div className={avatarPage ? "avatar-app" : "reference-ui"} data-page={pathname === "/" ? "home" : pathname.split("/")[1]}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/auth/*" element={<Auth />} />
@@ -74,6 +88,5 @@ export default function Router() {
       </Routes>
       <BottomNav />
       <LoginRequiredDialog />
-    </BrowserRouter>
-  );
+    </div>;
 }

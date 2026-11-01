@@ -1,0 +1,81 @@
+// Run with PGLITE_MODULE_PATH pointing to a temporary @electric-sql/pglite install.
+// No network, production access, or application dependency changes.
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const { PGlite } = await import(process.env.PGLITE_MODULE_PATH ?? '@electric-sql/pglite');
+const db = new PGlite();
+await db.exec(`
+create role anon; create role authenticated;
+create schema auth; create schema storage;
+grant usage on schema public,auth,storage to anon,authenticated;
+create table auth.users(id uuid primary key);
+create function auth.uid() returns uuid language sql stable as $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+create function auth.jwt() returns jsonb language sql stable as $$select coalesce(nullif(current_setting('request.jwt.claims',true),''),'{}')::jsonb$$;
+create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
+create table storage.objects(id uuid default gen_random_uuid(),bucket_id text,name text);
+alter table storage.objects enable row level security;
+grant insert,select on storage.objects to authenticated;
+create function storage.foldername(text) returns text[] language sql immutable as $$select string_to_array($1,'/')$$;
+`);
+const sql = await readFile('database/community.sql','utf8');
+await db.exec(sql);
+await db.exec(sql); // Seeding/migration must be repeatable.
+let feed = await db.query('select community_feed() as p');
+assert.equal(feed.rows.length,6);
+assert.deepEqual(feed.rows.slice(0,3).map(r=>[r.p.like_count,r.p.comment_count]),[[32,14],[45,11],[28,7]]);
+const alice='a0000000-0000-4000-8000-000000000001', bob='a0000000-0000-4000-8000-000000000002';
+const post='e0000000-0000-4000-8000-000000000001', comment='e0000000-0000-4000-8000-000000000002';
+await db.query('insert into auth.users(id) values($1),($2)',[alice,bob]);
+async function role(user) {
+ await db.exec('reset role');
+ await db.query("select set_config('request.jwt.claim.sub',$1,false),set_config('request.jwt.claims',$2,false)",[user??'',JSON.stringify({user_metadata:{nickname:'Private provider name',name:'Private provider name',dealvue_nickname:user===alice?'앨리스':'보브'}})]);
+ await db.exec(user?'set role authenticated':'set role anon');
+}
+async function denied(sql,args=[]) { await assert.rejects(db.query(sql,args)); }
+await role(null);
+assert.equal((await db.query('select community_feed()')).rows.length,6);
+await denied('insert into community_posts(title,body,category,kind) values($1,$2,$3,$4)',['손님','쓰기','피부','꿀팁']);
+await role(alice);
+await db.query('insert into community_posts(id,title,body,category,kind) values($1,$2,$3,$4,$5)',[post,'내 이야기','안전한 작성 테스트','피부','꿀팁']);
+await denied('insert into community_posts(id,title,body,category,kind) values($1,$2,$3,$4,$5)',[post,'중복','중복','피부','꿀팁']);
+await denied('insert into community_posts(author_id,title,body,category,kind) values($1,$2,$3,$4,$5)',[bob,'사칭','금지','피부','꿀팁']);
+await denied('update community_posts set initial_likes=999 where id=$1',[post]);
+await db.query("select set_config('request.jwt.claims',$1,false)",[JSON.stringify({user_metadata:{name:'Private provider name',nickname:'Private provider name'}})]);
+const privateComment='e0000000-0000-4000-8000-000000000004';
+await db.query('insert into community_comments(id,post_id,body) values($1,$2,$3)',[privateComment,post,'공개 표시 이름 확인']);
+assert.equal((await db.query('select author_name from community_comments where id=$1',[privateComment])).rows[0].author_name,'딜뷰 이웃');
+await db.query('delete from community_comments where id=$1',[privateComment]);
+await role(alice);
+await db.query('insert into community_comments(id,post_id,body) values($1,$2,$3)',[comment,post,'댓글 테스트']);
+await db.query('insert into community_likes(post_id) values($1) on conflict do nothing',[post]);
+await db.query('insert into community_likes(post_id) values($1) on conflict do nothing',[post]);
+let own=(await db.query('select community_feed($1) as p',[post])).rows[0].p;
+assert.equal(own.author_id,alice);assert.equal(own.author_name,'앨리스');assert.equal(own.like_count,1);assert.equal(own.comment_count,1);assert.equal(own.liked,true);
+await role(bob);
+assert.equal((await db.query('update community_posts set title=$1 where id=$2 returning id',['가로채기',post])).rows.length,0);
+assert.equal((await db.query('update community_comments set body=$1 where id=$2 returning id',['가로채기',comment])).rows.length,0);
+assert.equal((await db.query('delete from community_comments where id=$1 returning id',[comment])).rows.length,0);
+assert.equal((await db.query('select * from community_likes')).rows.length,0);
+await denied('insert into community_likes(post_id,user_id) values($1,$2)',[post,alice]);
+assert.equal((await db.query('select community_feed(null,null,null,null,true)')).rows.length,0);
+await denied('insert into storage.objects(bucket_id,name) values($1,$2)',['community-media',`${alice}/bad.jpg`]);
+await db.query('insert into storage.objects(bucket_id,name) values($1,$2)',['community-media',`${bob}/photo.jpg`]);
+await role(alice);
+await db.query('update community_posts set title=$1 where id=$2',['수정한 이야기',post]);
+assert.equal((await db.query('select community_feed(null,null,null,$1) as p',['수정한'])).rows.length,1);
+assert.equal((await db.query('select community_feed(null,$1) as p',['네일'])).rows.length,1);
+await denied('insert into community_comments(id,post_id,body) values($1,$2,$3)',[comment,post,'중복 댓글']);
+assert.equal((await db.query('update community_comments set body=$1 where id=$2 returning body',['수정한 댓글',comment])).rows[0].body,'수정한 댓글');
+assert.equal((await db.query('select community_feed($1) as p',[post])).rows[0].p.comment_count,1);
+const disposableComment='e0000000-0000-4000-8000-000000000003';
+await db.query('insert into community_comments(id,post_id,body) values($1,$2,$3)',[disposableComment,post,'삭제 확인']);
+assert.equal((await db.query('select community_feed($1) as p',[post])).rows[0].p.comment_count,2);
+assert.equal((await db.query('delete from community_comments where id=$1 returning id',[disposableComment])).rows.length,1);
+assert.equal((await db.query('select community_feed($1) as p',[post])).rows[0].p.comment_count,1);
+await db.query('delete from community_likes where post_id=$1',[post]);
+await db.query('update community_posts set deleted_at=now() where id=$1',[post]);
+assert.equal((await db.query('select community_feed($1)',[post])).rows.length,0);
+await role(null);
+assert.equal((await db.query('select * from community_comments where post_id=$1',[post])).rows.length,0);
+await db.close();
+console.log('PASS: PostgreSQL migration/seed replay, 6 posts + 32 comments, guest read-only, account ownership, no forged authors/counts, unique retries/likes, comment create/edit/delete counts and privacy, search/category/MY filters, soft deletion, upload folder isolation');

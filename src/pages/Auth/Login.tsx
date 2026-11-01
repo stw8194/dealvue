@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, Mail } from "lucide-react";
+import { ChevronLeft, LockKeyhole, Mail } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   requestLogin,
@@ -41,6 +41,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Login() {
   const navigate = useNavigate();
+  const [emailMode, setEmailMode] = useState(false);
   const setUser = useAuthStore((state) => state.setUser);
   const [pendingProvider, setPendingProvider] =
     useState<SocialLoginProvider | null>(null);
@@ -104,131 +105,33 @@ export default function Login() {
   };
 
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[480px] flex-col px-6 pb-32 pt-6">
-      <button
-        type="button"
-        aria-label="뒤로 가기"
-        onClick={() => navigate(-1)}
-        className="grid h-10 w-10 place-items-center text-page-heading"
-      >
-        <ChevronLeft size={30} strokeWidth={2.4} />
-      </button>
-
-      <div className="mt-24">
-        <img src={logoUrl} alt="DEALVUE" className="h-12 w-auto" />
-        <p className="mt-2 text-sm font-bold text-gray-400">
-          가치는 그대로, 가격은 최적화
-        </p>
+    <section className="auth-login flex min-h-dvh flex-col px-6 pb-8 text-page-heading">
+      <header className="relative -mx-2 flex h-14 shrink-0 items-center gap-2">
+        <button type="button" aria-label="뒤로 가기" onClick={() => emailMode ? setEmailMode(false) : navigate(-1)} className="grid h-9 w-9 place-items-center"><ChevronLeft size={23} strokeWidth={1.8} /></button>
+        <h1 className="text-[16px] font-bold">로그인</h1>
+      </header>
+      {emailMode ? <div className="mb-7 mt-9"><img src={logoUrl} alt="DEALVUE" className="h-8 w-auto" /><p className="mt-2 text-[12px] text-gray-400">가치는 그대로, 가격은 최적화</p></div>
+        : <div className="mb-9 mt-12 text-center"><img src="/images/brand/dealvue-symbol.jpeg" alt="" className="mx-auto h-24 w-24 object-contain mix-blend-multiply" /><h2 className="mt-5 text-[22px] font-bold">딜뷰에 오신 걸 환영해요</h2><p className="mt-2 text-[12px] text-gray-400">로그인하고 뷰티 타임딜을 즐겨보세요</p></div>}
+      {bookingPending && <p role="status" className="mb-5 rounded-xl bg-[#fff4f8] px-4 py-3 text-[12px] leading-5 text-accent">계속하려면 로그인이 필요합니다.<br />로그인 후 이전 화면으로 돌아가요.</p>}
+      {emailMode && <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <label className="block text-[12px] font-medium">이메일
+          <input {...register("email", { required: "이메일을 입력해 주세요.", pattern: { value: EMAIL_PATTERN, message: "올바른 이메일 형식으로 입력해 주세요." }, onChange: () => setErrorMessage("") })} type="email" autoComplete="email" className="mt-2 h-12 w-full rounded-xl border border-page-border bg-white px-4 text-[13px] font-normal outline-none placeholder:text-gray-400 focus:border-accent" placeholder="이메일을 입력해주세요" />
+          {errors.email?.message && <span className="mt-1 block text-[11px] text-rose-600">{errors.email.message}</span>}
+        </label>
+        <label className="block text-[12px] font-medium">비밀번호
+          <input {...register("password", { required: "비밀번호를 입력해 주세요.", minLength: { value: 6, message: "비밀번호는 6자 이상 입력해 주세요." }, onChange: () => setErrorMessage("") })} type="password" autoComplete="current-password" className="mt-2 h-12 w-full rounded-xl border border-page-border bg-white px-4 text-[13px] font-normal outline-none placeholder:text-gray-400 focus:border-accent" placeholder="비밀번호를 입력해주세요" />
+          {errors.password?.message && <span className="mt-1 block text-[11px] text-rose-600">{errors.password.message}</span>}
+        </label>
+        <button type="submit" disabled={!canSubmitEmailLogin} className="mt-3 flex h-12 w-full items-center justify-center rounded-xl bg-accent text-[14px] font-bold text-white disabled:opacity-40">{isEmailLoginLoading ? "로그인하는 중…" : "로그인"}</button>
+      </form>}
+      {errorMessage && <p role="alert" className="my-3 rounded-lg bg-rose-50 p-3 text-[12px] text-rose-600">{errorMessage}</p>}
+      {emailMode && <div className="my-6 flex items-center gap-3 text-[10px] text-gray-400"><span className="h-px flex-1 bg-page-border" />간편 로그인<span className="h-px flex-1 bg-page-border" /></div>}
+      <div className="space-y-3">
+        {LOGIN_OPTIONS.map(option => <button key={option.provider} type="button" disabled={Boolean(pendingProvider)} onClick={() => void handleSocialLogin(option.provider)} className={`flex h-12 w-full items-center justify-center gap-2 rounded-xl border text-[13px] font-bold transition hover:brightness-95 disabled:opacity-60 ${option.className}`}><img src={option.iconSrc} alt="" className="h-5 w-5 object-contain" />{pendingProvider === option.provider ? "연결하는 중…" : option.label}</button>)}
       </div>
-      {bookingPending && (
-        <p role="status" className="mt-8 rounded-2xl bg-accent/10 px-4 py-3 text-sm font-semibold text-accent">
-          계속하려면 로그인이 필요합니다. 로그인 후 이전 화면으로 돌아가요.
-        </p>
-      )}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid gap-3 mt-12  w-full mb-5"
-      >
-        <p className="flex items-center gap-2">
-          <span>이메일</span>
-          {errors.email?.message && (
-            <span className="text-xs font-medium text-blue-500">
-              {errors.email.message}
-            </span>
-          )}
-        </p>
-        <input
-          {...register("email", {
-            required: "이메일을 입력해 주세요.",
-            pattern: {
-              value: EMAIL_PATTERN,
-              message: "올바른 이메일 형식으로 입력해 주세요.",
-            },
-            onChange: () => setErrorMessage(""),
-          })}
-          type="email"
-          className="h-12 w-full rounded-xl border border-accent bg-white px-5 text-base text-black placeholder:text-gray-400 font-medium shadow-sm"
-          placeholder="이메일을 입력해주세요"
-        ></input>
-        <p className="flex items-center gap-2">
-          <span>비밀번호</span>
-          {errors.password?.message && (
-            <span className="text-xs font-medium text-blue-500">
-              {errors.password.message}
-            </span>
-          )}
-        </p>
-        <input
-          {...register("password", {
-            required: "비밀번호를 입력해 주세요.",
-            minLength: {
-              value: 6,
-              message: "비밀번호는 6자 이상 입력해 주세요.",
-            },
-            onChange: () => setErrorMessage(""),
-          })}
-          type="password"
-          className="h-12 w-full rounded-xl border border-accent bg-white px-5 text-base text-black placeholder:text-gray-400 font-medium shadow-sm"
-          placeholder="비밀번호를 입력해주세요"
-        ></input>
-        {errorMessage && (
-          <p className="text-center text-sm mt-4 font-medium text-red-500">
-            {errorMessage}
-          </p>
-        )}
-        <button
-          type="submit"
-          disabled={!canSubmitEmailLogin}
-          className={`flex h-14 w-full items-center justify-center rounded-full border px-5 text-base font-semibold shadow-sm disabled:cursor-not-allowed disabled:opacity-80 ${
-            canSubmitEmailLogin
-              ? "cursor-pointer border-accent text-accent hover:opacity-60"
-              : "pointer-events-none border-gray-500 text-gray-500"
-          } ${errorMessage ? "mt-4" : "mt-16"}`}
-        >
-          <Mail className="mr-3" size={20} strokeWidth={2.3} />
-          로그인
-        </button>
-      </form>
-
-      <div className="my-12 flex items-center gap-3" aria-hidden="true">
-        <span className="h-px flex-1 border-t border-dashed border-gray-400" />
-        <span className="text-sm font-medium text-gray-500">또는</span>
-        <span className="h-px flex-1 border-t border-dashed border-gray-400" />
-      </div>
-
-      <div className="flex flex-col gap-3">
-        {LOGIN_OPTIONS.map((option) => (
-          <button
-            key={option.label}
-            type="button"
-            disabled={Boolean(pendingProvider)}
-            onClick={() => void handleSocialLogin(option.provider)}
-            className={`flex h-14 w-full cursor-pointer items-center justify-center rounded-full border px-5 text-base font-semibold shadow-sm disabled:cursor-wait hover:opacity-70 disabled:opacity-80 ${option.className}`}
-          >
-            {
-              <img
-                src={option.iconSrc}
-                alt={option.iconAlt}
-                className="mr-3 h-6 w-6 object-contain"
-              />
-            }
-            {option.label}
-          </button>
-        ))}
-      </div>
-
-      <p className="mt-10 text-center text-base text-page-text">
-        계정이 없으신가요?{" "}
-        <Link to="/auth/register" className="font-semibold text-accent">
-          회원가입
-        </Link>
-      </p>
-
-      <div className="mt-10 rounded-2xl border border-page-border bg-white px-5 py-4 shadow-[0_2px_12px_rgb(0_0_0/7%)]">
-        <p className="text-center text-base font-semibold text-page-heading">
-          로그인하면 더 많은 혜택을 받을 수 있어요
-        </p>
-      </div>
+      {!emailMode && <><div className="my-6 flex items-center gap-3 text-[10px] text-gray-300"><span className="h-px flex-1 bg-page-border" />또는<span className="h-px flex-1 bg-page-border" /></div><button type="button" onClick={() => setEmailMode(true)} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-accent text-[13px] font-semibold text-accent"><Mail size={17} />이메일로 로그인</button></>}
+      <p className="mt-6 text-center text-[12px] text-gray-400">계정이 없으신가요? <Link to="/auth/register" className="ml-1 font-semibold text-accent">회원가입</Link></p>
+      <div className="mt-auto pt-12"><p className="flex items-center justify-center gap-2 rounded-xl border border-page-border bg-[#fafbfc] px-3 py-4 text-[11px] text-page-text"><LockKeyhole size={13} />로그인하면 더 많은 혜택을 받을 수 있어요</p></div>
     </section>
   );
 }

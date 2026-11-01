@@ -29,13 +29,13 @@ function ReservationTabs() {
   return (
     <Page title="예약내역">
       <div className="mx-auto max-w-md">
-      <nav aria-label="예약내역 분류" className="mb-5 flex gap-1 rounded-2xl bg-[#f7f5f6] p-1">
+      <nav aria-label="예약내역 분류" className="reservation-tabs mb-5 flex gap-1 border-b border-page-border">
         {TABS.map(tab => (
           <NavLink
             key={tab.path}
             to={tab.path}
             end={tab.path === "/reservation"}
-            className={({ isActive }) => `flex min-h-11 flex-1 items-center justify-center rounded-xl text-xs font-semibold transition ${isActive ? "bg-white text-page-heading shadow-sm" : "text-page-text hover:text-page-heading"}`}
+            className={({ isActive }) => `flex min-h-11 flex-1 items-center justify-center border-b-2 text-xs font-semibold transition ${isActive ? "border-accent text-accent" : "border-transparent text-page-text hover:text-page-heading"}`}
           >
             {tab.label}
           </NavLink>

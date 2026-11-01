@@ -1,0 +1,60 @@
+// Real Zustand stores + isolated IndexedDB. No network or production browser data.
+import assert from 'node:assert/strict';
+import { registerHooks } from 'node:module';
+import { existsSync } from 'node:fs';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+const root = new URL('../', import.meta.url);
+registerHooks({ resolve(specifier, context, next) {
+  let url;
+  if (specifier.startsWith('@/')) url = new URL(`src/${specifier.slice(2)}`, root);
+  else if (specifier.startsWith('.') && context.parentURL?.startsWith(new URL('src/', root).href)) url = new URL(specifier, context.parentURL);
+  if (url && !existsSync(fileURLToPath(url)) && existsSync(fileURLToPath(url) + '.ts')) return next(url.href + '.ts', context);
+  if (url) return next(url.href, context);
+  return next(specifier, context);
+} });
+const fake = await import(pathToFileURL(process.env.FAKE_IDB_MODULE_PATH || '/private/tmp/dealvue-db-check/node_modules/fake-indexeddb/build/esm/index.js'));
+globalThis.indexedDB = fake.indexedDB;
+globalThis.BroadcastChannel = undefined;
+const data = new Map();
+globalThis.localStorage = { getItem: k => data.get(k) ?? null, setItem: (k,v) => data.set(k,v), removeItem: k => data.delete(k) };
+globalThis.window = new EventTarget();
+window.localStorage = localStorage;
+const { changeAccountScope } = await import('../src/features/consumer/accountScope.ts');
+const { useEngagementStore: store } = await import('../src/features/consumer/engagement/store.ts');
+const { useDiscoveryFavorites: favorites } = await import('../src/features/consumer/discovery/favorites.ts');
+const { useBusinessHistory: history } = await import('../src/features/consumer/history.ts');
+const viewed = () => history.getState().visits.map(v => v.id);
+const { commitLedger, syncFromLedger } = await import('../src/features/consumer/ledger.ts');
+const balance = () => store.getState().pointHistory.reduce((n,p) => n+p.amount, 0);
+const flush = async () => { await new Promise(resolve => setTimeout(resolve, 20)); await syncFromLedger(); };
+// Seed unowned legacy data. It must never become a signed-in account's balance.
+await commitLedger(s => ({ next: {...s, pointHistory:[{id:'guest',reason:'guest',amount:90,createdAt:new Date().toISOString()}]}, result:null }));
+history.getState().record({id:7,name:'guest shop',preview:false});
+changeAccountScope('account-a'); await flush();
+assert.equal(balance(), 0); assert.equal(store.getState().checkIn(), true);
+assert.equal(store.getState().checkIn(), false, 'rapid repeated check-in cannot award twice');
+favorites.getState().toggleBusiness(42);
+assert.deepEqual(viewed(), [], 'guest recent views are not given to an account'); history.getState().record({id:42,name:'A shop',preview:false});
+store.getState().chooseAppearance({...store.getState().appearance, hairColor:'rose'});
+await flush(); assert.equal(balance(), 10);
+await commitLedger(s => ({next:{...s,pointHistory:[{id:'allowance',reason:'fixture',amount:100,createdAt:new Date().toISOString()},...s.pointHistory]},result:null}));
+assert.equal(store.getState().chooseOutfit('pink'),true);
+const look = store.getState();
+assert.ok(look.saveLook('A 코디',{outfit:look.outfit,accessories:look.accessories,backdrop:look.backdrop,appearance:look.appearance}));
+assert.ok(store.getState().beginRoulette());
+await flush();
+// Begin a write for A and immediately switch, while the DB open/transaction awaits.
+const late = commitLedger(s => ({next:{...s,pointHistory:[{id:'late',reason:'A only',amount:7,createdAt:new Date().toISOString()},...s.pointHistory]},result:null}));
+changeAccountScope('account-b'); await assert.rejects(late, /계정이 바뀌/); await flush();
+assert.equal(balance(), 0); assert.deepEqual(favorites.getState().businessIds, []); assert.deepEqual(viewed(), []);
+assert.equal(store.getState().appearance.hairColor,'chestnut');
+assert.deepEqual(store.getState().ownedOutfits,['basic']); assert.equal(store.getState().roulettePlay,null); assert.deepEqual(store.getState().savedLooks,[]);
+assert.equal(store.getState().checkIn(), true); await flush(); assert.equal(balance(), 10);
+changeAccountScope('account-a'); await flush();
+assert.equal(balance(),87); assert.ok(store.getState().ownedOutfits.includes('pink')); assert.equal(store.getState().savedLooks.length,1); assert.ok(store.getState().roulettePlay); assert.equal(store.getState().checkIn(), false);
+assert.deepEqual(favorites.getState().businessIds,[42]); assert.deepEqual(viewed(),[42]); assert.equal(store.getState().appearance.hairColor,'rose');
+changeAccountScope(); await flush(); assert.equal(balance(),90); assert.deepEqual(viewed(),[7]);
+changeAccountScope('account-b'); await flush(); assert.equal(balance(),10);
+// Rapid changes: stale reads from A or guest must not overwrite B.
+changeAccountScope('account-a'); const stale = syncFromLedger(); changeAccountScope('account-b'); await stale; await flush(); assert.equal(balance(),10);
+console.log('PASS account-specific points, attendance, favorites, recent views, appearance, guest legacy preservation, pending writes and stale reads');

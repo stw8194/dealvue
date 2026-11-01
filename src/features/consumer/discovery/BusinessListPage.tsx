@@ -58,15 +58,15 @@ export function BusinessListPage() {
         <section className="space-y-3">
           <h1 className="text-lg font-bold text-page-heading">{category?.label ?? ""} 전체 매장 <span className="text-accent">{currentResult.businesses.length}</span></h1>
           {currentResult.businesses.length ? (
-            <ul className="grid gap-3 sm:grid-cols-2">
+            <ul className="grid gap-3">
               {currentResult.businesses.map((business) => (
                 <li key={business.id}>
-                  <Link to={`/business/${business.id}`} className="block h-full space-y-2 rounded-xl border border-page-border p-4 hover:border-accent">
-                    {business.business_images?.[0]?.img_url && <img src={business.business_images[0].img_url} alt={business.name} loading="lazy" className="aspect-video w-full rounded-lg object-cover" />}
-                    <h2 className="font-bold text-page-heading">{business.name}</h2>
-                    <p className="text-sm text-page-text">{business.address || "주소 정보 준비 중"}</p>
-                    {business.description && <p className="line-clamp-2 text-sm text-page-text">{business.description}</p>}
-                    <span className="inline-block text-sm font-semibold text-accent">매장 상세 보기 →</span>
+                  <Link to={`/business/${business.id}`} className="business-list-card relative block min-h-[128px] overflow-hidden rounded-2xl border border-page-border bg-white py-3 pl-[126px] pr-3 shadow-[0_2px_6px_rgb(32_38_50/4%)] hover:border-accent">
+                    {business.business_images?.[0]?.img_url && <img src={business.business_images[0].img_url} alt={business.name} loading="lazy" className="absolute left-3 top-3 h-[104px] w-[100px] rounded-xl object-cover" />}
+                    <h2 className="mb-1 text-[14px] font-bold text-page-heading">{business.name}</h2>
+                    <p className="text-[11px] text-page-text">{business.address || "주소 정보 준비 중"}</p>
+                    {business.description && <p className="mt-1 line-clamp-2 text-[10px] text-gray-400">{business.description}</p>}
+                    <span className="mt-2 inline-block text-[11px] font-semibold text-accent">매장 상세 보기 →</span>
                   </Link>
                 </li>
               ))}

@@ -4,10 +4,12 @@ import { formatSlotDay, slotDay } from "./rules";
 const KST = "Asia/Seoul";
 const choice = "relative cursor-pointer border border-page-border text-center transition has-[:checked]:border-accent has-[:checked]:bg-accent has-[:checked]:text-white has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent";
 const timeFormat = new Intl.DateTimeFormat("ko-KR", { timeZone: KST, hour: "numeric", minute: "2-digit", hour12: true });
-const hourFormat = new Intl.DateTimeFormat("en-US", { timeZone: KST, hour: "numeric", hourCycle: "h23" });
+const seoulHour = (value: string) => new Date(Date.parse(value) + 9 * 3_600_000).getUTCHours();
 
 type Props = {
   slots: string[];
+  slotLabels?: Record<string, string>;
+  unavailableSlots?: string[];
   day: string;
   slot: string;
   onDayChange: (day: string) => void;
@@ -18,12 +20,12 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function BookingSchedulePicker({ slots, day, slot, onDayChange, onSlotChange, dateLabel = "방문 날짜", timeLabel = "방문 시간", name = "booking", disabled = false }: Props) {
+export default function BookingSchedulePicker({ slots, slotLabels, unavailableSlots = [], day, slot, onDayChange, onSlotChange, dateLabel = "방문 날짜", timeLabel = "방문 시간", name = "booking", disabled = false }: Props) {
   const days = [...new Set(slots.map(slotDay))].sort();
   const times = slots.filter(value => slotDay(value) === day).sort((a, b) => Date.parse(a) - Date.parse(b));
   const periods = [
-    { label: "오전", items: times.filter(value => Number(hourFormat.format(new Date(value))) < 12) },
-    { label: "오후", items: times.filter(value => Number(hourFormat.format(new Date(value))) >= 12) },
+    { label: "오전", items: times.filter(value => seoulHour(value) < 12) },
+    { label: "오후", items: times.filter(value => seoulHour(value) >= 12) },
   ].filter(period => period.items.length);
 
   if (!days.length) return <p className="rounded-2xl bg-gray-50 p-4 text-sm text-page-text">지금 예약 가능한 일정이 없습니다.</p>;
@@ -35,9 +37,10 @@ export default function BookingSchedulePicker({ slots, day, slot, onDayChange, o
       {periods.map(period => <div key={period.label} className="space-y-2">
         <p className="text-xs font-semibold text-page-text">{period.label}</p>
         <div role="radiogroup" aria-label={`${period.label} ${timeLabel}`} className="grid grid-cols-3 gap-2 min-[360px]:grid-cols-4">
-          {period.items.map(value => <label key={value} className={`${choice} rounded-xl py-3 text-sm font-semibold`}>
-            <input type="radio" name={`${name}-slot`} value={value} checked={slot === value} onChange={() => onSlotChange(value)} className="sr-only" />
+          {period.items.map(value => <label key={value} className={`${choice} rounded-xl py-3 text-sm font-semibold ${unavailableSlots.includes(value) ? "opacity-35 cursor-not-allowed line-through" : ""}`}>
+            <input type="radio" disabled={unavailableSlots.includes(value)} name={`${name}-slot`} value={value} checked={slot === value} onChange={() => onSlotChange(value)} className="sr-only" />
             {timeFormat.format(new Date(value)).replace(/^(오전|오후)\s*/, "")}
+            {slotLabels?.[new Date(value).toISOString()] && <span className="mt-1 block text-[10px] font-normal">{slotLabels[new Date(value).toISOString()]}</span>}
           </label>)}
         </div>
       </div>)}

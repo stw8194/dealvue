@@ -60,14 +60,14 @@ export default function BottomNav() {
     };
   }, []);
 
-  if (pathname.startsWith("/auth") || pathname === "/mypage/inquiry") {
+  if (pathname.startsWith("/auth") || pathname === "/mypage/inquiry" || /^\/business\/\d+\/?$/.test(pathname) || pathname.startsWith("/checkout/") || pathname.startsWith("/deal/")) {
     return null;
   }
 
   return (
     <nav
       aria-label="주요 메뉴"
-      className={`fixed inset-x-0 bottom-0 z-50 border-t border-page-border bg-white/95 shadow-[0_-3px_16px_rgb(0_0_0/7%)] backdrop-blur transition-transform duration-300 ease-out ${
+      className={`app-bottom-nav fixed inset-x-0 bottom-0 z-50 border-t border-page-border bg-white/95 shadow-[0_-3px_16px_rgb(0_0_0/7%)] backdrop-blur transition-transform duration-300 ease-out ${
         isVisible ? "translate-y-0" : "pointer-events-none translate-y-full"
       }`}
     >

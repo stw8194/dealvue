@@ -1,3 +1,4 @@
+import { accountStorage, registerAccountStore, scopedStorageKey } from "@/features/consumer/accountScope";
 import { create } from "zustand";
 import { isAvailableAccessory } from "./playground/accessoryCatalog";
 import { persist } from "zustand/middleware";
@@ -257,7 +258,7 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
     void resetLedger();
   },
 }), {
-  name: "dealvue-consumer-engagement-preview-v1", version: 1,
+  storage: accountStorage(), name: "dealvue-consumer-engagement-preview-v1", version: 1,
   merge: (persisted, current) => {
     const saved = (persisted ?? {}) as Partial<EngagementStore>;
     return { ...current, ...saved, posts: (saved.posts ?? current.posts).filter(post => post.authorId !== "example-neighbor"), appearance: normalizeAppearance(saved.appearance), savedLooks: (saved.savedLooks ?? current.savedLooks).map(look => ({ ...look, appearance: look.appearance ? normalizeAppearance(look.appearance) : undefined })), accessories: { ...DEFAULT_ACCESSORIES, ...saved.accessories }, ownedAccessories: [...new Set([...Object.values(DEFAULT_ACCESSORIES), ...(saved.ownedAccessories ?? current.ownedAccessories)])] };
@@ -268,7 +269,7 @@ export const useEngagementStore = create<EngagementStore>()(persist((set, get) =
 if (typeof window !== "undefined") {
   const sync = (event: StorageEvent) => {
     // The stored copy may lag the ledger, so the ledger is re-applied after reloading it.
-    if (event.key === "dealvue-consumer-engagement-preview-v1") void Promise.resolve(useEngagementStore.persist.rehydrate()).then(syncFromLedger);
+    if (event.key === scopedStorageKey("dealvue-consumer-engagement-preview-v1")) void Promise.resolve(useEngagementStore.persist.rehydrate()).then(syncFromLedger);
   };
   window.addEventListener("storage", sync);
   import.meta.hot?.dispose(() => window.removeEventListener("storage", sync));
@@ -287,3 +288,5 @@ registerLedgerCache({
     useEngagementStore.setState(next);
   },
 });
+
+registerAccountStore(useEngagementStore);

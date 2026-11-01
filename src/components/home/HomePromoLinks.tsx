@@ -90,7 +90,7 @@ function AccountCouponBanner({ userId, initialized }: { userId?: string; initial
           : "쿠폰 받기";
 
   return (
-    <section id="welcome-coupon" className="scroll-mt-20 px-4 py-5 min-[390px]:px-5">
+    <section id="welcome-coupon" className="home-coupon scroll-mt-20 px-4 py-5 min-[390px]:px-5">
       <article className="grid min-h-36 grid-cols-[1fr_auto] items-center gap-4 overflow-hidden rounded-2xl border border-page-border border-l-4 border-l-accent bg-white px-5 py-5 shadow-[0_3px_14px_rgb(0_0_0/8%)]">
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-accent">
@@ -105,7 +105,7 @@ function AccountCouponBanner({ userId, initialized }: { userId?: string; initial
             3,000원 쿠폰팩
           </h2>
           <p className="mt-1 text-sm text-gray-400">
-            15,000원 이상 예약 시 사용 가능
+            15,000원 이상 결제 시 사용 가능
           </p>
           {message && (
             <p role="status" className="mt-2 text-sm font-bold text-accent">
@@ -140,7 +140,7 @@ function AccountCouponBanner({ userId, initialized }: { userId?: string; initial
 
 export function HomePlaygroundBanner() {
   return (
-    <section className="px-4 py-7 min-[390px]:px-5">
+    <section className="home-playground px-4 py-7 min-[390px]:px-5">
       <Link
         to="/mypage/playground"
         className="flex min-h-28 items-center gap-4 rounded-2xl border border-page-border bg-white px-5 py-5 shadow-[0_3px_14px_rgb(0_0_0/8%)]"

@@ -1,0 +1,54 @@
+.fortune-content .crystal-stage.illustrated-crystal{background:radial-gradient(ellipse at 50% 50%,#5630a8,#21104a 75%);min-height:0;padding-bottom:18px;box-shadow:inset 0 0 60px #120c36}
+.fortune-content .illustrated-crystal .scene-eyebrow{color:#dfc8ff;z-index:2;top:22px;font-size:8px}
+.fortune-content .illustrated-crystal .crystal-action{width:100%;height:auto;aspect-ratio:1;margin:40px auto 0;border-radius:0;overflow:visible;cursor:pointer;z-index:1;isolation:isolate}
+.fortune-content .illustrated-crystal .crystal-action:disabled{cursor:default}
+/* The backdrop, candles and pedestal stay still. Motion is confined to the glass. */
+.fortune-content .illustrated-crystal .fortune-crystal-art{display:block;width:100%;height:100%;object-fit:cover;mask-image:linear-gradient(transparent,#000 8%,#000 92%,transparent);transform:none;animation:none;filter:none}
+.fortune-orb-field{position:absolute;left:16%;top:6%;width:68%;height:62%;border-radius:50%;overflow:hidden;pointer-events:none;isolation:isolate;mask-image:radial-gradient(ellipse closest-side,#000 87%,transparent 100%)}
+.fortune-orb-texture{position:absolute;inset:0;border-radius:50%;background:url('/images/community/crystal.png') 50% 15.789%/147.059% 161.29%;animation:fortune-glass-float 7s ease-in-out infinite;mask-image:radial-gradient(ellipse closest-side,#000 84%,transparent 100%)}
+.fortune-orb-nebula{position:absolute;inset:3%;border-radius:50%;mix-blend-mode:screen;opacity:.26;filter:blur(7px);background:conic-gradient(from 30deg,transparent 0deg,#9479ff80 55deg,transparent 110deg,#f5bfff90 175deg,transparent 220deg,#8ca7ffa0 280deg,transparent 345deg);animation:fortune-nebula-flow 23s linear infinite}
+.fortune-orb-nebula.nebula-two{inset:15% 10%;opacity:.2;animation-direction:reverse;animation-duration:31s;background:conic-gradient(transparent,#ffdcff80,transparent 30%,#777bffb0,transparent 70%,#e9b0ff70,transparent)}
+.fortune-orb-current{position:absolute;inset:20% 7%;border-radius:50%;border:1px solid #e4caff60;box-shadow:0 0 7px #dac4ff60,inset 0 0 9px #a2b2ff40;transform:rotate(-25deg) scaleY(.5);animation:fortune-glass-current 11s ease-in-out infinite;mix-blend-mode:screen}
+.fortune-orb-sheen{position:absolute;inset:-25%;background:linear-gradient(110deg,transparent 38%,#fff4ff00 42%,#fff4ff48 49%,#fff4ff00 55%,transparent 60%);mix-blend-mode:screen;opacity:0;animation:fortune-glass-sheen 9s ease-in-out infinite}
+.fortune-orb-star{position:absolute;font-size:clamp(5px,1.8vw,11px);line-height:1;color:#ffecff;text-shadow:0 0 7px #ddb9ff,0 0 12px #fff;animation:fortune-glass-twinkle 4.5s ease-in-out infinite;animation-delay:calc(var(--star) * -.63s);opacity:0;mix-blend-mode:screen}
+.fortune-reading .fortune-orb-nebula{animation-duration:2.4s;opacity:.5}
+.fortune-reading .fortune-orb-nebula.nebula-two{animation-duration:3.3s;opacity:.4}
+.fortune-reading .fortune-orb-current{animation-duration:1.2s;border-color:#fff0ffb0;box-shadow:0 0 14px #edd3ff99}
+.fortune-reading .fortune-orb-star{animation-duration:1s}
+.fortune-reading .fortune-orb-texture{animation-duration:1.5s}
+.fortune-content .illustrated-crystal .crystal-orbit,.fortune-content .illustrated-crystal .crystal-pedestal,.fortune-content .illustrated-crystal .crystal-floor{display:none}
+.fortune-content .illustrated-crystal .crystal-stage-caption{position:relative;margin:8px 12px 4px;color:#eadfff;z-index:3}
+/* Reuse the previous reveal's expanding rings and scattered stars, centered on the orb. */
+.fortune-content .illustrated-crystal .crystal-finale{left:16%;top:6%;width:68%;height:62%;z-index:4;pointer-events:none}
+.illustrated-crystal[data-paused=true] .fortune-orb-field *{animation-play-state:paused}
+@keyframes fortune-glass-float{0%,100%{transform:translateY(0) rotate(-.3deg)}50%{transform:translateY(-3px) rotate(.4deg)}}
+@keyframes fortune-nebula-flow{to{transform:rotate(360deg)}}
+@keyframes fortune-glass-current{0%,100%{transform:rotate(-25deg) scaleY(.5);opacity:.3}50%{transform:rotate(28deg) scaleY(.75);opacity:.7}}
+@keyframes fortune-glass-sheen{0%,65%,100%{transform:translateX(-30%);opacity:0}78%{opacity:.55}92%{transform:translateX(35%);opacity:0}}
+@keyframes fortune-glass-twinkle{0%,100%{opacity:0;transform:translateY(2px) scale(.65)}45%{opacity:.85;transform:translateY(-3px) scale(1.1)}70%{opacity:.2;transform:translateY(-5px) scale(.8)}}
+@media(prefers-reduced-motion:reduce){.illustrated-crystal .fortune-orb-field *{animation:none!important;transform:none!important}.illustrated-crystal .fortune-orb-texture{opacity:0}.illustrated-crystal .fortune-orb-nebula{opacity:.12}.illustrated-crystal .fortune-orb-star{opacity:.35}.illustrated-crystal .fortune-orb-sheen{opacity:0}}
+/* Animate light around and inside the glass, never scale the illustration. */
+.fortune-magic-aura{position:absolute;left:7%;top:0;width:86%;height:75%;pointer-events:none;mix-blend-mode:screen}
+.fortune-aura-halo{position:absolute;inset:4%;border-radius:50%;background:radial-gradient(ellipse,transparent 51%,#bd77ff22 64%,#e6b0ff48 70%,transparent 78%);opacity:.55;animation:fortune-aura-breathe 5s ease-in-out infinite}
+.fortune-aura-orbit{position:absolute;inset:16% -2%;border-radius:50%;border:1px solid #dcb5ff55;box-shadow:0 0 9px #ab7dff33;transform:rotate(-32deg) scaleY(.46)}
+.fortune-aura-orbit i{position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(from 0deg,transparent 75%,#b8a0ff00 84%,#e4d1ff99 96%,#fff 99%,transparent);mask-image:radial-gradient(ellipse closest-side,transparent calc(100% - 3px),#000 calc(100% - 2px),#000 calc(100% - 1px),transparent);animation:fortune-nebula-flow 8s linear infinite;filter:drop-shadow(0 0 4px #dccaff)}
+.fortune-aura-orbit.orbit-two{inset:7% 5%;transform:rotate(48deg) scaleY(.65);border-color:#ffddf533}
+.fortune-aura-orbit.orbit-two i{animation-duration:12s;animation-direction:reverse}
+.fortune-orb-aurora{position:absolute;inset:-20%;border-radius:50%;background:conic-gradient(from 30deg,transparent 8%,#a0c8ff66 19%,transparent 28%,#f8a6e966 43%,transparent 55%,#b595ff77 72%,transparent 84%);filter:blur(9px);mix-blend-mode:screen;animation:fortune-aurora-drift 15s ease-in-out infinite;opacity:.58}
+.fortune-orb-comet{position:absolute;left:7%;top:14%;width:52%;height:1px;transform:rotate(-34deg);transform-origin:right center;background:linear-gradient(90deg,transparent,#dccaffaa,#fff);box-shadow:0 0 6px #c69cff;animation:fortune-comet-pass 7s ease-in-out infinite;opacity:0}
+.fortune-orb-comet::after{content:"";position:absolute;right:0;top:-1px;width:3px;height:3px;border-radius:50%;background:white;box-shadow:0 0 9px 2px #e7cbff}
+.fortune-orb-comet.comet-two{left:28%;top:37%;width:35%;animation-delay:-3.7s;animation-duration:9s}
+.fortune-rising-spark{position:absolute;top:86%;font-size:clamp(9px,3vw,16px);color:#f6d8ff;text-shadow:0 0 6px #cb87ff,0 0 12px #e7b4ff;opacity:0;animation:fortune-spark-rise 6s ease-in-out infinite;animation-delay:calc(var(--spark) * -.8s)}
+.fortune-orb-nebula{opacity:.4}.fortune-orb-nebula.nebula-two{opacity:.3}
+.fortune-orb-star{animation-duration:3.7s;text-shadow:0 0 5px #fff,0 0 11px #ddb9ff,0 0 18px #b179ff}
+.fortune-reading .fortune-aura-halo{animation-duration:2s;opacity:.9}
+.fortune-reading .fortune-aura-orbit i{animation-duration:2s}
+.fortune-reading .fortune-orb-aurora{animation-duration:3s;opacity:.85}
+.fortune-reading .fortune-orb-comet{animation-duration:2.4s}
+.fortune-reading .fortune-rising-spark{animation-duration:2s}
+.illustrated-crystal[data-paused=true] .fortune-magic-aura *{animation-play-state:paused}
+@keyframes fortune-aura-breathe{0%,100%{opacity:.35;transform:scale(.98)}50%{opacity:.8;transform:scale(1.04)}}
+@keyframes fortune-aurora-drift{0%,100%{transform:rotate(-20deg) scale(.9)}50%{transform:rotate(100deg) scale(1.1)}}
+@keyframes fortune-comet-pass{0%,60%,100%{opacity:0;translate:-45% 65%}67%{opacity:.85}82%{opacity:0;translate:75% -75%}}
+@keyframes fortune-spark-rise{0%,100%{opacity:0;transform:translate(0,0) scale(.5)}20%{opacity:.75}75%{opacity:0;transform:translate(8px,-100px) scale(1)}}
+@media(prefers-reduced-motion:reduce){.illustrated-crystal .fortune-magic-aura *,.illustrated-crystal .fortune-orb-field *{animation:none!important}.illustrated-crystal .fortune-rising-spark,.illustrated-crystal .fortune-orb-comet,.illustrated-crystal .fortune-aura-orbit i{display:none}.illustrated-crystal .fortune-aura-halo{opacity:.3}.illustrated-crystal .fortune-orb-aurora{opacity:.2}}

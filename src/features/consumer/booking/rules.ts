@@ -16,7 +16,7 @@ export function reservationStatusLabel(reservation: Reservation, now = Date.now(
   if (reservation.status === "cancelled") return "예약 취소";
   if (reservation.status === "done") return "이용 완료";
   if (Date.parse(reservation.endAt) <= now) return "방문 확인 전";
-  return "예약 완료";
+  return "이전 예약";
 }
 
 /** Upcoming bookings; past ones move to the usage tab even before a visit is confirmed. */
@@ -38,11 +38,10 @@ export function canCompleteVisit(reservation: Reservation, now = Date.now()) {
   return reservation.isPreview && (reservation.status === "waiting" || reservation.status === "confirmed") && Date.parse(reservation.endAt) <= now;
 }
 
-/** Reads the free-cancellation window ("예약 3시간 전까지 무료 취소") from a shop's policy text. */
+/** Reservation-only checkout has no deposit or app refund; legacy policy text is not displayed. */
 export function parseCancellationPolicy(text: string | undefined): { text: string; freeCancelHours: number | null } {
-  const value = text?.trim() || "방문 시작 전까지 예약을 취소할 수 있습니다.";
-  const hours = value.match(/(\d+)\s*시간\s*전까지\s*무료\s*취소/);
-  return { text: value, freeCancelHours: hours ? Number(hours[1]) : null };
+  void text;
+  return { text: "예약 시 결제하지 않습니다. 방문 시작 전까지 변경·취소할 수 있습니다.", freeCancelHours: null };
 }
 
 /**
@@ -109,15 +108,8 @@ export function validateReview(rating: number, content: string): string | null {
 }
 
 export function paymentStatusLabel(reservation: Reservation) {
-  const paid = (reservation.paidAmount ?? reservation.price).toLocaleString();
-  switch (reservation.paymentStatus) {
-    case "paid": return `결제 완료 · ${paid}원`;
-    case "refunded": return `결제 취소 · ${paid}원 환불`;
-    case "on_site": return `방문 시 매장 결제 · ${paid}원`;
-    case "test": return `예약 금액 · ${paid}원`;
-    case "test_cancelled": return "예약 취소";
-    default: return "결제 정보 없음";
-  }
+  if (reservation.status === "cancelled") return "예약 취소";
+  return `방문 시 매장 결제 · ${(reservation.paidAmount ?? reservation.price).toLocaleString()}원`;
 }
 
 const KST = "Asia/Seoul";

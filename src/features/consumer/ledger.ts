@@ -1,3 +1,4 @@
+import { accountScope, onAccountScopeChange } from "./accountScope";
 import type { Reservation, ReservationReview } from "@/type/reservation";
 import type { LocalCoupon } from "./coupons";
 import type { AccessoryId, BackdropId, Outfit, RoulettePlay } from "./engagement/playground/data";
@@ -24,9 +25,10 @@ type Apply = (state: LedgerState) => LedgerState | null;
 
 const DB_NAME = "dealvue-ledger";
 const STORE = "ledger";
-const KEY = "main";
+const ledgerKey = (scope: string) => scope === "guest" ? "main" : `user:${scope}`;
 const adapters: CacheAdapter[] = [];
-const pending: { id: number; apply: Apply }[] = [];
+let pending: { id: number; apply: Apply }[] = [];
+let generation = 0;
 let nextPendingId = 0;
 let lastCommitted: LedgerState | null = null;
 // Before anything is stored, the ledger starts from the saved screen state as it was before any
@@ -87,12 +89,14 @@ function openDb(): Promise<IDBDatabase | null> {
  * read-check-write is atomic and every field of one change is saved together or not at all.
  */
 export async function commitLedger<T>(mutate: (state: LedgerState) => { next: LedgerState; result: T }): Promise<T> {
+  const scope = accountScope(), revision = generation, key = ledgerKey(scope);
+  const initial = baseline();
   const db = await openDb();
   if (!db) {
     // Without IndexedDB (e.g. some private modes) changes stay in this tab's memory only.
-    const { next, result } = mutate(baseline());
-    lastCommitted = next;
-    rebaseCaches(next);
+    const { next, result } = mutate(initial);
+    if (revision === generation) { lastCommitted = next; rebaseCaches(next); }
+    if (revision !== generation) throw new LedgerConflictError("계정이 바뀌었어요. 현재 계정에서 다시 확인해 주세요.");
     return result;
   }
   return new Promise<T>((resolve, reject) => {
@@ -100,21 +104,21 @@ export async function commitLedger<T>(mutate: (state: LedgerState) => { next: Le
     let failure: unknown = null;
     const tx = db.transaction(STORE, "readwrite");
     const store = tx.objectStore(STORE);
-    const read = store.get(KEY);
+    const read = store.get(key);
     read.onsuccess = () => {
       try {
-        outcome = mutate({ ...emptyLedger(), ...((read.result as LedgerState | undefined) ?? baseline()) });
-        store.put(outcome.next, KEY);
+        outcome = mutate({ ...emptyLedger(), ...((read.result as LedgerState | undefined) ?? initial) });
+        store.put(outcome.next, key);
       } catch (error) {
         failure = error;
         tx.abort();
       }
     };
     tx.oncomplete = () => {
-      lastCommitted = outcome!.next;
-      rebaseCaches(outcome!.next);
-      channel?.postMessage("changed");
-      resolve(outcome!.result);
+      if (revision === generation) { lastCommitted = outcome!.next; rebaseCaches(outcome!.next); }
+      channel?.postMessage({ scope });
+      if (revision === generation) resolve(outcome!.result);
+      else reject(new LedgerConflictError("계정이 바뀌었어요. 현재 계정에서 다시 확인해 주세요."));
     };
     tx.onabort = () => reject(failure ?? tx.error ?? new Error("저장하지 못했어요. 다시 시도해 주세요."));
   });
@@ -129,6 +133,8 @@ export function applyOptimistic(apply: Apply): boolean {
   const current = pending.reduce((state, change) => change.apply(state) ?? state, baseline());
   const next = apply(current);
   if (!next) return false;
+  const revision = generation;
+  const changes = pending;
   const id = nextPendingId++;
   pending.push({ id, apply });
   writeCaches(next);
@@ -137,22 +143,24 @@ export function applyOptimistic(apply: Apply): boolean {
     if (!applied) throw new LedgerConflictError();
     return { next: applied, result: true };
   }).catch(() => undefined).finally(() => {
-    const index = pending.findIndex(change => change.id === id);
-    if (index >= 0) pending.splice(index, 1);
-    void syncFromLedger();
+    const index = changes.findIndex(change => change.id === id);
+    if (index >= 0) changes.splice(index, 1);
+    if (revision === generation) void syncFromLedger();
   });
   return true;
 }
 
 /** Loads the stored ledger into the stores, e.g. on start-up or after another tab changed it. */
 export async function syncFromLedger() {
+  const revision = generation, key = ledgerKey(accountScope());
   const db = await openDb();
   if (!db) return;
   const stored = await new Promise<LedgerState | undefined>(resolve => {
-    const request = db.transaction(STORE, "readonly").objectStore(STORE).get(KEY);
+    const request = db.transaction(STORE, "readonly").objectStore(STORE).get(key);
     request.onsuccess = () => resolve(request.result as LedgerState | undefined);
     request.onerror = () => resolve(undefined);
   });
+  if (revision !== generation) return;
   if (!stored) { baseline(); return; }
   lastCommitted = { ...emptyLedger(), ...stored };
   rebaseCaches(lastCommitted);
@@ -162,7 +170,16 @@ export function resetLedger() {
   return commitLedger(() => ({ next: emptyLedger(), result: undefined }));
 }
 
+onAccountScopeChange(() => {
+  generation++;
+  pending = [];
+  lastCommitted = null;
+  seed = null;
+  // Stores reset and hydrate synchronously before this microtask reads their slices.
+  queueMicrotask(() => { void syncFromLedger(); });
+});
+
 if (typeof window !== "undefined") {
-  channel?.addEventListener("message", () => { void syncFromLedger(); });
+  channel?.addEventListener("message", event => { if (event.data?.scope === accountScope() || (event.data === "changed" && accountScope() === "guest")) void syncFromLedger(); });
   queueMicrotask(() => { void syncFromLedger(); });
 }

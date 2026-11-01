@@ -149,7 +149,7 @@ export default function MyPageDashboard({
   ];
 
   return (
-    <div className="space-y-5 bg-[#fafafa] px-4 py-5 min-[390px]:px-5">
+    <div className="mypage-dashboard space-y-5 bg-[#fafafa] px-4 py-5 min-[390px]:px-5">
       <section className="rounded-2xl border border-page-border bg-white p-5 shadow-[0_2px_12px_rgb(0_0_0/7%)]">
         {isCheckingUser ? (
           <div className="h-36 animate-pulse rounded-xl bg-gray-100" />
@@ -163,7 +163,7 @@ export default function MyPageDashboard({
                 {user.nickname}
               </h2>
               <p className="mt-1 truncate text-sm text-gray-400">
-                {user.email}
+                나의 뷰티 프로필
               </p>
             </div>
             <Link
@@ -256,10 +256,10 @@ export default function MyPageDashboard({
         </span>
         <div className="min-w-0 flex-1">
           <h2 className="text-base font-black text-page-heading">
-            친구 초대하고 5,000원 받기
+            친구와 딜뷰 함께 둘러보기
           </h2>
           <p className="mt-1 text-xs text-gray-400">
-            친구가 첫 예약 완료 시 포인트 지급
+            마음에 드는 뷰티 정보를 함께 나눠보세요
           </p>
         </div>
         <button

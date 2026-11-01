@@ -1,0 +1,105 @@
+.wardrobe-filter-toggle { display: none; }
+.wardrobe-filters { flex-shrink: 0; }
+
+/* The viewport is shared by a compact preview and a flexible item browser. */
+@media (max-width: 700px) {
+  .play-modal.modal-wardrobe {
+    height: calc(100dvh - 16px);
+    max-height: calc(100dvh - 16px);
+    overflow: hidden;
+  }
+  .modal-wardrobe > .play-modal-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+  .modal-wardrobe .play-modal-header,
+  .modal-wardrobe .modal-wallet { flex-shrink: 0; }
+  .modal-wardrobe .playground-tab-content { flex: 1; min-height: 0; overflow: hidden; }
+  .play-modal.modal-wardrobe .fashion-studio {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: clamp(150px, 30dvh, 250px) minmax(0, 1fr);
+    gap: 9px;
+    padding: 8px 12px max(8px, env(safe-area-inset-bottom));
+    box-sizing: border-box;
+  }
+  .play-modal.modal-wardrobe .fashion-studio .avatar-stage.has-prototype-tools {
+    height: 100%; min-height: 0; overflow: hidden;
+  }
+  .play-modal.modal-wardrobe .fashion-studio .avatar-stage.has-prototype-tools .avatar-illustration {
+    height: calc(100% - 64px); width: auto; aspect-ratio: 2 / 3; margin: 41px auto 0;
+  }
+  .modal-wardrobe .fashion-studio .avatar-stage.has-prototype-tools .avatar-stage-label { bottom: 5px; }
+  .modal-wardrobe .fashion-studio .avatar-stage-label strong { font-size: 10px; }
+  .modal-wardrobe .fashion-studio .avatar-stage.has-prototype-tools .studio-pedestal { bottom: 24px; }
+  .modal-wardrobe .fashion-studio .studio-halo { inset: 35px 65px 25px; }
+  .modal-wardrobe .dressroom-activity-rail { top: 7px; left: 7px; right: 7px; gap: 5px; }
+  .modal-wardrobe .dressroom-activity-rail > button { flex-direction: row; gap: 2px; padding: 2px 5px 2px 2px; background: #fff9; border-radius: 20px; min-height: 28px; }
+  .modal-wardrobe .dressroom-activity-rail > button > span:first-child { width: 23px; height: 23px; border: 0; box-shadow: none; }
+  .modal-wardrobe .dressroom-activity-rail > button > span:first-child > svg { width: 14px; height: 14px; }
+  .modal-wardrobe .dressroom-activity-rail > button > strong { background: none; color: #65436d; padding: 0; font-size: 8px; }
+  .modal-wardrobe .dressroom-activity-rail > button.dressroom-coupon-teaser { padding: 3px 5px; gap: 3px; min-height: 28px; }
+  .modal-wardrobe .dressroom-coupon-teaser > svg { width: 14px; }
+  .modal-wardrobe .dressroom-coupon-teaser > span { font-size: 7px; line-height: 1.4; }
+  .modal-wardrobe .dressroom-coupon-teaser strong { font-size: 8px; }
+  .modal-wardrobe .dressroom-quick-tools { top: 52px; left: 10px; gap: 8px; }
+  .modal-wardrobe .dressroom-quick-tools button,
+  .modal-wardrobe .dressroom-expand { width: 34px; height: 34px; }
+  .modal-wardrobe .dressroom-expand { bottom: 10px; right: 10px; }
+
+  .play-modal.modal-wardrobe .fashion-studio .wardrobe-controls {
+    position: relative; align-self: stretch; height: 100%; min-height: 0; max-height: none; padding: 0; overflow: hidden;
+  }
+  .modal-wardrobe .wardrobe-controls > .wardrobe-categories { flex-shrink: 0; padding-right: 47px; margin-bottom: 7px; min-height: 35px; }
+  .modal-wardrobe .wardrobe-categories button { font-size: 10px; padding: 0 9px; }
+  .modal-wardrobe .wardrobe-filter-toggle { display: block; position: absolute; top: 0; right: 0; z-index: 5; height: 35px; width: 45px; border: 1px solid #e7d8ee; border-radius: 10px; color: #91447c; background: #fff9fd; font-size: 10px; cursor: pointer; }
+  .modal-wardrobe .wardrobe-filters { display: none; }
+  .modal-wardrobe .wardrobe-filters.is-open { display: block; position: absolute; top: 41px; left: 0; right: 0; z-index: 6; padding: 12px 10px; background: #fff9fd; border: 1px solid #e7d8ee; border-radius: 13px; box-shadow: 0 8px 20px #50345d22; max-height: min(220px, 50%); overflow-y: auto; }
+  .modal-wardrobe .fashion-studio .outfit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 2px 2px 10px; scroll-padding-block: 3px 10px; }
+  .modal-wardrobe .fashion-studio .outfit-preview { height: clamp(62px, 10dvh, 92px); }
+  .modal-wardrobe .fashion-studio .outfit-card { min-width: 0; padding: 4px 4px 6px; }
+  .modal-wardrobe .fashion-studio .outfit-name { margin-top: 4px; font-size: 10px; line-height: 1.5; }
+  .modal-wardrobe .fashion-studio .outfit-price { font-size: 9px; line-height: 1.5; }
+  .modal-wardrobe .fashion-studio .wardrobe-action { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 4px; flex: 0 0 auto; padding: 4px 2px 0; border-top: 1px solid #efdfef; box-shadow: none; }
+  .modal-wardrobe .fashion-studio .wardrobe-action .selected-look { margin: 2px 0 5px; }
+  .modal-wardrobe .wardrobe-action > :is(.selected-look, .playground-primary, .playground-feedback) { grid-column: 1 / -1; }
+  .modal-wardrobe .selected-look > div > span { display: none; }
+  .modal-wardrobe .fashion-studio .wardrobe-action .playground-primary { min-height: 38px; }
+  .modal-wardrobe .look-goal-button,
+  .modal-wardrobe .wardrobe-action .earn-more-link { display: inline-flex; width: auto; min-width: 0; margin: 5px 0 0; font-size: 8px; }
+  .modal-wardrobe .appearance-apply { flex-shrink: 0; }
+  .modal-wardrobe .appearance-apply p { margin: 4px 0 0; font-size: 9px; }
+}
+@media (max-width: 350px) {
+  .modal-wardrobe .dressroom-activity-rail { gap: 3px; }
+  .modal-wardrobe .dressroom-activity-rail > button { padding-right: 3px; gap: 1px; }
+  .modal-wardrobe .dressroom-activity-rail > button > span:first-child { width: 20px; height: 23px; }
+  .modal-wardrobe .dressroom-coupon-teaser > svg { display: none; }
+}
+/* Short phones reserve room for two complete rows, even with purchase actions. */
+@media (max-width: 700px) and (max-height: 740px) {
+  .play-modal.modal-wardrobe .fashion-studio { grid-template-rows: clamp(120px, 24dvh, 176px) minmax(0, 1fr); }
+  .modal-wardrobe .fashion-studio .outfit-preview { height: 62px; }
+}
+@media (max-width: 700px) and (max-height: 650px) {
+  .play-modal.modal-wardrobe .fashion-studio { grid-template-rows: 120px minmax(0, 1fr); gap: 7px; padding-top: 5px; }
+  .modal-wardrobe .play-modal-header { padding: 5px 11px; }
+  .modal-wardrobe .modal-wallet { padding: 3px 13px 0; font-size: 10px; }
+  .play-modal.modal-wardrobe .fashion-studio .avatar-stage.has-prototype-tools .avatar-illustration { height: calc(100% - 46px); margin-top: 31px; }
+  .modal-wardrobe .dressroom-activity-rail { top: 4px; }
+  .modal-wardrobe .dressroom-activity-rail > button { min-height: 23px; padding-top: 0; padding-bottom: 0; }
+  .modal-wardrobe .dressroom-quick-tools { top: 38px; gap: 5px; }
+  .modal-wardrobe .dressroom-quick-tools button,
+  .modal-wardrobe .dressroom-expand { width: 29px; height: 29px; }
+  .modal-wardrobe .fashion-studio .outfit-preview { height: 48px; }
+  .modal-wardrobe .fashion-studio .wardrobe-action .playground-primary { min-height: 35px; }
+  .modal-wardrobe .fashion-studio .outfit-grid { gap: 6px; }
+}
+@media (max-width: 700px) and (max-height: 650px) {
+  .modal-wardrobe .fashion-studio .avatar-stage-label { display: none; }
+  .modal-wardrobe .fashion-studio .avatar-stage.has-prototype-tools .studio-pedestal { bottom: 14px; }
+}

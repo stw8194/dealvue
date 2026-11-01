@@ -30,13 +30,9 @@ function getRemainingTime(endAt: string | null, currentTime: number | null) {
 
 function TimeBox({ value, label }: { value: string; label: string }) {
   return (
-    <span className="flex w-[27%] flex-col items-center gap-[0.6vw] md:w-auto md:gap-1">
-      <span className="grid aspect-[1.22/1] w-full place-items-center rounded-[2.4vw] bg-black/75 text-[clamp(13px,4.2vw,18px)] font-black leading-none text-white md:h-14 md:min-w-16 md:rounded-2xl md:px-4 md:text-3xl">
-        {value}
-      </span>
-      <span className="text-[clamp(8px,2.4vw,11px)] leading-none text-white/75 md:text-xs">
-        {label}
-      </span>
+    <span className="flex flex-col items-center gap-1">
+      <span className="grid h-10 w-11 place-items-center rounded-xl bg-black/75 text-[21px] font-extrabold leading-none tabular-nums text-white">{value}</span>
+      <span className="text-[9px] leading-none text-white/65">{label}</span>
     </span>
   );
 }
@@ -44,10 +40,12 @@ function TimeBox({ value, label }: { value: string; label: string }) {
 function TimeDealSlide({
   currentTime,
   deal,
+  priority,
   onSelectDeal,
 }: {
   currentTime: number | null;
   deal: TimeDeal;
+  priority: boolean;
   onSelectDeal: (deal: TimeDeal) => void;
 }) {
   const remainingTime = getRemainingTime(deal.endAt, currentTime);
@@ -68,11 +66,14 @@ function TimeDealSlide({
           openDeal();
         }
       }}
-      className="relative aspect-[1.78/1] w-full min-w-0 shrink-0 snap-center cursor-pointer overflow-hidden rounded-[6vw] bg-[#262128] shadow-[0_8px_24px_rgb(0_0_0/18%)] md:aspect-[1.68/1] md:rounded-[26px]"
+      className="hero-slide relative aspect-[1.68/1] w-full min-w-0 shrink-0 snap-center cursor-pointer overflow-hidden rounded-[20px] bg-[#262128]"
     >
       {deal.imageUrl ? (
         <img
           src={deal.imageUrl}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding="async"
           alt=""
           draggable={false}
           className="absolute inset-0 h-full w-full select-none object-cover"
@@ -84,35 +85,24 @@ function TimeDealSlide({
       )}
       <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-black/25" />
 
-      <div className="absolute inset-x-[4.5vw] top-[4vw] flex items-center justify-between md:inset-x-7 md:top-6">
-        <span className="rounded-full bg-accent px-3 py-1 text-[clamp(10px,3vw,13px)] font-black text-white md:px-4 md:py-1.5 md:text-sm">
-          {timeDealDiscount(deal)}% 할인
-        </span>
-        <span className="rounded-full bg-black/45 px-3 py-1 text-[clamp(9px,2.7vw,12px)] font-bold text-white backdrop-blur-sm md:px-4 md:py-1.5 md:text-sm">
-          {deal.remaining_capacity.toLocaleString()}자리 남음
-        </span>
+      <div className="absolute inset-x-4 top-4 flex items-center gap-2">
+        <span className="flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-[11px] font-bold text-white"><span className="h-1.5 w-1.5 rounded-full bg-white/65" />LIVE</span>
+        <span className="rounded-full bg-black/55 px-3 py-1.5 text-[10px] font-medium text-white">{deal.remaining_capacity.toLocaleString()}자리 남음</span>
       </div>
-
-      <div className="absolute inset-x-[4.5vw] bottom-[5vw] text-white md:inset-x-7 md:bottom-7">
-        <p className="truncate text-[clamp(10px,3vw,14px)] font-semibold text-white/80 md:text-base">
-          {deal.businessName}
-        </p>
-        <h2 className="mt-[0.7vw] truncate text-[clamp(15px,4.5vw,21px)] font-black md:mt-1 md:text-2xl">
-          {deal.serviceName}
-        </h2>
-
-        <div className="mt-[2.2vw] flex items-end justify-between gap-3 md:mt-4">
-          <div className="flex w-[48%] items-start justify-between md:w-auto md:gap-2">
+      <div className="absolute inset-x-4 bottom-7 text-white">
+        <p className="truncate text-[12px] font-medium text-white/80">{deal.businessName}</p>
+        <h2 className="mt-1 truncate text-[21px] font-extrabold leading-snug">{deal.serviceName}</h2>
+        <div className="mt-3 flex items-end justify-between gap-2">
+          <div className="flex shrink-0 gap-1.5">
             <TimeBox value={remainingTime.hours} label="시간" />
             <TimeBox value={remainingTime.minutes} label="분" />
             <TimeBox value={remainingTime.seconds} label="초" />
           </div>
-          <div className="min-w-0 pb-[3vw] text-right md:pb-4">
-            <p className="truncate text-[clamp(9px,2.7vw,12px)] text-white/65 line-through md:text-sm">
-              {deal.originalPrice.toLocaleString()}원
-            </p>
-            <p className="truncate text-[clamp(16px,5vw,24px)] font-black text-white md:text-3xl">
-              {deal.price.toLocaleString()}원
+          <div className="min-w-0 pb-3 text-right">
+            <p className="text-[10px] text-white/65 line-through">{deal.originalPrice.toLocaleString()}원</p>
+            <p className="mt-1 flex flex-wrap items-center justify-end gap-1 text-accent">
+              <span className="rounded bg-accent px-1.5 py-0.5 text-[11px] font-bold text-white">{timeDealDiscount(deal)}%</span>
+              <strong className="whitespace-nowrap text-[23px] font-extrabold leading-none tracking-[-.05em]">{deal.price.toLocaleString()}<span className="ml-0.5 text-[14px]">원</span></strong>
             </p>
           </div>
         </div>
@@ -203,27 +193,28 @@ export default function TimeDealBanner({
   const visibleActiveIndex = activeIndex < deals.length ? activeIndex : 0;
 
   return (
-    <section aria-label="할인율 높은 타임딜 배너" className="px-[4vw] pb-4 pt-2 sm:px-5">
+    <section aria-label="할인율 높은 타임딜 배너" className="px-[18px] pb-1 pt-1">
       <div className="relative">
         <div
           ref={carouselRef}
           onScroll={handleScroll}
           onPointerDown={pauseAutoAdvance}
           onWheel={pauseAutoAdvance}
-          className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="hero-carousel flex snap-x snap-mandatory overflow-x-auto scroll-smooth overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {deals.map((deal) => (
+          {deals.map((deal, index) => (
             <TimeDealSlide
               key={deal.id}
               currentTime={currentTime}
               deal={deal}
+              priority={index === 0}
               onSelectDeal={onSelectDeal}
             />
           ))}
         </div>
 
         {deals.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 md:bottom-4">
+          <div className="absolute bottom-3 left-1/2 z-10 flex -translate-x-1/2 gap-1.5 ">
             {deals.map((deal, index) => (
               <button
                 key={deal.id}
@@ -236,7 +227,7 @@ export default function TimeDealBanner({
                 }}
                 className={`h-1.5 cursor-pointer rounded-full transition-all ${
                   visibleActiveIndex === index
-                    ? "w-5 bg-white"
+                    ? "w-1.5 bg-white"
                     : "w-1.5 bg-white/45"
                 }`}
               />
@@ -244,6 +235,7 @@ export default function TimeDealBanner({
           </div>
         )}
       </div>
+      <button type="button" onClick={() => onSelectDeal(deals[visibleActiveIndex])} className="mt-3 flex h-12 w-full items-center justify-center rounded-xl bg-accent text-[14px] font-bold text-white transition hover:brightness-95">지금 예약하고 할인 받기 →</button>
     </section>
   );
 }

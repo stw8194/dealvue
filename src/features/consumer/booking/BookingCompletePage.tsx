@@ -2,13 +2,15 @@ import { Check, X, ArrowRight, CalendarDays } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { EmptyState, Page } from "@/features/consumer/ui";
 import BookingSummaryCard from "./BookingSummaryCard";
-import { useOwnLocalReservations } from "./useReservations";
+import { useReservations } from "./useReservations";
 
 export default function BookingCompletePage() {
   const { reservationId } = useParams();
-  const reservations = useOwnLocalReservations();
+  const { reservations, loading, refreshing, error, refreshError, retry } = useReservations();
   const reservation = reservations.find(item => item.id === reservationId);
   const visits = reservation?.groupId ? reservations.filter(item => item.groupId === reservation.groupId).sort((a, b) => (a.legIndex ?? 0) - (b.legIndex ?? 0)) : [];
+  if (loading || (!reservation && refreshing)) return <Page title="예약 확인"><p role="status">예약 정보를 불러오는 중입니다.</p></Page>;
+  if (error || (!reservation && refreshError)) return <Page title="예약 확인"><p role="alert">{error ?? refreshError}</p><button onClick={retry}>다시 확인</button></Page>;
   if (!reservation) return <Page title="예약 확인"><EmptyState title="예약을 찾을 수 없습니다" description="예약내역에서 예약을 확인해 주세요." action={<Link to="/reservation" className="text-accent underline">예약내역 보기</Link>} /></Page>;
   const cancelled = reservation.status === "cancelled";
   return (

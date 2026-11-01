@@ -40,7 +40,7 @@ export function DealDetailPage() {
         <section className="space-y-2 text-sm text-page-text">
           <h2 className="font-semibold text-page-heading">이용 안내</h2>
           <p>예약 단계에서 시술, 방문 시간, 금액을 확인해주세요. 추가 시술은 매장과 별도로 상담해주세요.</p>
-          <p>취소 · 환불 안내는 예약 확인 화면에서 확인할 수 있습니다.</p>
+          <p>변경 · 취소 안내는 예약 확인 화면에서 확인할 수 있습니다.</p>
         </section>
         <div className="flex gap-2">
           {<button type="button" aria-pressed={liked} onClick={() => toggleDeal(deal.id)} className="rounded-lg border border-page-border px-4 py-3 text-sm">{liked ? "찜 해제" : "찜 추가"}</button>}

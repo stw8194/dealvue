@@ -1,3 +1,4 @@
+import { startsInVisitWindow } from "./booking/visitWindow";
 import { businessAddress } from "./businessAddress";
 import { getSupabaseClient } from "@/api/supabase";
 import { SERVICE_CATEGORIES } from "@/data/packageOptions";
@@ -38,7 +39,7 @@ function requestSlots(start: string, end: string, duration: number, closedDays =
     const week = Math.ceil(date.getUTCDate() / 7);
     if (closedDays.includes("매주") && closedDays.includes(`${weekday}요일`)) continue;
     if (closedDays.includes("둘째") && closedDays.includes("넷째") && closedDays.includes(`${weekday}요일`) && (week === 2 || week === 4)) continue;
-    for (let minute = firstMinute; minute <= Math.max(firstMinute, lastMinute - duration); minute += 30) {
+    for (let minute = firstMinute; minute <= lastMinute - duration; minute += 30) {
       const time = base + day * 86400000 + minute * 60000;
       if (time > Date.now()) slots.push(new Date(time).toISOString());
     }
@@ -46,7 +47,7 @@ function requestSlots(start: string, end: string, duration: number, closedDays =
   return slots;
 }
 
-export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
+async function loadCatalog(): Promise<{ deals: ConsumerDeal[]; sharedStock: boolean }> {
   const client = getSupabaseClient();
   const templates = await client.from("provided_deal_templates").select("*").order("source_key");
   if (templates.error && !["PGRST205", "42P01"].includes(templates.error.code)) throw new Error(templates.error.message);
@@ -54,7 +55,7 @@ export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
   const live = supplied.length ? null : await client.from("time_deals").select("id,business_id,service_id,original_price,deal_price,remaining_capacity,start_at,end_at").order("end_at");
   if (live?.error) throw new Error(live.error.message);
   const rows: (DealRow | TemplateRow)[] = supplied.length ? supplied : (live?.data ?? []) as DealRow[];
-  if (!rows.length) return [];
+  if (!rows.length) return { deals: [], sharedStock: false };
   const businessIds = [...new Set(rows.map((row) => row.business_id))];
   const serviceIds = [...new Set(rows.flatMap((row) => row.service_id === null ? [] : [row.service_id]))];
   const [businesses, services, images] = await Promise.all([
@@ -70,7 +71,7 @@ export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
   const deals: ConsumerDeal[] = rows.map((row) => {
     const business = businessMap.get(row.business_id);
     const service = row.service_id === null ? undefined : serviceMap.get(row.service_id);
-    const duration = service?.display_duration_minutes ?? service?.duration_minutes ?? 60;
+    const duration = service?.duration_minutes ?? 60;
     const template = "source_key" in row ? row : null;
     return {
       id: template ? 1_000_000 + row.service_id! : (row as DealRow).id,
@@ -79,9 +80,9 @@ export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
       category: categoryOf(business), description: service?.description ?? business?.description ?? "",
       imageUrl: resolveBusinessImage(images.data?.find((image) => image.business_id === row.business_id)?.img_url as string | undefined),
       address: businessAddress(business?.address), originalPrice: row.original_price, price: row.deal_price,
-      remainingCapacity: row.remaining_capacity, endAt: template ? "" : (row as DealRow).end_at,
+      remainingCapacity: row.remaining_capacity, totalCapacity: row.remaining_capacity, endAt: template ? "" : (row as DealRow).end_at,
       startAt: template ? "" : (row as DealRow).start_at,
-      slots: template ? requestSlots(template.start_time, template.end_time, duration, business?.source_details?.closed_days) : [],
+      slots: template ? openingHourSlots(business?.source_details?.opening_hours, duration, business?.source_details?.closed_days).filter(slot => startsInVisitWindow(slot, template.start_time, template.end_time)) : [],
       regularPrice: service?.price ?? row.original_price,
       regularSlots: openingHourSlots(business?.source_details?.opening_hours, duration, business?.source_details?.closed_days),
       cancellationPolicy: business?.source_details?.cancellation_policy,
@@ -89,5 +90,38 @@ export async function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
       ...(template ? { scheduleKind: "rotation" as const, timeWindow: `${template.start_time.slice(0, 5)}–${template.end_time.slice(0, 5)}`, discountRate: template.source_details?.discount_rate } : {}),
     };
   });
-  return applyDealRotation(deals, Date.now());
+  return { deals, sharedStock: supplied.length > 0 };
+}
+
+// Shop/menu/image metadata changes rarely. Keep it for ten minutes, but rebuild
+// date candidates at Seoul midnight. Live stock is never stored in this cache.
+let metadata: Awaited<ReturnType<typeof loadCatalog>> | undefined;
+let metadataAt = 0;
+let metadataDay = "";
+let metadataPending: ReturnType<typeof loadCatalog> | undefined;
+let catalogPending: Promise<ConsumerDeal[]> | undefined;
+
+async function readCatalogMetadata() {
+  const day = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+  if (metadata?.sharedStock && metadataDay === day && Date.now() - metadataAt < 600_000) return metadata;
+  if (!metadataPending) {
+    metadataPending = loadCatalog().then(value => {
+      metadata = value; metadataAt = Date.now(); metadataDay = day;
+      return value;
+    }).finally(() => { metadataPending = undefined; });
+  }
+  return metadataPending;
+}
+
+export function requestConsumerCatalog(): Promise<ConsumerDeal[]> {
+  if (!catalogPending) {
+    catalogPending = readCatalogMetadata().then(async ({ deals, sharedStock }) => {
+      if (!sharedStock) return applyDealRotation(deals, Date.now());
+      const stock = await getSupabaseClient().rpc("consumer_deal_stock");
+      if (stock.error) throw new Error("실시간 예약 수량을 확인하지 못했습니다. 잠시 후 다시 확인해 주세요.");
+      const remaining = new Map<number, number>((stock.data ?? []).map((row: { service_id: number; remaining_capacity: number }) => [row.service_id, row.remaining_capacity]));
+      return applyDealRotation(deals.map(deal => ({ ...deal, remainingCapacity: remaining.get(deal.serviceId!) ?? deal.totalCapacity ?? deal.remainingCapacity })), Date.now());
+    }).finally(() => { catalogPending = undefined; });
+  }
+  return catalogPending;
 }

@@ -1,5 +1,6 @@
+import { accountStorage, registerAccountStore } from "@/features/consumer/accountScope";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import type { ConsumerDeal } from "@/features/consumer/types";
 import type { Reservation, ReservationReview } from "@/type/reservation";
 import { bookingOffer, type BookingOffer } from "../dealTiming";
@@ -203,7 +204,7 @@ export const useBookingStore = create<BookingState>()(persist(set => ({
   resetDemo: () => set({ reservations: [], reviews: [] }),
 }), {
   name: "dealvue-consumer-preview-bookings-v1",
-  storage: createJSONStorage(() => localStorage),
+  storage: accountStorage(),
   partialize: state => ({ reservations: state.reservations, reviews: state.reviews }),
 }));
 
@@ -211,3 +212,5 @@ registerLedgerCache({
   read: () => ({ reservations: useBookingStore.getState().reservations, reviews: useBookingStore.getState().reviews }),
   write: ({ reservations, reviews }) => useBookingStore.setState({ ...(reservations ? { reservations } : {}), ...(reviews ? { reviews } : {}) }),
 });
+
+registerAccountStore(useBookingStore);

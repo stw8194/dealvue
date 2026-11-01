@@ -1,3 +1,4 @@
+import { accountStorage, registerAccountStore } from "@/features/consumer/accountScope";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -20,6 +21,8 @@ export const useDiscoveryFavorites = create<DiscoveryFavorites>()(
         businessIds: state.businessIds.includes(id) ? state.businessIds.filter((value) => value !== id) : [...state.businessIds, id],
       })),
     }),
-    { name: "dealvue-consumer-preview-favorites-v1" },
+    { storage: accountStorage(), name: "dealvue-consumer-preview-favorites-v1" },
   ),
 );
+
+registerAccountStore(useDiscoveryFavorites);

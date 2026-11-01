@@ -13,6 +13,7 @@ export interface ConsumerDeal {
   originalPrice: number;
   price: number;
   remainingCapacity: number;
+  totalCapacity?: number;
   endAt: string;
   slots: string[];
   durationMinutes?: number;

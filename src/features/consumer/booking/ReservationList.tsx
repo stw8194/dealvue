@@ -16,7 +16,7 @@ const BELONGS: Record<ReservationTab, (reservation: Reservation, now: number) =>
 };
 
 export default function ReservationList({ tab, emptyTitle }: { tab: ReservationTab; emptyTitle: string }) {
-  const { reservations, loading, error, needsLogin, retry } = useReservations();
+  const { reservations, loading, error, refreshError, needsLogin, retry } = useReservations();
   const now = useDealTime();
   if (needsLogin) return <EmptyState title="로그인이 필요합니다" description="로그인 후 내 예약내역을 확인할 수 있습니다." action={<Link to="/auth/login" className="text-accent underline">로그인</Link>} />;
   if (loading) return <p role="status" className="py-6 text-sm">예약내역을 불러오는 중입니다.</p>;
@@ -25,16 +25,17 @@ export default function ReservationList({ tab, emptyTitle }: { tab: ReservationT
   if (!filtered.length) return <EmptyState title={emptyTitle} action={<Link to="/search" className="text-accent underline">타임딜 둘러보기</Link>} />;
   return (
     <div className="space-y-3">
+      {refreshError && <p role="status" className="rounded-xl bg-amber-50 p-3 text-sm">최신 예약내역을 확인하지 못했어요. <button type="button" onClick={retry} className="underline">다시 확인</button></p>}
       <ul className="space-y-3">
         {filtered.map(reservation => (
-          <li key={reservation.id} className="overflow-hidden rounded-3xl border border-page-border bg-white">
-            <Link to={`/reservation/${reservation.id}`} aria-label={`${reservation.shopName} ${reservation.productName} 예약 상세 보기`} className="block p-5 transition hover:bg-[#fffcfd]">
+          <li key={reservation.id} className="reservation-card overflow-hidden rounded-2xl border border-page-border bg-white shadow-[0_2px_6px_rgb(32_38_50/4%)]">
+            <Link to={`/reservation/${reservation.id}`} aria-label={`${reservation.shopName} ${reservation.productName} 예약 상세 보기`} className="block p-4 transition hover:bg-[#fffcfd]">
               <div className="mb-4 flex items-center justify-between gap-2">
                 <span className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${tab === "cancelled" ? "bg-gray-100 text-page-text" : "bg-accent/10 text-accent"}`}>{reservationStatusLabel(reservation, now)}</span>
                 <ChevronRight size={17} className="text-gray-400" />
               </div>
               <div className="flex items-center gap-3">
-                <span className="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-[#faf4f6] text-accent">{reservation.imageUrl ? <img src={reservation.imageUrl} alt="" className="h-full w-full object-cover" /> : <Store size={23} strokeWidth={1.6} />}</span>
+                <span className="grid h-[66px] w-[66px] shrink-0 place-items-center overflow-hidden rounded-2xl bg-[#faf4f6] text-accent">{reservation.imageUrl ? <img src={reservation.imageUrl} alt="" className="h-full w-full object-cover" /> : <Store size={23} strokeWidth={1.6} />}</span>
                 <div className="min-w-0">
                   <p className="text-xs text-page-text">{reservation.shopName}{reservation.legCount ? ` · 패키지 ${(reservation.legIndex ?? 0) + 1}/${reservation.legCount}` : ""}</p>
                   <h2 className="mt-1 break-words text-sm font-bold leading-snug text-page-heading">{reservation.productName}</h2>
@@ -47,6 +48,7 @@ export default function ReservationList({ tab, emptyTitle }: { tab: ReservationT
                 <span className="text-base font-bold text-page-heading">{(reservation.paidAmount ?? reservation.price).toLocaleString()}원</span>
               </div>
             </Link>
+            <div className="grid grid-cols-2 gap-2 border-t border-page-border px-4 py-3"><Link to={`/business/${reservation.businessId}`} className="flex h-9 items-center justify-center rounded-full border border-page-border text-[11px] font-semibold text-page-text">매장 보기</Link><Link to={`/reservation/${reservation.id}`} className="flex h-9 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-white">예약 상세</Link></div>
             {reservation.status === "done" && reservation.isPreview && reservation.completedAt && <Link to={`/reservation/${reservation.id}/review`} className="mx-5 mb-4 flex min-h-11 items-center justify-center rounded-xl bg-accent/5 text-sm font-semibold text-accent">리뷰 작성·수정</Link>}
           </li>
         ))}

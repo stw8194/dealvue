@@ -5,6 +5,7 @@ import { EmptyState, Page } from "@/features/consumer/ui";
 import BusinessProfile from "./BusinessProfile";
 import { readConsumerBusiness, type ConsumerBusiness } from "./business";
 import { useBusinessHistory } from "@/features/consumer/history";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export function BusinessDetailPage() {
   const { businessId } = useParams();
@@ -30,9 +31,11 @@ export function BusinessDetailPage() {
   const business = result?.key === requestKey ? result.business : null;
   const visitedId = business?.id;
   const visitedName = business?.name;
+  // Recent views belong to the signed-in account, so wait until the account is known.
+  const authReady = useAuthStore(state => state.initialized);
   useEffect(() => {
-    if (visitedId && visitedName) useBusinessHistory.getState().record({ id: visitedId, name: visitedName, preview });
-  }, [visitedId, visitedName, preview]);
+    if (authReady && visitedId && visitedName) useBusinessHistory.getState().record({ id: visitedId, name: visitedName, preview });
+  }, [authReady, visitedId, visitedName, preview]);
   if (loading) return <Page title="매장 상세"><p role="status">매장 정보를 불러오는 중입니다.</p></Page>;
   if (error) return <Page title="매장 상세"><EmptyState title="매장 정보를 불러오지 못했습니다" description={error} action={<button type="button" onClick={() => window.location.reload()} className="text-accent">다시 시도</button>} /></Page>;
   if (!business) return <Page title="매장 상세"><EmptyState title="매장을 찾을 수 없습니다" action={<Link to="/search" className="text-accent">다른 매장 찾기</Link>} /></Page>;

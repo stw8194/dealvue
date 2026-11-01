@@ -28,7 +28,7 @@ export function SettingsPage() {
     <Link to="/mypage/edit" className="block rounded border border-page-border p-4">프로필 설정 →</Link>
     <Link to="/location" className="block rounded border border-page-border p-4">동네 설정 →</Link>
     <Link to="/onboarding" className="block rounded border border-page-border p-4">관심 카테고리 설정 →</Link>
-    <fieldset className="space-y-3 rounded border border-page-border p-4 disabled:opacity-60"><legend>알림 설정</legend>{([["activity", "활동 알림"], ["benefits", "혜택 알림"]] as const).map(([key, label]) => <label key={key} className="flex items-center justify-between gap-3"><span>{label}</span><input type="checkbox" checked={notificationSettings[key]} onChange={(event) => setNotificationSetting(key, event.target.checked)} /></label>)}</fieldset>
+    <fieldset className="space-y-3 rounded border border-page-border p-4 disabled:opacity-60"><legend>알림 설정</legend>{([["activity", "활동 알림"], ["benefits", "혜택 알림"]] as const).map(([key, label]) => <label key={key} className="flex items-center justify-between gap-3"><span>{label}</span><input type="checkbox" role="switch" className="settings-toggle" checked={notificationSettings[key]} onChange={(event) => setNotificationSetting(key, event.target.checked)} /></label>)}</fieldset>
     <p className="text-sm">활동 알림과 혜택 알림을 설정할 수 있어요.</p>
     {<button type="button" className="rounded border border-red-200 px-4 py-3 text-sm text-red-600" onClick={() => {
       if (!window.confirm("이 기기에 저장한 예약, 찜, 쿠폰, 게시글, 포인트, 최근 본 매장, 아바타 꾸미기를 모두 초기화할까요?")) return;

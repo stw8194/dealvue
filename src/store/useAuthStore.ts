@@ -1,3 +1,4 @@
+import { changeAccountScope } from "@/features/consumer/accountScope";
 import { create } from "zustand";
 import type { User } from "@/type/auth";
 
@@ -11,6 +12,6 @@ interface AuthState {
 export const useAuthStore = create<AuthState>(set => ({
   user: null,
   initialized: false,
-  setUser: user => set({ user }),
+  setUser: user => { changeAccountScope(user?.id); set({ user }); },
   setInitialized: initialized => set({ initialized }),
 }));

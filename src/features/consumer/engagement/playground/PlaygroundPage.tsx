@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowUpRight, Coins, Gem, Shirt, Sparkles, RotateCw, Target } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { PreviewBoundary } from "@/features/consumer/preview";
 import { localDay, pointBalance, useEngagementStore } from "../store";
 import { useKoreanDay } from "./motion";
@@ -22,6 +22,8 @@ const tabs = [
 
 export default function PlaygroundPage({ defaultTab = "wardrobe" }: { defaultTab?: Tab }) {
   const [params, setParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const value = params.get("tab") ?? (defaultTab === "fortune" ? "fortune" : null);
   const tab = tabs.some(item => item.id === value) ? value as Tab : null;
   const balance = useEngagementStore(state => pointBalance(state.pointHistory));
@@ -37,8 +39,12 @@ export default function PlaygroundPage({ defaultTab = "wardrobe" }: { defaultTab
   const checkedInToday = attendance.includes(localDay());
   const discoveries = LOOKS.filter(item => !owned.includes(item.id));
   const featured = (discoveries.length ? discoveries : LOOKS)[Number(day.replaceAll("-", "")) % (discoveries.length || LOOKS.length)];
-  const chooseTab = (next: Tab, collection?: string, look?: Outfit) => setParams({ tab: next, ...(collection ? { collection } : {}), ...(look ? { look } : {}) }, { replace: true });
-  const close = () => setParams({ tab: "home" }, { replace: true });
+  const chooseTab = (next: Tab, collection?: string, look?: Outfit) => setParams({ tab: next, ...(collection ? { collection } : {}), ...(look ? { look } : {}) }, { replace: true, state: location.state });
+  const close = () => {
+    if (location.state?.playgroundReturnTo === "/community") navigate("/community", { replace: true });
+    else if (location.pathname === "/fortune") navigate("/rewards", { replace: true });
+    else setParams({ tab: "home" }, { replace: true });
+  };
   return <main className={`playground-page ${tab ? "has-play-modal" : ""}`}>
     <div className="playground-shell">
       <header className="playground-header"><Link to="/mypage" className="playground-back" aria-label="마이페이지로 돌아가기"><ArrowLeft size={19} /></Link><Link to="/rewards" className="playground-wordmark"><Sparkles size={15} strokeWidth={1.5} /> 놀이터</Link><Link to="/mypage/point" className="playground-wallet" aria-label={`보유 포인트 ${balance} P · 포인트 내역`}><span><Coins size={15} /></span><strong key={balance}>{balance.toLocaleString()} <small>P</small></strong><ArrowUpRight size={13} /></Link></header>

@@ -1,20 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import type { ConsumerDeal } from "./types";
+import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { requestConsumerCatalog } from "./catalogData";
 import { applyDealRotation, currentRotationRound } from "./dealSchedule";
+import { createSharedQuery } from "./sharedQuery";
 export { requestConsumerCatalog };
+
+const catalogQuery = createSharedQuery(requestConsumerCatalog);
+const EMPTY_DEALS: import("./types").ConsumerDeal[] = [];
 
 export function useConsumerCatalog() {
   const [round, setRound] = useState(() => currentRotationRound(Date.now()));
-  const [result, setResult] = useState<{ deals: ConsumerDeal[]; error: string | null; ready: boolean }>({ deals: [], error: null, ready: false });
-  useEffect(() => {
-    let current = true;
-    void requestConsumerCatalog().then(
-      (deals) => { if (current) setResult({ deals, error: null, ready: true }); },
-      (error: unknown) => { if (current) setResult({ deals: [], error: error instanceof Error ? error.message : "타임딜을 불러오지 못했습니다.", ready: true }); },
-    );
-    return () => { current = false; };
-  }, []);
+  const result = useSyncExternalStore(catalogQuery.subscribe, catalogQuery.getSnapshot);
   useEffect(() => {
     const update = () => {
       const next = currentRotationRound(Date.now());
@@ -25,6 +20,6 @@ export function useConsumerCatalog() {
     document.addEventListener("visibilitychange", update);
     return () => { window.clearInterval(timer); window.removeEventListener("focus", update); document.removeEventListener("visibilitychange", update); };
   }, []);
-  const deals = useMemo(() => applyDealRotation(result.deals, round.start), [result.deals, round]);
-  return { deals, loading: !result.ready, error: result.error };
+  const deals = useMemo(() => applyDealRotation(result.data ?? EMPTY_DEALS, round.start), [result.data, round]);
+  return { deals, loading: !result.ready, error: result.data === undefined ? result.error : null, refreshError: result.data !== undefined ? result.error : null, retry: catalogQuery.retry };
 }

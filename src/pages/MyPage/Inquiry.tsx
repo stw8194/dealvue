@@ -64,7 +64,7 @@ export default function Inquiry() {
   };
 
   return (
-    <section className="flex h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-[#f7f7f9]">
+    <section className="inquiry-page flex h-[calc(100dvh-4rem)] flex-col overflow-hidden bg-[#f7f7f9]">
       <header className="flex h-16 shrink-0 items-center gap-3 border-b border-page-border bg-white px-4">
         <button
           type="button"

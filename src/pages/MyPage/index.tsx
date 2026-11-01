@@ -25,8 +25,8 @@ export default function MyPage() {
         pathname === "/mypage/inquiry" ? "pb-0" : "pb-24"
       }`}
     >
-      <header className="sticky top-0 z-40 flex h-16 items-center border-b border-page-border bg-white px-5">
-        <h1 className="text-xl font-black text-page-heading">마이페이지</h1>
+      <header className="mypage-header sticky top-0 z-40 flex h-16 items-center border-b border-page-border bg-white px-5">
+        <h1 className="text-xl font-black text-page-heading">마이</h1>
         <div className="ml-auto flex items-center gap-1">
           <Link
             to="/notifications"

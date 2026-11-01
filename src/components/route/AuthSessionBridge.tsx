@@ -7,6 +7,8 @@ import { useAuthStore } from "@/store/useAuthStore";
 export default function AuthSessionBridge() {
   useEffect(() => {
     const store = useAuthStore.getState();
+    // Retire the old device-wide display-name cache; account metadata is authoritative.
+    try { localStorage.removeItem("dealvue-preview-profile"); } catch { /* Storage may be unavailable. */ }
     if (!isSupabaseConfigured) {
       store.setInitialized(true);
       return;

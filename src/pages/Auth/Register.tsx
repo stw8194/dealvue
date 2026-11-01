@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronLeft, Mail } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronLeft, Mail, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   requestRegister,
@@ -46,6 +46,10 @@ export default function Register() {
   const [emailRegisterError, setEmailRegisterError] = useState("");
   const [registrationNotice, setRegistrationNotice] = useState("");
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const emailDialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (isEmailModalOpen && !emailDialog.current?.open) emailDialog.current?.showModal();
+  }, [isEmailModalOpen]);
   const [isEmailRegisterLoading, setIsEmailRegisterLoading] = useState(false);
   const setUser = useAuthStore((state) => state.setUser);
   const {
@@ -123,7 +127,7 @@ export default function Register() {
   };
 
   return (
-    <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[480px] flex-col px-6 pb-32 pt-6">
+    <section className="auth-register mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[480px] flex-col px-6 pb-32 pt-6">
       <button
         type="button"
         aria-label="뒤로 가기"
@@ -186,19 +190,22 @@ export default function Register() {
         </p>
       </div>
       {isEmailModalOpen && (
-        <div
-          role="presentation"
-          onClick={closeEmailModal}
-          className="fixed inset-0 z-50 grid cursor-pointer place-items-center bg-black/40 px-4"
+        <dialog
+          ref={emailDialog}
+          aria-labelledby="email-register-title"
+          onCancel={event => { event.preventDefault(); closeEmailModal(); }}
+          onClick={event => { if (event.target === event.currentTarget) closeEmailModal(); }}
+          className="m-auto max-h-[90dvh] w-[calc(100%-2rem)] max-w-[432px] overflow-y-auto rounded-2xl border-0 p-0 backdrop:bg-black/40"
         >
           <form
             onSubmit={handleSubmit(handleEmailRegister)}
             onClick={(event) => event.stopPropagation()}
             className="w-full max-w-[432px] cursor-default rounded-2xl bg-white p-5 shadow-[0_12px_40px_rgb(0_0_0/20%)]"
           >
-            <h2 className="text-lg font-bold text-page-heading">
-              이메일 회원가입
-            </h2>
+            <div className="flex items-center justify-between gap-3">
+              <h2 id="email-register-title" className="text-lg font-bold text-page-heading">이메일 회원가입</h2>
+              <button type="button" aria-label="회원가입 창 닫기" disabled={isEmailRegisterLoading} onClick={closeEmailModal} className="grid h-10 w-10 place-items-center rounded-full hover:bg-gray-100"><X size={20} /></button>
+            </div>
 
             <div className="mt-5 grid gap-4">
               <label className="grid gap-2 text-sm font-semibold text-page-heading">
@@ -283,7 +290,7 @@ export default function Register() {
               {isEmailRegisterLoading ? "가입 중..." : "가입하기"}
             </button>
           </form>
-        </div>
+        </dialog>
       )}
     </section>
   );

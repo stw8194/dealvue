@@ -29,6 +29,8 @@ import { BusinessMenuManagementLink } from "./BusinessMenuManager";
 import BusinessBookingFlow from "@/features/consumer/booking/BusinessBookingFlow";
 import { BookingButton } from "@/features/consumer/auth/loginGate";
 
+import { useBookingStore } from "../booking/store";
+
 const tabs = ["홈", "시술 메뉴", "담당자", "사진", "리뷰", "정보"] as const;
 type Tab = (typeof tabs)[number];
 type Props = {
@@ -68,6 +70,9 @@ export default function BusinessProfile({
   const selectedDeal = selectedService ? activeDeals.find((deal) => deal.serviceId === selectedService.id) ?? deals.find((deal) => deal.serviceId === selectedService.id) : undefined;
   const images = [...new Set(business.images ?? [])];
   const supplied = business.source_details;
+  const savedReviews = useBookingStore(state => state.reviews);
+  const shownReviews = [...savedReviews.filter(review => review.businessId === business.id), ...(supplied?.review_samples ?? [])];
+  const shownRating = shownReviews.length ? shownReviews.reduce((sum, review) => sum + review.rating, 0) / shownReviews.length : 0;
   const phone = business.number?.replace(/[^\d+]/g, "");
   const categories = (business.categories ?? [])
     .map((id) => SERVICE_CATEGORIES.find((item) => item.id === id)?.label)
@@ -204,30 +209,30 @@ export default function BusinessProfile({
   );
 
   return (
-    <main className="min-h-screen bg-[#fafafb] pb-44 text-page-heading">
-      <header className="flex h-14 items-center justify-between border-b border-page-border bg-white px-4">
+    <main className="business-profile relative min-h-screen bg-[#fafafb] pb-44 text-page-heading">
+      <header className="absolute inset-x-0 top-0 z-20 flex h-16 items-center justify-between px-4 text-white">
         <button
           type="button"
           aria-label="뒤로 가기"
           onClick={() =>
             window.history.length > 1 ? navigate(-1) : navigate("/businesses")
           }
-          className="p-2"
+          className="grid h-10 w-10 place-items-center rounded-full bg-black/45 backdrop-blur-sm"
         >
           <ArrowLeft size={21} />
         </button>
-        <span className="text-sm font-semibold">매장 상세</span>
+        <span className="sr-only">매장 상세</span>
         <button
           type="button"
           aria-label="매장 공유"
           onClick={() => void share()}
-          className="p-2"
+          className="grid h-10 w-10 place-items-center rounded-full bg-black/45 backdrop-blur-sm"
         >
           <Share2 size={19} />
         </button>
       </header>
       <div className="mx-auto max-w-3xl">
-        <div className={`relative flex w-full min-w-0 items-center justify-center overflow-hidden bg-[#fff0f5] ${activeDeals.length ? "h-[300px]" : "aspect-[2/1]"}`}>
+        <div className="relative flex aspect-[1.55] w-full min-w-0 items-center justify-center overflow-hidden bg-[#fff0f5]">
           <div className="flex flex-col items-center gap-3 text-[#d795ae]">
             <Store size={48} strokeWidth={1.4} />
             <span className="text-xs">
@@ -254,12 +259,11 @@ export default function BusinessProfile({
           <button
             type="button"
             onClick={() => selectTab("사진")}
-            className={`absolute right-4 flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1.5 text-xs text-white ${activeDeals.length ? "top-4" : "bottom-4"}`}
+            className="absolute bottom-4 right-4 flex items-center gap-1.5 rounded-full bg-black/45 px-3 py-1.5 text-xs text-white"
           >
             <ImageIcon size={14} />
             사진 {images.length}
           </button>
-          <BusinessTimeDeals deals={activeDeals} now={now} />
         </div>
         <section className="space-y-4 bg-white px-5 py-6">
           <div className="flex flex-wrap gap-2">
@@ -276,7 +280,7 @@ export default function BusinessProfile({
             {business.name}
           </h1>
           {supplied && <div className="space-y-2 text-sm">
-            <p>★ {supplied.average_rating.toFixed(1)} <span className="text-page-text">리뷰 {supplied.review_count.toLocaleString()} · 찜 {supplied.favorite_count.toLocaleString()}</span></p>
+            <p>★ {shownRating.toFixed(1)} <span className="text-page-text">리뷰 {shownReviews.length.toLocaleString()} · 찜 {supplied.favorite_count.toLocaleString()}</span></p>
             <p className="leading-6 text-page-text">{supplied.hashtags}</p>
             <p className="leading-6">{supplied.opening_hours} <span className="text-page-text">· {supplied.closed_days}</span></p>
           </div>}
@@ -341,6 +345,7 @@ export default function BusinessProfile({
           ))}
         </nav>
         <div className="space-y-5 p-5">
+          {(tab === "홈" || tab === "시술 메뉴") && <BusinessTimeDeals deals={activeDeals} now={now} />}
           {tab === "정보" && !preview && (
             <div className="flex flex-wrap gap-2"><BusinessMenuManagementLink businessId={business.id} /><DealKitManagementLink businessId={business.id} /></div>
           )}
@@ -501,7 +506,7 @@ export default function BusinessProfile({
               </section>
               <section className={box}>
                 <h2 className="mb-3 text-lg font-bold">예약 · 이용 안내</h2>
-                {supplied ? <dl className="space-y-3 text-sm leading-6"><div><dt className="font-semibold">영업시간</dt><dd>{supplied.opening_hours}</dd></div><div><dt className="font-semibold">휴무일</dt><dd>{supplied.closed_days}</dd></div><div><dt className="font-semibold">편의정보 · 주차</dt><dd>{supplied.amenities}<br />{supplied.parking}</dd></div><div><dt className="font-semibold">예약금</dt><dd>{supplied.deposit}</dd></div><div><dt className="font-semibold">취소·환불 안내</dt><dd>{supplied.cancellation_policy}</dd></div></dl> : <>
+                {supplied ? <dl className="space-y-3 text-sm leading-6"><div><dt className="font-semibold">영업시간</dt><dd>{supplied.opening_hours}</dd></div><div><dt className="font-semibold">휴무일</dt><dd>{supplied.closed_days}</dd></div><div><dt className="font-semibold">편의정보 · 주차</dt><dd>{supplied.amenities}<br />{supplied.parking}</dd></div><div><dt className="font-semibold">결제 안내</dt><dd>예약 시 결제 없이 방문 후 매장에서 결제합니다.</dd></div><div><dt className="font-semibold">취소 안내</dt><dd>방문 시작 전까지 예약내역에서 변경·취소할 수 있습니다.</dd></div></dl> : <>
                 <ul className="space-y-3 text-sm leading-6 text-page-text">
                   <li>시술 메뉴에서 가격과 소요시간을 확인해 주세요.</li>
                   <li>
@@ -524,7 +529,7 @@ export default function BusinessProfile({
           )}
         </div>
       </div>
-      <div className="fixed inset-x-0 bottom-16 z-40 border-t border-page-border bg-white/95 px-5 py-3 backdrop-blur">
+      <div className="business-booking-bar fixed inset-x-0 bottom-16 z-40 border-t border-page-border bg-white/95 px-5 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center gap-4">
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs text-page-text">{business.name}</p>

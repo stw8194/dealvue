@@ -1,3 +1,4 @@
+import "./fortune-art.css";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ArrowUpRight, Check, Moon, Sparkles, Star } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -51,14 +52,26 @@ export default function Fortune() {
     setPhase("reading");
   };
   return <div className={`playground-content fortune-content fortune-${displayedPhase} ${phase === "revealed" && revealId > 0 ? "has-finale" : ""}`} aria-busy={phase === "reading"}>
-    <div className="crystal-stage ambient-scene" ref={scene}>
+    <div className="crystal-stage ambient-scene illustrated-crystal" ref={scene}>
       <span className="scene-eyebrow"><Moon size={12} /> A LITTLE MAGIC FOR YOU</span>
       <div className="constellation" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <span key={i} className={`constellation-star star-${i}`}>✦</span>)}</div>
       <div className="crystal-orbit" /><div className="crystal-orbit orbit-tilted" />
       <button className="crystal-action" type="button" onClick={read} disabled={claimed || phase === "reading"} aria-label={phase === "reading" ? "수정구슬이 운세를 읽고 있어요" : claimed ? "오늘의 수정구슬 참여 완료" : "수정구슬을 터치해 오늘의 운세 보기"}>
-        <span className="crystal-float"><span className="crystal-ball"><span className="crystal-mist mist-one" /><span className="crystal-mist mist-two" /><span className="crystal-inner-ring" /><span className="crystal-highlight" /><span className="crystal-symbol"><Sparkles size={45} strokeWidth={1} /></span><span className="crystal-glint glint-one" /><span className="crystal-glint glint-two" /></span></span>
+        <img className="fortune-crystal-art" src="/images/community/crystal.png" alt="별빛과 은하가 반짝이는 보라색 수정구슬" />
+        <span className="fortune-magic-aura" aria-hidden="true"><span className="fortune-aura-halo" /><span className="fortune-aura-orbit orbit-one"><i /></span><span className="fortune-aura-orbit orbit-two"><i /></span>{Array.from({ length: 8 }, (_, i) => <span key={i} className="fortune-rising-spark" style={{ "--spark": i, left: `${10 + (i * 31) % 80}%` } as CSSProperties}>✧</span>)}</span>
+        <span className="fortune-orb-field" aria-hidden="true">
+          <span className="fortune-orb-texture" />
+          <span className="fortune-orb-nebula nebula-one" />
+          <span className="fortune-orb-nebula nebula-two" />
+          <span className="fortune-orb-current" />
+          <span className="fortune-orb-aurora" />
+          <span className="fortune-orb-comet comet-one" />
+          <span className="fortune-orb-comet comet-two" />
+          <span className="fortune-orb-sheen" />
+          {Array.from({ length: 20 }, (_, i) => <span key={i} className="fortune-orb-star" style={{ "--star": i, left: `${18 + (i * 29) % 67}%`, top: `${16 + (i * 23) % 67}%` } as CSSProperties}>✦</span>)}
+        </span>
+      {phase === "revealed" && revealId > 0 && <span className="crystal-finale" key={revealId} aria-hidden="true"><span className="finale-light" /><span className="finale-ring ring-a" /><span className="finale-ring ring-b" /><span className="finale-ring ring-c" />{Array.from({ length: 18 }, (_, i) => <span className="finale-star" key={i} style={{ "--i": i } as CSSProperties}>{i % 3 === 0 ? "✧" : "✦"}</span>)}<span className="finale-gift">{receivedGift ? "+ 5 P" : "오늘의 빛이 도착했어요"}</span></span>}
       </button>
-      {phase === "revealed" && revealId > 0 && <div className="crystal-finale" key={revealId} aria-hidden="true"><span className="finale-light" /><span className="finale-ring ring-a" /><span className="finale-ring ring-b" /><span className="finale-ring ring-c" />{Array.from({ length: 18 }, (_, i) => <span className="finale-star" key={i} style={{ "--i": i } as CSSProperties}>{i % 3 === 0 ? "✧" : "✦"}</span>)}<span className="finale-gift">{receivedGift ? "+ 5 P" : "오늘의 빛이 도착했어요"}</span></div>}
       <div className="crystal-pedestal"><span /><span /></div><div className="crystal-floor" />
       <div className="crystal-stage-caption"><span>{phase === "reading" ? "별빛 속에서 행운을 찾고 있어요" : displayedPhase === "revealed" ? "당신에게 도착한 오늘의 메시지" : "구슬을 톡, 오늘의 행운을 깨워보세요"}</span><span className="crystal-caption-dots" aria-hidden="true">✧ · ✧ · ✧</span></div>
     </div>

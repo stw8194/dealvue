@@ -37,7 +37,7 @@ export function hasActiveSale(startAt: string | undefined, endAt: string | null 
 export function applyDealRotation(deals: ConsumerDeal[], now: number): ConsumerDeal[] {
   const businesses = new Map<number, ConsumerDeal>();
   for (const deal of deals) {
-    if (deal.scheduleKind === "rotation" && deal.remainingCapacity > 0) businesses.set(deal.businessId, deal);
+    if (deal.scheduleKind === "rotation" && (deal.totalCapacity ?? deal.remainingCapacity) > 0) businesses.set(deal.businessId, deal);
   }
   const categories = new Map<string, number[]>();
   for (const business of [...businesses.values()].sort((a, b) => a.businessId - b.businessId)) {
