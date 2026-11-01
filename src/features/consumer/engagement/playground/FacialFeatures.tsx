@@ -6,7 +6,7 @@ import { FACE_TONES, type AvatarAppearance } from "./appearance";
 const EYES = [[190, 274], [327, 260]];
 const EYE_HUES = { brown: 0, navy: 205, mint: 125, violet: 260, rose: 325 };
 const MOUTH_INDEX = { smile: 0, grin: 1, pout: 2, ooh: 3, kitty: 4 };
-const MOUTH_SIZE = { smile: [37, 18], grin: [35, 25], pout: [23, 18], ooh: [18, 25], kitty: [34, 18] };
+const MOUTH_SIZE = { smile: [37, 18], grin: [31, 21], pout: [22, 15], ooh: [15, 20], kitty: [30, 15] };
 
 export function PaintedMouth({ mouth, x = 258, y = 313 }: { mouth: AvatarAppearance["mouth"]; x?: number; y?: number }) {
   const id = `lips-${useId().replaceAll(":", "")}`;
@@ -17,25 +17,44 @@ export function PaintedMouth({ mouth, x = 258, y = 313 }: { mouth: AvatarAppeara
   </svg>;
 }
 
-/** Colour only the iris; keep the original eye whites, lashes and highlights in place. */
+/** Use the same painted eyes in the editor and on the avatar. */
+export function PaintedEyes({ appearance, preview = false }: { appearance: AvatarAppearance; preview?: boolean }) {
+  const id = `eyes-${useId().replaceAll(":", "")}`;
+  const tone = FACE_TONES.find(item => item.id === appearance.tone)!;
+  const drawing = <HeadArtwork appearance={appearance} />;
+  const eyeScale = { sparkle: [1, 1], gentle: [1, .88], cat: [1.04, .9], round: [1.04, 1.08] }[appearance.eyes];
+  return <g>
+    <defs>
+      <filter id={`${id}-color`} colorInterpolationFilters="sRGB"><feColorMatrix type="hueRotate" values={String(EYE_HUES[appearance.eyeColor])} /><feColorMatrix type="saturate" values=".72" /></filter>
+      <radialGradient id={`${id}-fade`}><stop offset=".84" stopColor="white" /><stop offset="1" stopColor="white" stopOpacity="0" /></radialGradient>
+      {EYES.map(([x,y], i) => <clipPath key={i} id={`${id}-iris-${i}`}><ellipse cx={x} cy={y} rx="26" ry="28" /></clipPath>)}
+      {EYES.map(([x,y], i) => <mask key={i} id={`${id}-eye-${i}`} maskUnits="userSpaceOnUse" x={x-55} y={y-59} width="110" height="118"><ellipse cx={x} cy={y} rx="55" ry="59" fill={`url(#${id}-fade)`} /></mask>)}
+    </defs>
+    {(preview || appearance.eyes !== "sparkle" || appearance.eyeColor !== "brown") && EYES.map(([x,y],i) => <g key={i} mask={`url(#${id}-eye-${i})`}>
+      <g transform={`translate(${x} ${y}) rotate(${appearance.eyes === "cat" ? i ? 5 : -5 : 0}) scale(${eyeScale.join(" ")}) translate(${-x} ${-y})`}>
+        <g style={{ filter: tone.filter }}>{drawing}</g>
+        {appearance.eyeColor !== "brown" && <g clipPath={`url(#${id}-iris-${i})`} filter={`url(#${id}-color)`}>{drawing}</g>}
+      </g>
+    </g>)}
+  </g>;
+}
+
 export default function FacialFeatures({ appearance }: { appearance: AvatarAppearance }) {
   const id = `features-${useId().replaceAll(":", "")}`;
   const tone = FACE_TONES.find(item => item.id === appearance.tone)!;
   const drawing = <HeadArtwork appearance={appearance} />;
   return <svg className="avatar-face-features painted-face-features" viewBox="0 0 512 768" aria-hidden="true">
     <defs>
-      <filter id={`${id}-eye-color`} colorInterpolationFilters="sRGB"><feColorMatrix type="hueRotate" values={String(EYE_HUES[appearance.eyeColor])} /><feColorMatrix type="saturate" values=".72" /></filter>
-      <radialGradient id={`${id}-fade`}><stop offset=".67" stopColor="white" /><stop offset="1" stopColor="white" stopOpacity="0" /></radialGradient>
+      <radialGradient id={`${id}-fade`}><stop offset=".65" stopColor="white" /><stop offset="1" stopColor="white" stopOpacity="0" /></radialGradient>
       <mask id={`${id}-mouth-cover`} maskUnits="userSpaceOnUse" x="228" y="296" width="62" height="36"><ellipse cx="258" cy="314" rx="31" ry="18" fill={`url(#${id}-fade)`} /></mask>
-      {EYES.map(([x,y], i) => <clipPath key={i} id={`${id}-iris-${i}`}><ellipse cx={x} cy={y} rx="26" ry="28" /></clipPath>)}
     </defs>
-    {appearance.eyeColor !== "brown" && EYES.map((_,i) => <g key={i} clipPath={`url(#${id}-iris-${i})`} filter={`url(#${id}-eye-color)`}>{drawing}</g>)}
-    {/* Soft lid shapes affect the original eye locally, with no skin replacement patches. */}
-    {appearance.eyes !== "sparkle" && EYES.map(([x,y],i) => <g key={i} clipPath={`url(#${id}-iris-${i})`} opacity={appearance.eyes === "gentle" ? .14 : .08}><path d={`M${x-28} ${y-26}q28 ${appearance.eyes === "cat" ? -4 : 15} 56 0`} stroke="#6d4236" strokeWidth={appearance.eyes === "gentle" ? 10 : 5} fill="none" /></g>)}
+    <PaintedEyes appearance={appearance} />
     {appearance.mouth !== "smile" && <>
-      {/* Sample adjacent skin from THIS painting: no Coco patch on another face. */}
-      <g mask={`url(#${id}-mouth-cover)`} style={{ filter: tone.filter }}><g transform="translate(48 0)">{drawing}</g></g>
-      <g transform="rotate(-4 258 313)"><PaintedMouth mouth={appearance.mouth} /></g>
+      <g mask={`url(#${id}-mouth-cover)`} style={{ filter: tone.filter }}>
+        {/* Sample the unpainted chin, not the rosy cheek beside the mouth. */}
+        <svg x="227" y="296" width="62" height="36" viewBox="240 332 36 8" preserveAspectRatio="none">{drawing}</svg>
+      </g>
+      <g transform="rotate(-4 258 313)" style={{ filter: tone.filter }}><PaintedMouth mouth={appearance.mouth} /></g>
     </>}
   </svg>;
 }
