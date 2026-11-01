@@ -6,6 +6,7 @@ import { useConsumerCatalog } from "@/features/consumer/catalog";
 import { DealCard } from "@/features/consumer/discovery/DealCard";
 import { EmptyState, Page } from "@/features/consumer/ui";
 import { bookingOffer, isOpenDeal, useDealTime } from "@/features/consumer/dealTiming";
+import { dealSearchScore } from "@/features/consumer/search";
 
 function SearchForm({ keyword, onSearch }: { keyword: string; onSearch: (value: string) => void }) {
   const [value, setValue] = useState(keyword);
@@ -28,19 +29,24 @@ export default function Search() {
   const keyword = params.get("keyword") ?? "";
   const category = params.get("category") ?? "";
   const area = params.get("area") ?? "";
-  const sort = params.get("sort") ?? "ending";
+  const sort = params.get("sort") ?? (keyword.trim() ? "relevance" : "ending");
   function updateParam(key: string, value: string) {
     setParams((previous) => {
       const next = new URLSearchParams(previous);
       if (value) next.set(key, value); else next.delete(key);
+      if (key === "keyword" && !value && next.get("sort") === "relevance") next.delete("sort");
       return next;
     });
   }
+  const scores = new Map(deals.map(deal => [deal.id, dealSearchScore(deal, keyword)]));
   const results = deals.filter((deal) => {
-    const text = `${deal.businessName} ${deal.serviceName} ${deal.address} ${deal.description}`.toLocaleLowerCase();
     // A keyword search also finds shops whose time deal is not running now; they book at the menu price.
-    return (isOpenDeal(deal, now) || keyword.trim() !== "") && text.includes(keyword.toLocaleLowerCase()) && (!category || deal.category === category) && (!area || deal.address.includes(area));
+    return (isOpenDeal(deal, now) || keyword.trim() !== "") && scores.get(deal.id)! >= 0 && (!category || deal.category === category) && (!area || deal.address.includes(area));
   }).sort((a, b) => {
+    if (sort === "relevance") {
+      const relevance = scores.get(b.id)! - scores.get(a.id)!;
+      if (relevance) return relevance;
+    }
     const openFirst = Number(isOpenDeal(b, now)) - Number(isOpenDeal(a, now));
     if (openFirst) return openFirst;
     const offerA = bookingOffer(a, now), offerB = bookingOffer(b, now);
@@ -57,11 +63,11 @@ export default function Search() {
         </div>
         <div className="space-y-4 rounded-2xl bg-[#faf7f8] p-4">
           <ChoiceGroup label="지역" value={area} onChange={value => updateParam("area", value)} options={[{ value: "", label: "전체 지역" }, ...[...new Set([...(area ? [area] : []), ...areas])].map(value => ({ value, label: value.replace(/^서울특별시 /, "") }))]} />
-          <ChoiceGroup label="정렬" value={sort} onChange={value => updateParam("sort", value)} options={[{ value: "ending", label: "마감 빠른순" }, { value: "price", label: "낮은 가격순" }, { value: "discount", label: "할인율 높은순" }]} />
+          <ChoiceGroup label="정렬" value={sort} onChange={value => updateParam("sort", value)} options={[...(keyword.trim() ? [{ value: "relevance", label: "관련도 높은순" }] : []), { value: "ending", label: "마감 빠른순" }, { value: "price", label: "낮은 가격순" }, { value: "discount", label: "할인율 높은순" }]} />
         </div>
         {loading ? <p role="status" className="py-8 text-center text-sm">검색 결과를 불러오는 중입니다.</p> : error ? <EmptyState title="검색 결과를 불러오지 못했습니다" description={error} action={<button type="button" onClick={() => window.location.reload()} className="text-accent">다시 시도</button>} /> : <>
           <p className="text-sm text-page-text" aria-live="polite">{keyword ? `“${keyword}” ` : ""}검색 결과 {results.length}건</p>
-          {results.length ? <div className="space-y-3">{results.map((deal) => <DealCard key={deal.id} deal={deal} />)}</div> : <EmptyState title="조건에 맞는 타임딜이 없습니다" description="검색어나 카테고리, 지역을 바꿔보세요." action={<button type="button" onClick={() => setParams({})} className="text-accent">검색 조건 초기화</button>} />}
+          {results.length ? <div className="space-y-3">{results.map((deal) => <DealCard key={deal.id} deal={deal} />)}</div> : <EmptyState title="조건에 맞는 시술이 없습니다" description="검색어나 카테고리, 지역을 바꿔보세요." action={<button type="button" onClick={() => setParams({})} className="text-accent">검색 조건 초기화</button>} />}
         </>}
       </div>
     </Page>
