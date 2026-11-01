@@ -38,14 +38,16 @@ export const MOTION_DURATIONS = { hello: 2250, happy: 2200, twirl: 3000, cozy: 3
 export const hairCutoutSource = (view: "front" | "side" | "back" | "front-quarter" | "back-quarter", hairstyle: AvatarAppearance["hairstyle"], hairRibbon: AvatarAppearance["hairRibbon"] = "ribbon") => hairstyle === "bob" ? `/images/playground/hair/${view}-bob.webp` : `/images/playground/hair-v3/${hairRibbon === "none" ? "no-ribbon/" : ""}${hairstyle}-turns.webp`;
 /** Skin regions (x%, y%, rx%, ry%) the hair recolour skips — face, ears, neck — so shadowed skin and eyes never take the hair colour. */
 export const FACE_HOLES = {
-  front: [[50.4, 40, 24, 8.5], [35.5, 35, 13, 6.8], [65.3, 35, 13, 6.8], [22.5, 38.5, 3.2, 3.8], [79, 37.2, 3.2, 3.8], [50, 49, 8.5, 3.5]],
-  side: [[65, 36, 15, 13], [40.5, 37, 6, 6], [54, 49, 7, 2.8]],
-  "front-quarter": [[56, 37, 25, 12], [23, 39.5, 4.5, 5.5], [55, 49, 8, 2.8]],
+  front: [[50.4, 40, 24, 8.5], [35.5, 35, 13, 6.8], [65.3, 35, 13, 6.8], [25.2, 39.1, 3.8, 4.7, 97], [80, 36.5, 3.8, 4.8, 97], [76.5, 39.2, 2.6, 2.1, 97], [50, 49, 8.5, 3.5]],
+  side: [[65, 36, 15, 13], [40.5, 37, 6, 6, 94], [54, 49, 7, 2.8]],
+  "front-quarter": [[56, 37, 25, 12], [23, 39.5, 4.5, 5.5, 94], [55, 49, 8, 2.8]],
   back: [[50, 49.5, 8, 2.5]],
-  "back-quarter": [[73, 35.5, 4.5, 6], [52, 49.5, 8, 2.5]],
+  "back-quarter": [[73, 35.5, 4.5, 6, 94], [52, 49.5, 8, 2.5]],
 } as const;
 /** Hair-colour filter that leaves the given skin ellipses (x%, y%, rx%, ry%) untouched. */
 export function hairRecolorStyle(key: string, colorFilter: string, holes: readonly (readonly number[])[]): CSSProperties {
-  const mask = holes.map(([x, y, rx, ry]) => `radial-gradient(${rx}% ${ry}% at ${x}% ${y}%, transparent 72%, black 100%)`).join(", ");
+  // Ear shadows are as dark as hair. Protect the whole ear, including its rim,
+  // rather than fading the colour back in over the outer 28% of the skin.
+  const mask = holes.map(([x, y, rx, ry, clear = 72]) => `radial-gradient(${rx}% ${ry}% at ${x}% ${y}%, transparent ${clear}%, black 100%)`).join(", ");
   return { filter: `url(#${key}) ${colorFilter === "none" ? "" : colorFilter}`.trim(), ...(mask ? { maskImage: mask, maskComposite: "intersect" } : {}) };
 }
