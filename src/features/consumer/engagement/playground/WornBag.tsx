@@ -19,7 +19,7 @@ const PLACEMENTS: Partial<Record<AccessoryItem["design"], Placement>> = {
 };
 
 /** Straps lie on the garment; the painted bag lies behind the foreground hand. */
-export default function WornBag({ item, layer }: { item: AccessoryItem; layer: "strap" | "body" }) {
+export default function WornBag({ item, layer }: { item: AccessoryItem; layer: "strap" | "strap-front" | "body" }) {
   const id = `bag-strap-${useId().replaceAll(":", "")}`;
   const placement = PLACEMENTS[item.design] ?? HAND;
   if (item.design === "none") return null;
@@ -27,8 +27,15 @@ export default function WornBag({ item, layer }: { item: AccessoryItem; layer: "
     <PaintedAccessory id={item.id} x={placement.x} y={placement.y} width={placement.width} height={placement.height} />
   </g>;
   if (!placement.strap) return null;
-  return <g style={{ filter: ACCESSORY_COLORWAYS[item.colorway] }} data-bag-strap={placement.carry}>
-    <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="0"><stop stopColor={item.color} /><stop offset=".5" stopColor={item.accent} /><stop offset="1" stopColor={item.color} /></linearGradient></defs>
+  const foreground = layer === "strap-front";
+  if (foreground && placement.carry !== "crossbody") return null;
+  return <g style={{ filter: ACCESSORY_COLORWAYS[item.colorway] }} data-bag-strap={placement.carry} clipPath={foreground ? `url(#${id}-front)` : undefined}>
+    <defs>
+      <linearGradient id={id} x1="0" y1="0" x2="1" y2="0"><stop stopColor={item.color} /><stop offset=".5" stopColor={item.accent} /><stop offset="1" stopColor={item.color} /></linearGradient>
+      {/* Restore the garment section over the sleeve paint, while keeping the
+          shoulder wrap below hair and the lower end below the bag/hand. */}
+      {foreground && <clipPath id={`${id}-front`}><rect x="0" y="379" width="512" height="121" /></clipPath>}
+    </defs>
     <path d={placement.strap} stroke="#432c3830" strokeWidth="9" strokeLinecap="round" fill="none" transform="translate(1 1)" />
     <path d={placement.strap} stroke={`url(#${id})`} strokeWidth="6" strokeLinecap="round" fill="none" />
     <path d={placement.strap} stroke="#fff5dd" strokeOpacity=".5" strokeWidth="1" strokeLinecap="round" fill="none" />

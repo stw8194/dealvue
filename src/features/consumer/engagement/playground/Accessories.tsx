@@ -8,7 +8,7 @@ export function AccessoryThumbnail({ id }: { id: AccessoryId }) {
   return <svg viewBox="0 0 80 80" className="accessory-thumbnail" aria-hidden="true">{empty ? <><circle cx="40" cy="40" r="22" fill="none" stroke="#cbc5d8" strokeWidth="2" /><path d="m25 55 30-30" stroke="#cbc5d8" strokeWidth="2" /></> : <PaintedAccessory id={id} x={4} y={4} width={72} height={72} />}</svg>;
 }
 
-export function WornAccessories({ selection, part, hairstyle = "bob" }: { selection: Selection; part: "head" | "torso" | "arm-right"; hairstyle?: AvatarAppearance["hairstyle"] }) {
+export function WornAccessories({ selection, part, hairstyle = "bob" }: { selection: Selection; part: "head" | "torso" | "arm-right" | "strap-front"; hairstyle?: AvatarAppearance["hairstyle"] }) {
   const hair = ACCESSORIES.find(item => item.id === selection.hair)!;
   const necklace = ACCESSORIES.find(item => item.id === selection.necklace)!;
   const bag = ACCESSORIES.find(item => item.id === selection.bag)!;
@@ -24,6 +24,7 @@ export function WornAccessories({ selection, part, hairstyle = "bob" }: { select
       {selection.ears !== "ears-none" && [[122, 302], [407, 285]].map(([x, y]) => <g key={x} className="earring-pendant" style={{ transformOrigin: `${x + 8}px ${y}px` }}><PaintedAccessory id={selection.ears} x={x} y={y} width={16} height={35} /></g>)}
     </>}
     {part === "arm-right" && <WornBag item={bag} layer="body" />}
+    {part === "strap-front" && <WornBag item={bag} layer="strap-front" />}
     {part === "torso" && <WornBag item={bag} layer="strap" />}
     {part === "torso" && necklace.design !== "none" && <PaintedAccessory id={selection.necklace} x={necklace.design === "star-collar" ? 195 : 211} y={371} width={necklace.design === "star-collar" ? 122 : 90} height={necklace.design === "ribbon-choker" || necklace.design === "pearl-choker" ? 39 : 65} />}
   </svg>;

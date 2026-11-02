@@ -11,6 +11,7 @@
 .avatar-dress-up .accessories-torso { z-index: 1; }
 .avatar-dress-up .accessories-head { z-index: 3; }
 .avatar-dress-up .accessories-arm-right { z-index: 2; }
+.avatar-dress-up .accessories-strap-front { z-index: 2; }
 .avatar-dress-up .fashion-avatar-body { animation: none; }
 .avatar-dress-up :is(.eye-open, .eye-closed) { animation: none; }
 .avatar-dress-up .avatar-static-body { display: block; mask-image: linear-gradient(transparent 49.7%, black 50.7%); }
