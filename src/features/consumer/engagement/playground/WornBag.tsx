@@ -1,5 +1,5 @@
 import { useId } from "react";
-import { ACCESSORY_COLORWAYS, type AccessoryItem } from "./accessoryCatalog";
+import { ACCESSORY_COLORWAYS, isAvailableAccessory, type AccessoryItem } from "./accessoryCatalog";
 import PaintedAccessory from "./PaintedAccessory";
 
 type Carry = "hand" | "crossbody" | "shoulder";
@@ -22,7 +22,7 @@ const PLACEMENTS: Partial<Record<AccessoryItem["design"], Placement>> = {
 export default function WornBag({ item, layer }: { item: AccessoryItem; layer: "strap" | "strap-front" | "body" }) {
   const id = `bag-strap-${useId().replaceAll(":", "")}`;
   const placement = PLACEMENTS[item.design] ?? HAND;
-  if (item.design === "none") return null;
+  if (item.design === "none" || !isAvailableAccessory(item)) return null;
   if (layer === "body") return <g className={placement.carry === "hand" ? "worn-bag-swing" : "worn-bag-body"} data-bag-carry={placement.carry}>
     <PaintedAccessory id={item.id} x={placement.x} y={placement.y} width={placement.width} height={placement.height} />
   </g>;

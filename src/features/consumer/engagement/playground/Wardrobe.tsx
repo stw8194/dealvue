@@ -43,7 +43,7 @@ function WardrobeStudio({ onEarn, initialCollection, initialOutfit }: WardrobePr
   const goal = useEngagementStore(state => state.lookGoal);
   const setGoal = useEngagementStore(state => state.setLookGoal);
   const [selected, setSelected] = useState(initialOutfit ?? outfit);
-  const [selection, setSelection] = useState(() => ({ ...worn, hair: isAvailableAccessory(ACCESSORIES.find(item => item.id === worn.hair) ?? { design: "none" }) ? worn.hair : "hair-none" as const }));
+  const [selection, setSelection] = useState(() => ({ ...worn, bag: isAvailableAccessory(ACCESSORIES.find(item => item.id === worn.bag) ?? { design: "none" }) ? worn.bag : "bag-none" as const, hair: isAvailableAccessory(ACCESSORIES.find(item => item.id === worn.hair) ?? { design: "none" }) ? worn.hair : "hair-none" as const }));
   const [category, setCategory] = useState<Category>("clothes");
   const [collection, setCollection] = useState<string>(() => initialCollection === "all" || COLLECTIONS.some(item => item.id === initialCollection) ? initialCollection! : LOOKS.find(item => item.id === (initialOutfit ?? outfit))?.collection ?? "signature");
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -67,7 +67,7 @@ function WardrobeStudio({ onEarn, initialCollection, initialOutfit }: WardrobePr
   const previewLook = (next: Outfit) => {
     setSelected(next); setFeedback("");
   };
-  const applySaved = (saved: SavedLook) => { setSelected(saved.outfit); setSelection({ ...saved.accessories, hair: isAvailableAccessory(ACCESSORIES.find(item => item.id === saved.accessories.hair) ?? { design: "none" }) ? saved.accessories.hair : "hair-none" }); setSelectedBackdrop(saved.backdrop); setAppearance(normalizeAppearance(saved.appearance ?? wornAppearance)); };
+  const applySaved = (saved: SavedLook) => { setSelected(saved.outfit); setSelection({ ...saved.accessories, bag: isAvailableAccessory(ACCESSORIES.find(item => item.id === saved.accessories.bag) ?? { design: "none" }) ? saved.accessories.bag : "bag-none", hair: isAvailableAccessory(ACCESSORIES.find(item => item.id === saved.accessories.hair) ?? { design: "none" }) ? saved.accessories.hair : "hair-none" }); setSelectedBackdrop(saved.backdrop); setAppearance(normalizeAppearance(saved.appearance ?? wornAppearance)); };
   const matches = (name: string) => name.includes(query.trim());
   const visibleLooks = LOOKS.filter(item => (collection === "all" || item.collection === collection) && (!ownedOnly || owned.includes(item.id)) && matches(item.name));
   const dress = () => {
