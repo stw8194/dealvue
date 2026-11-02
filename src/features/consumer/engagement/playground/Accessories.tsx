@@ -21,7 +21,7 @@ export function WornAccessories({ selection, part, hairstyle = "bob" }: { select
       {hair.design !== "none" && <PaintedAccessory id={selection.hair} x={hairBox[0]} y={hairBox[1]} width={hairBox[2]} height={hairBox[3]} />}
       {selection.ears !== "ears-none" && [[122, 302], [407, 285]].map(([x, y]) => <g key={x} className="earring-pendant" style={{ transformOrigin: `${x + 8}px ${y}px` }}><PaintedAccessory id={selection.ears} x={x} y={y} width={16} height={35} /></g>)}
     </>}
-    {part === "arm-right" && selection.bag !== "bag-none" && <g className="worn-bag-swing"><PaintedAccessory id={selection.bag} x={370} y={490} width={88} height={105} /></g>}
+    {part === "arm-right" && selection.bag !== "bag-none" && <g className="worn-bag-swing"><PaintedAccessory id={selection.bag} x={350} y={480} width={132} height={158} /></g>}
     {part === "torso" && necklace.design !== "none" && <PaintedAccessory id={selection.necklace} x={necklace.design === "star-collar" ? 195 : 211} y={371} width={necklace.design === "star-collar" ? 122 : 90} height={necklace.design === "ribbon-choker" || necklace.design === "pearl-choker" ? 39 : 65} />}
   </svg>;
 }
