@@ -30,7 +30,8 @@ export type AvatarAppearance = { hairRibbon: typeof HAIR_RIBBONS[number]["id"]; 
 export const DEFAULT_APPEARANCE: AvatarAppearance = { hairRibbon: "ribbon", hairstyle: "bob", hairColor: "chestnut", eyes: "sparkle", eyeColor: "brown", mouth: "smile", tone: "peach" };
 export function normalizeAppearance(value?: Partial<AvatarAppearance> | null): AvatarAppearance {
   const catalogs = { hairRibbon: HAIR_RIBBONS, hairstyle: HAIRSTYLES, hairColor: HAIR_COLORS, eyes: EYE_SHAPES, eyeColor: EYE_COLORS, mouth: MOUTH_SHAPES, tone: FACE_TONES };
-  return Object.fromEntries(Object.entries(catalogs).map(([key, options]) => [key, options.some(option => option.id === value?.[key as keyof AvatarAppearance]) ? value![key as keyof AvatarAppearance] : DEFAULT_APPEARANCE[key as keyof AvatarAppearance]])) as AvatarAppearance;
+  // Legacy looks may contain other mouths. Always restore the original painted smile.
+  return { ...Object.fromEntries(Object.entries(catalogs).map(([key, options]) => [key, options.some(option => option.id === value?.[key as keyof AvatarAppearance]) ? value![key as keyof AvatarAppearance] : DEFAULT_APPEARANCE[key as keyof AvatarAppearance]])), mouth: "smile" } as AvatarAppearance;
 }
 export function sameAppearance(left: AvatarAppearance, right: AvatarAppearance) { return (Object.keys(DEFAULT_APPEARANCE) as (keyof AvatarAppearance)[]).every(key => left[key] === right[key]); }
 export const MOTION_DURATIONS = { hello: 2250, happy: 2200, twirl: 3000, cozy: 3500, pose: 2100 } as const;

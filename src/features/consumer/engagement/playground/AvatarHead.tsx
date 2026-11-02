@@ -3,7 +3,7 @@ import faceArt from "@/data/avatar-face-v5.json";
 import { DEFAULT_APPEARANCE, FACE_HOLES, FACE_TONES, HAIR_COLORS, hairRecolorStyle, type AvatarAppearance } from "./appearance";
 import { HairKeyFilter } from "./HairRecolor";
 import PaintedHead from "./PaintedHead";
-import FacialFeatures, { PaintedEyes, PaintedMouth } from "./FacialFeatures";
+import FacialFeatures, { PaintedEyes } from "./FacialFeatures";
 import { hasPaintedHead } from "./paintedHeadData";
 
 /** The original drawn head. Skin tone and hair colour recolour it in place, so the character never changes shape. */
@@ -22,14 +22,11 @@ function OriginalPortrait({ appearance }: { appearance: AvatarAppearance }) {
 export function FaceEyes({ appearance }: { appearance: AvatarAppearance }) {
   return <PaintedEyes appearance={appearance} preview />;
 }
-export function FaceMouth({ mouth }: { mouth: AvatarAppearance["mouth"] }) {
-  return <PaintedMouth mouth={mouth} x={256} y={326} />;
-}
 export function FaceFeatures({ appearance }: { appearance: AvatarAppearance }) {
   return <FacialFeatures appearance={appearance} />;
 }
 export default function AvatarHead({ appearance = DEFAULT_APPEARANCE }: { appearance?: AvatarAppearance }) {
-  const custom = `${appearance.eyes !== DEFAULT_APPEARANCE.eyes || appearance.eyeColor !== DEFAULT_APPEARANCE.eyeColor ? "custom-eyes" : ""} ${appearance.mouth !== DEFAULT_APPEARANCE.mouth ? "custom-mouth" : ""}`;
+  const custom = `${appearance.eyes !== DEFAULT_APPEARANCE.eyes || appearance.eyeColor !== DEFAULT_APPEARANCE.eyeColor ? "custom-eyes" : ""}`;
   if (hasPaintedHead(appearance)) {
     return <span className={`avatar-custom-head hair-${appearance.hairstyle} uses-original-portrait ${custom}`} aria-hidden="true"><PaintedHead appearance={appearance} /><FaceFeatures appearance={appearance} /></span>;
   }

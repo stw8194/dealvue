@@ -28,10 +28,10 @@ const state = page => page.evaluate(async () => {
   return JSON.parse(JSON.stringify(useEngagementStore.getState()));
 });
 const category = (page, name) => page.getByRole("group", { name: "꾸미기 종류", exact: true }).getByRole("button", { name, exact: true }).click();
-const customized = { hairRibbon: "none", hairstyle: "twintails", hairColor: "rose", eyes: "gentle", eyeColor: "violet", mouth: "kitty", tone: "cream" };
+const customized = { hairRibbon: "none", hairstyle: "twintails", hairColor: "rose", eyes: "gentle", eyeColor: "violet", mouth: "smile", tone: "cream" };
 async function customize(page) {
   await category(page, "얼굴·헤어");
-  for (const name of ["포근 트윈테일", "로즈 핑크 머리색", "순둥순둥 눈 모양", "포도빛 눈동자", "고양이 미소", "크림 얼굴 톤"]) await page.getByRole("button", { name, exact: true }).click();
+  for (const name of ["포근 트윈테일", "로즈 핑크 머리색", "순둥순둥 눈 모양", "포도빛 눈동자", "크림 얼굴 톤"]) await page.getByRole("button", { name, exact: true }).click();
 }
 try {
   const { context, page } = await setup(); const initial = await state(page);
