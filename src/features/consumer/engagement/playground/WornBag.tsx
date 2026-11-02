@@ -5,11 +5,13 @@ import PaintedAccessory from "./PaintedAccessory";
 type Carry = "hand" | "crossbody" | "shoulder";
 type Placement = { carry: Carry; x: number; y: number; width: number; height: number; strap?: string };
 const HAND: Placement = { carry: "hand", x: 350, y: 492, width: 122, height: 142 };
-const CROSSBODY: Placement = { carry: "crossbody", x: 320, y: 510, width: 134, height: 142, strap: "M188 380 Q233 440 335 551" };
+// Extend over the shoulder, underneath the head/hair layer, rather than ending on the chest.
+const SHOULDER_WRAP = "M195 350 Q174 350 181 379";
+const CROSSBODY: Placement = { carry: "crossbody", x: 320, y: 510, width: 134, height: 142, strap: `${SHOULDER_WRAP} Q233 440 335 551` };
 const PLACEMENTS: Partial<Record<AccessoryItem["design"], Placement>> = {
   "berry-bag": CROSSBODY,
-  "camera-bag": { ...CROSSBODY, y: 512, strap: "M188 380 Q238 446 335 564" },
-  "caramel-satchel": { ...CROSSBODY, y: 506, strap: "M188 380 Q238 446 334 555" },
+  "camera-bag": { ...CROSSBODY, y: 512, strap: `${SHOULDER_WRAP} Q238 446 335 564` },
+  "caramel-satchel": { ...CROSSBODY, y: 506, strap: `${SHOULDER_WRAP} Q238 446 334 555` },
   "moon-bag": { carry: "shoulder", x: 334, y: 438, width: 134, height: 162, strap: "M326 383 Q365 409 351 501" },
   "flower-bag": { ...HAND, x: 355, y: 489, width: 114, height: 156 },
   "teddy-bag": { ...HAND, x: 355, width: 114, height: 142 },
