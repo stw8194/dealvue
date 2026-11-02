@@ -71,9 +71,9 @@ export function PortraitAvatar({ outfit, accessories, appearance, view }: { outf
         <FrontBody outfit={look.id} />
         <WornAccessories selection={accessories} part="torso" />
         <span className="avatar-static-head"><AvatarHead appearance={appearance} /></span>
-        {!ownHead && <ForegroundArms outfit={look.id} />}
-        <WornAccessories selection={accessories} part="head" hairstyle={appearance.hairstyle} />
         <WornAccessories selection={accessories} part="arm-right" />
+        {(!ownHead || accessories.bag !== "bag-none") && <ForegroundArms outfit={look.id} />}
+        <WornAccessories selection={accessories} part="head" hairstyle={appearance.hairstyle} />
       </div>
     </div>
   </div>;

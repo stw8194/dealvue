@@ -8,8 +8,9 @@
 .avatar-foreground-arms { position: absolute; inset: 0; display: block; z-index: 2; pointer-events: none; }
 .avatar-foreground-arms[data-arm-view="side"] { mask-image: none; }
 .avatar-layer-defs { position: absolute; width: 0; height: 0; }
-.avatar-dress-up :is(.accessories-torso, .accessories-head) { z-index: 3; }
-.avatar-dress-up .accessories-arm-right { z-index: 4; }
+.avatar-dress-up .accessories-torso { z-index: 1; }
+.avatar-dress-up .accessories-head { z-index: 3; }
+.avatar-dress-up .accessories-arm-right { z-index: 2; }
 .avatar-dress-up .fashion-avatar-body { animation: none; }
 .avatar-dress-up :is(.eye-open, .eye-closed) { animation: none; }
 .avatar-dress-up .avatar-static-body { display: block; mask-image: linear-gradient(transparent 49.7%, black 50.7%); }

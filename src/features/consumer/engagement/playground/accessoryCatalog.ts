@@ -66,3 +66,5 @@ export const ACCESSORIES: AccessoryItem[] = (["hair", "ears", "bag", "necklace"]
     { ...item, id: `${item.id}-midnight` as AccessoryId, design: item.id, name: `${item.name} · 미드나잇`, color: "#8880b1", accent: "#d6c5ea", colorway: "midnight" as const },
   ]),
 ]);
+
+export const ACCESSORY_COLORWAYS = { original: "none", pearl: "saturate(.25) brightness(1.16)", midnight: "saturate(.45) hue-rotate(225deg) brightness(.65)" };

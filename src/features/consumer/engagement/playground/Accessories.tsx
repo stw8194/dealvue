@@ -1,6 +1,7 @@
 import { ACCESSORIES, type Accessories as Selection, type AccessoryId } from "./data";
 import type { AvatarAppearance } from "./appearance";
 import PaintedAccessory from "./PaintedAccessory";
+import WornBag from "./WornBag";
 
 export function AccessoryThumbnail({ id }: { id: AccessoryId }) {
   const empty = ACCESSORIES.find(item => item.id === id)?.design === "none";
@@ -10,6 +11,7 @@ export function AccessoryThumbnail({ id }: { id: AccessoryId }) {
 export function WornAccessories({ selection, part, hairstyle = "bob" }: { selection: Selection; part: "head" | "torso" | "arm-right"; hairstyle?: AvatarAppearance["hairstyle"] }) {
   const hair = ACCESSORIES.find(item => item.id === selection.hair)!;
   const necklace = ACCESSORIES.find(item => item.id === selection.necklace)!;
+  const bag = ACCESSORIES.find(item => item.id === selection.bag)!;
   const clip = ["silk-bow", "mint-bow", "daisy-clip", "butterfly-clip", "star-clip"].includes(hair.design);
   const hairBox = clip ? hairstyle === "bun" ? [334, 95, 70, 62] : [344, 90, 74, 64]
     : hair.design === "rose-beret" ? [76, -18, 357, 180]
@@ -21,7 +23,8 @@ export function WornAccessories({ selection, part, hairstyle = "bob" }: { select
       {hair.design !== "none" && <PaintedAccessory id={selection.hair} x={hairBox[0]} y={hairBox[1]} width={hairBox[2]} height={hairBox[3]} />}
       {selection.ears !== "ears-none" && [[122, 302], [407, 285]].map(([x, y]) => <g key={x} className="earring-pendant" style={{ transformOrigin: `${x + 8}px ${y}px` }}><PaintedAccessory id={selection.ears} x={x} y={y} width={16} height={35} /></g>)}
     </>}
-    {part === "arm-right" && selection.bag !== "bag-none" && <g className="worn-bag-swing"><PaintedAccessory id={selection.bag} x={350} y={480} width={132} height={158} /></g>}
+    {part === "arm-right" && <WornBag item={bag} layer="body" />}
+    {part === "torso" && <WornBag item={bag} layer="strap" />}
     {part === "torso" && necklace.design !== "none" && <PaintedAccessory id={selection.necklace} x={necklace.design === "star-collar" ? 195 : 211} y={371} width={necklace.design === "star-collar" ? 122 : 90} height={necklace.design === "ribbon-choker" || necklace.design === "pearl-choker" ? 39 : 65} />}
   </svg>;
 }
